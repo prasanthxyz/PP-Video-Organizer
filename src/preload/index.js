@@ -11,7 +11,10 @@ const backendMethodNames = [
   'isTgpExisting',
   'generateMissingTgps',
   'isFileExisting',
-  'deleteVideo'
+  'deleteVideo',
+  'createDbTag',
+  'getDbTags',
+  'deleteTag'
 ]
 backendMethodNames.forEach((methodName) => {
   api[methodName] = (...args) => ipcRenderer.invoke(methodName, ...args)

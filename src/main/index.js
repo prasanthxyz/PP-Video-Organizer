@@ -3,14 +3,8 @@ import { BrowserWindow, app, ipcMain, shell } from 'electron'
 import { join } from 'path'
 import icon from '../../resources/icon.png?asset'
 
-import { createVideos, getVideos } from '../backend/db'
-import {
-  deleteVideo,
-  generateMissingTgps,
-  generateTgp,
-  isFileExisting,
-  isTgpExisting
-} from '../backend/video'
+import { createTag, createVideos, deleteTag, deleteVideo, getTags, getVideos } from '../backend/db'
+import { generateMissingTgps, generateTgp, isFileExisting, isTgpExisting } from '../backend/video'
 import { setupDB } from './database/database'
 
 async function createWindow() {
@@ -70,7 +64,10 @@ app.whenReady().then(() => {
     isTgpExisting: isTgpExisting,
     generateMissingTgps: generateMissingTgps,
     isFileExisting: isFileExisting,
-    deleteVideo: deleteVideo
+    deleteVideo: deleteVideo,
+    createDbTag: createTag,
+    getDbTags: getTags,
+    deleteTag: deleteTag
   }
 
   for (const methodName in ipcMainHandlers) {

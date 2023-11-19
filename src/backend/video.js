@@ -10,13 +10,6 @@ export const generateMissingTgps = async () => {
   })
 }
 
-export const deleteVideo = async (videoPath) => {
-  if (isFileExisting(videoPath)) {
-    fs.unlinkSync(videoPath)
-  }
-  await db.deleteVideo(videoPath)
-}
-
 export const isFileExisting = (videoPath) => {
   return fs.existsSync(videoPath)
 }
