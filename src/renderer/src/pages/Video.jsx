@@ -3,5 +3,15 @@ import { useParams } from 'react-router'
 
 export default function Video() {
   let { videoPath } = useParams()
-  return <h1>Video: {videoPath}</h1>
+  const videoPathComponents = videoPath.replace(/\\/g, '/').split('/')
+
+  const getImgPath = (type) => {
+    const imgPathComponents = videoPathComponents.slice(0, videoPathComponents.length - 1)
+    imgPathComponents.push(type === 'pc' ? 'img' : 'img_phone')
+    imgPathComponents.push(videoPathComponents[videoPathComponents.length - 1] + '.jpg')
+    return imgPathComponents.join('/')
+  }
+
+  const imgPath = getImgPath('pc')
+  return <img src={`file:///${imgPath}`} />
 }

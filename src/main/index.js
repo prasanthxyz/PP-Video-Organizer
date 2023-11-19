@@ -4,6 +4,7 @@ import { join } from 'path'
 import icon from '../../resources/icon.png?asset'
 
 import { createVideos, getVideos } from '../backend/db'
+import { generateTgp, isTgpExisting } from '../backend/video'
 import { setupDB } from './database/database'
 
 async function createWindow() {
@@ -16,7 +17,8 @@ async function createWindow() {
     ...(process.platform === 'linux' ? { icon } : {}),
     webPreferences: {
       preload: join(__dirname, '../preload/index.js'),
-      sandbox: false
+      sandbox: false,
+      webSecurity: false
     }
   })
 
@@ -57,7 +59,9 @@ app.whenReady().then(() => {
 
   const ipcMainHandlers = {
     getDbVideos: getVideos,
-    createDbVideos: createVideos
+    createDbVideos: createVideos,
+    generateTgp: generateTgp,
+    isTgpExisting: isTgpExisting
   }
 
   for (const methodName in ipcMainHandlers) {
