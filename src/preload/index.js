@@ -14,7 +14,13 @@ const backendMethodNames = [
   'deleteVideo',
   'createDbTag',
   'getDbTags',
-  'deleteTag'
+  'deleteTag',
+  'getDbGalleries',
+  'createDbGallery',
+  'deleteGallery',
+  'isDirExisting',
+  'chooseDirectory',
+  'getGalleryImagePaths'
 ]
 backendMethodNames.forEach((methodName) => {
   api[methodName] = (...args) => ipcRenderer.invoke(methodName, ...args)

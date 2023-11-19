@@ -1,9 +1,20 @@
 import { electronApp, is, optimizer } from '@electron-toolkit/utils'
-import { BrowserWindow, app, ipcMain, shell } from 'electron'
+import { BrowserWindow, app, dialog, ipcMain, shell } from 'electron'
 import { join } from 'path'
 import icon from '../../resources/icon.png?asset'
 
-import { createTag, createVideos, deleteTag, deleteVideo, getTags, getVideos } from '../backend/db'
+import {
+  createGallery,
+  createTag,
+  createVideos,
+  deleteGallery,
+  deleteTag,
+  deleteVideo,
+  getGalleries,
+  getTags,
+  getVideos
+} from '../backend/db'
+import { getGalleryImagePaths, isDirExisting } from '../backend/gallery'
 import { generateMissingTgps, generateTgp, isFileExisting, isTgpExisting } from '../backend/video'
 import { setupDB } from './database/database'
 
@@ -19,6 +30,17 @@ async function createWindow() {
       preload: join(__dirname, '../preload/index.js'),
       sandbox: false,
       webSecurity: false
+    }
+  })
+
+  ipcMain.handle('chooseDirectory', async () => {
+    const { canceled, filePaths } = await dialog.showOpenDialog(mainWindow, {
+      properties: ['openDirectory']
+    })
+    if (canceled) {
+      return
+    } else {
+      return filePaths[0]
     }
   })
 
@@ -67,7 +89,12 @@ app.whenReady().then(() => {
     deleteVideo: deleteVideo,
     createDbTag: createTag,
     getDbTags: getTags,
-    deleteTag: deleteTag
+    deleteTag: deleteTag,
+    getDbGalleries: getGalleries,
+    createDbGallery: createGallery,
+    deleteGallery: deleteGallery,
+    isDirExisting: isDirExisting,
+    getGalleryImagePaths: getGalleryImagePaths
   }
 
   for (const methodName in ipcMainHandlers) {
