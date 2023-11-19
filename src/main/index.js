@@ -1,8 +1,9 @@
-import { app, shell, BrowserWindow } from 'electron'
+import { electronApp, is, optimizer } from '@electron-toolkit/utils'
+import { BrowserWindow, app, ipcMain, shell } from 'electron'
 import { join } from 'path'
-import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
 
+import { createVideos, getVideos } from '../backend/db'
 import { setupDB } from './database/database'
 
 async function createWindow() {
@@ -53,6 +54,15 @@ app.whenReady().then(() => {
   app.on('browser-window-created', (_, window) => {
     optimizer.watchWindowShortcuts(window)
   })
+
+  const ipcMainHandlers = {
+    getDbVideos: getVideos,
+    createDbVideos: createVideos
+  }
+
+  for (const methodName in ipcMainHandlers) {
+    ipcMain.handle(methodName, (_event, ...args) => ipcMainHandlers[methodName](...args))
+  }
 
   createWindow()
 

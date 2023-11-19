@@ -6,6 +6,7 @@ module.exports = {
     '@electron-toolkit/eslint-config-prettier'
   ],
   rules: {
-    'no-undef': 'error'
+    'no-undef': 'error',
+    'react/prop-types': 'off'
   }
 }
