@@ -4,7 +4,13 @@ import { contextBridge, ipcRenderer } from 'electron'
 // Custom APIs for renderer
 const api = {}
 
-const backendMethodNames = ['getDbVideos', 'createDbVideos', 'generateTgp', 'isTgpExisting']
+const backendMethodNames = [
+  'getDbVideos',
+  'createDbVideos',
+  'generateTgp',
+  'isTgpExisting',
+  'generateMissingTgps'
+]
 backendMethodNames.forEach((methodName) => {
   api[methodName] = (...args) => ipcRenderer.invoke(methodName, ...args)
 })

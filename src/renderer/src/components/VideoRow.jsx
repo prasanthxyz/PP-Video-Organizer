@@ -1,6 +1,7 @@
 import * as React from 'react'
 import { Link } from 'react-router-dom'
 import mainAdapter from '../../../mainAdapter'
+import { HStack } from '@chakra-ui/react'
 
 export default function VideoRow({ videoPath }) {
   const [tgpExists, setTgpExists] = React.useState(false)
@@ -25,9 +26,12 @@ export default function VideoRow({ videoPath }) {
     setPhoneTgpExists(true)
   }
 
+  const videoPathComponents = videoPath.replace(/\\/g, '/').split('/')
+  const videoName = videoPathComponents[videoPathComponents.length - 1]
+
   return (
-    <>
-      <Link to={`/video/${videoPath}`}>{videoPath}</Link>
+    <HStack>
+      <Link to={`/video/${videoPath}`}>{videoName}</Link>
       {tgpExists ? (
         <>
           Tgp Exists
@@ -46,6 +50,6 @@ export default function VideoRow({ videoPath }) {
       ) : (
         <button onClick={async () => await handleGeneratePhoneTgp()}>Generate Phone TGP</button>
       )}
-    </>
+    </HStack>
   )
 }

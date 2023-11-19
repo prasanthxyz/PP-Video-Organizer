@@ -4,7 +4,7 @@ import { join } from 'path'
 import icon from '../../resources/icon.png?asset'
 
 import { createVideos, getVideos } from '../backend/db'
-import { generateTgp, isTgpExisting } from '../backend/video'
+import { generateMissingTgps, generateTgp, isTgpExisting } from '../backend/video'
 import { setupDB } from './database/database'
 
 async function createWindow() {
@@ -61,7 +61,8 @@ app.whenReady().then(() => {
     getDbVideos: getVideos,
     createDbVideos: createVideos,
     generateTgp: generateTgp,
-    isTgpExisting: isTgpExisting
+    isTgpExisting: isTgpExisting,
+    generateMissingTgps: generateMissingTgps
   }
 
   for (const methodName in ipcMainHandlers) {

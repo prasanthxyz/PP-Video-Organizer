@@ -1,6 +1,7 @@
 import * as React from 'react'
 import mainAdapter from '../../../mainAdapter.js'
 import VideoRow from '../components/VideoRow.jsx'
+import { Button, VStack } from '@chakra-ui/react'
 
 export default function Videos() {
   const [dbVideos, setDbVideos] = React.useState([])
@@ -38,8 +39,11 @@ export default function Videos() {
   )
   return (
     <div>
-      {dbVideos}
-      {addVideoForm}
+      <VStack>
+        <Button onClick={() => mainAdapter.generateMissingTgps()}>Generate Missing TGPs</Button>
+        {dbVideos.length > 0 && dbVideos}
+        {addVideoForm}
+      </VStack>
     </div>
   )
 }

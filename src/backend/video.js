@@ -1,6 +1,15 @@
 import * as child_process from 'child_process'
 import * as fs from 'fs'
 import * as path from 'path'
+import { getVideos } from './db'
+
+export const generateMissingTgps = async () => {
+  const existingVideos = await getVideos()
+  existingVideos.forEach((video) => {
+    generateTgp(video.filePath, 'pc')
+    generateTgp(video.filePath, 'phone')
+  })
+}
 
 export const isTgpExisting = (videoPath, type) => {
   const [videoName, imgDir] = getVideoData(videoPath, type)
@@ -23,7 +32,7 @@ export const generateTgp = (videoPath, type, regenerate = false) => {
 
   const gridSize = type === 'pc' ? '4x4' : '2x7'
 
-  child_process.exec(
+  child_process.execSync(
     `python -m vcsi.vcsi ${videoPath} -g ${gridSize} --metadata-font-size 0 -w 1500 -o ${imgDir}`,
     (error, _stdout, stderr) => {
       if (error) console.error(`error: ${error.message}`)
