@@ -6,20 +6,19 @@ import { getVideos } from './db'
 export const generateMissingTgps = async () => {
   const existingVideos = await getVideos()
   existingVideos.forEach((video) => {
-    generateTgp(video.filePath, 'pc')
-    generateTgp(video.filePath, 'phone')
+    generateTgp(video.filePath)
   })
 }
 
-export const isTgpExisting = (videoPath, type) => {
-  const [videoName, imgDir] = getVideoData(videoPath, type)
+export const isTgpExisting = (videoPath) => {
+  const [videoName, imgDir] = getVideoData(videoPath)
   if (!fs.existsSync(imgDir)) return false
   const imgFileName = path.join(imgDir, videoName + '.jpg')
   return fs.existsSync(imgFileName)
 }
 
-export const generateTgp = (videoPath, type, regenerate = false) => {
-  const [videoName, imgDir] = getVideoData(videoPath, type)
+export const generateTgp = (videoPath, regenerate = false) => {
+  const [videoName, imgDir] = getVideoData(videoPath)
   if (!fs.existsSync(imgDir)) {
     fs.mkdirSync(imgDir)
   }
@@ -30,10 +29,8 @@ export const generateTgp = (videoPath, type, regenerate = false) => {
     fs.unlinkSync(imgFileName)
   }
 
-  const gridSize = type === 'pc' ? '4x4' : '2x7'
-
   child_process.execSync(
-    `python -m vcsi.vcsi ${videoPath} -g ${gridSize} --metadata-font-size 0 -w 1500 -o ${imgDir}`,
+    `python -m vcsi.vcsi ${videoPath} -g 4x4 --metadata-font-size 0 -w 1500 -o ${imgDir}`,
     (error, _stdout, stderr) => {
       if (error) console.error(`error: ${error.message}`)
       if (stderr) console.error(`stderr: ${stderr}`)
@@ -41,8 +38,7 @@ export const generateTgp = (videoPath, type, regenerate = false) => {
   )
 }
 
-const getVideoData = (videoPath, type) => {
-  const imgDirName = type === 'pc' ? 'img' : 'img_phone'
-  const imgDir = path.join(path.dirname(videoPath), imgDirName)
+const getVideoData = (videoPath) => {
+  const imgDir = path.join(path.dirname(videoPath), 'img')
   return [path.basename(videoPath), imgDir]
 }

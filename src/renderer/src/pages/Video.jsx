@@ -5,13 +5,13 @@ export default function Video() {
   let { videoPath } = useParams()
   const videoPathComponents = videoPath.replace(/\\/g, '/').split('/')
 
-  const getImgPath = (type) => {
+  const getImgPath = () => {
     const imgPathComponents = videoPathComponents.slice(0, videoPathComponents.length - 1)
-    imgPathComponents.push(type === 'pc' ? 'img' : 'img_phone')
+    imgPathComponents.push('img')
     imgPathComponents.push(videoPathComponents[videoPathComponents.length - 1] + '.jpg')
     return imgPathComponents.join('/')
   }
 
-  const imgPath = getImgPath('pc')
+  const imgPath = getImgPath()
   return <img src={`file:///${imgPath}`} />
 }

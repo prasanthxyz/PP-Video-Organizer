@@ -1,10 +1,12 @@
+import { Button, Spinner, VStack } from '@chakra-ui/react'
 import * as React from 'react'
 import mainAdapter from '../../../mainAdapter.js'
 import VideoRow from '../components/VideoRow.jsx'
-import { Button, VStack } from '@chakra-ui/react'
 
 export default function Videos() {
   const [dbVideos, setDbVideos] = React.useState([])
+  const [isUploading, setIsUploading] = React.useState(false)
+  const [isGeneratingTgps, setIsGeneratingTgps] = React.useState(false)
   const [videoInputData, setVideoInputData] = React.useState({})
 
   const updateVideoInputData = (e) => {
@@ -12,8 +14,13 @@ export default function Videos() {
   }
 
   const handleCreateVideos = async (e) => {
+    setIsUploading(true)
     const videoPaths = Array.from(videoInputData).map((video) => video.path)
     await mainAdapter.createDbVideos(videoPaths)
+    for (const videoPath of videoPaths) {
+      await mainAdapter.generateTgp(videoPath)
+    }
+    setIsUploading(false)
     document.getElementById('filesInput').value = ''
     await loadVideos()
   }
@@ -27,6 +34,12 @@ export default function Videos() {
     )
   }
 
+  const handleGenerateMissingTgps = async () => {
+    setIsGeneratingTgps(true)
+    await mainAdapter.generateMissingTgps()
+    setIsGeneratingTgps(false)
+  }
+
   React.useEffect(() => {
     loadVideos()
   }, [])
@@ -34,13 +47,25 @@ export default function Videos() {
   const addVideoForm = (
     <div>
       <input id="filesInput" type="file" multiple="multiple" onChange={updateVideoInputData} />
-      <input type="button" value="submit" onClick={handleCreateVideos} />
+      {isUploading ? (
+        <>
+          <Spinner /> Generating TGPs...
+        </>
+      ) : (
+        <input type="button" value="submit" onClick={handleCreateVideos} />
+      )}
     </div>
   )
   return (
     <div>
       <VStack>
-        <Button onClick={() => mainAdapter.generateMissingTgps()}>Generate Missing TGPs</Button>
+        {isGeneratingTgps ? (
+          <>
+            <Spinner /> Generating TGPs...
+          </>
+        ) : (
+          <Button onClick={handleGenerateMissingTgps}>Generate Missing TGPs</Button>
+        )}
         {dbVideos.length > 0 && dbVideos}
         {addVideoForm}
       </VStack>
