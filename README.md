@@ -1,3 +1,3 @@
 # P-Video-Organizer
 
-A video organizer and random video selector with genre/actor tagging and slideshows.
+A video organizer and random video selector with genre/gallery tagging and slideshows.
