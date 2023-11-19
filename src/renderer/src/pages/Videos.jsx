@@ -1,4 +1,15 @@
-import { Button, Spinner, VStack } from '@chakra-ui/react'
+import {
+  Button,
+  Input,
+  Spinner,
+  Table,
+  TableContainer,
+  Tbody,
+  Th,
+  Thead,
+  Tr,
+  VStack
+} from '@chakra-ui/react'
 import * as React from 'react'
 import mainAdapter from '../../../mainAdapter.js'
 import VideoRow from '../components/VideoRow.jsx'
@@ -11,6 +22,11 @@ export default function Videos() {
 
   const updateVideoInputData = (e) => {
     setVideoInputData(e.target.files)
+  }
+
+  const handleDeleteVideo = async (videoPathToRemove) => {
+    await mainAdapter.deleteVideo(videoPathToRemove)
+    setDbVideos(dbVideos.filter((videoPath) => videoPath.filePath !== videoPathToRemove))
   }
 
   const handleCreateVideos = async (e) => {
@@ -26,17 +42,14 @@ export default function Videos() {
   }
 
   const loadVideos = async () => {
-    const videoObjects = await mainAdapter.getDbVideos()
-    setDbVideos(
-      videoObjects.map((videoPath) => {
-        return <VideoRow videoPath={videoPath.filePath} key={videoPath.filePath} />
-      })
-    )
+    setDbVideos(await mainAdapter.getDbVideos())
   }
 
   const handleGenerateMissingTgps = async () => {
     setIsGeneratingTgps(true)
     await mainAdapter.generateMissingTgps()
+    setDbVideos([])
+    await loadVideos()
     setIsGeneratingTgps(false)
   }
 
@@ -44,15 +57,40 @@ export default function Videos() {
     loadVideos()
   }, [])
 
+  const videosTable = (
+    <TableContainer>
+      <Table variant="simple">
+        <Thead>
+          <Tr>
+            <Th>Name</Th>
+            <Th>File</Th>
+            <Th>TGP</Th>
+            <Th></Th>
+            <Th></Th>
+          </Tr>
+        </Thead>
+        <Tbody>
+          {dbVideos.map((videoPath) => (
+            <VideoRow
+              videoPath={videoPath.filePath}
+              deleteVideo={handleDeleteVideo}
+              key={videoPath.filePath}
+            />
+          ))}
+        </Tbody>
+      </Table>
+    </TableContainer>
+  )
+
   const addVideoForm = (
     <div>
-      <input id="filesInput" type="file" multiple="multiple" onChange={updateVideoInputData} />
+      <Input id="filesInput" type="file" multiple="multiple" onChange={updateVideoInputData} />
       {isUploading ? (
         <>
           <Spinner /> Generating TGPs...
         </>
       ) : (
-        <input type="button" value="submit" onClick={handleCreateVideos} />
+        <Button onClick={handleCreateVideos}>Add</Button>
       )}
     </div>
   )
@@ -66,7 +104,7 @@ export default function Videos() {
         ) : (
           <Button onClick={handleGenerateMissingTgps}>Generate Missing TGPs</Button>
         )}
-        {dbVideos.length > 0 && dbVideos}
+        {dbVideos.length > 0 && videosTable}
         {addVideoForm}
       </VStack>
     </div>

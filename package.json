@@ -17,12 +17,14 @@
     "build:linux": "npm run build && electron-builder --linux --config"
   },
   "dependencies": {
+    "@chakra-ui/icons": "^2.1.1",
     "@chakra-ui/react": "^2.8.2",
     "@electron-toolkit/preload": "^2.0.0",
     "@electron-toolkit/utils": "^2.0.0",
     "@emotion/react": "^11.11.1",
     "@emotion/styled": "^11.11.0",
     "framer-motion": "^10.16.5",
+    "pg-hstore": "^2.3.4",
     "react-router-dom": "^6.19.0",
     "sequelize": "^6.35.0",
     "sqlite3": "^5.1.6"

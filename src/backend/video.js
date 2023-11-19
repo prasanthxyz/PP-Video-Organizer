@@ -1,13 +1,24 @@
 import * as child_process from 'child_process'
 import * as fs from 'fs'
 import * as path from 'path'
-import { getVideos } from './db'
+import * as db from './db'
 
 export const generateMissingTgps = async () => {
-  const existingVideos = await getVideos()
+  const existingVideos = await db.getVideos()
   existingVideos.forEach((video) => {
     generateTgp(video.filePath)
   })
+}
+
+export const deleteVideo = async (videoPath) => {
+  if (isFileExisting(videoPath)) {
+    fs.unlinkSync(videoPath)
+  }
+  await db.deleteVideo(videoPath)
+}
+
+export const isFileExisting = (videoPath) => {
+  return fs.existsSync(videoPath)
 }
 
 export const isTgpExisting = (videoPath) => {
@@ -18,6 +29,7 @@ export const isTgpExisting = (videoPath) => {
 }
 
 export const generateTgp = (videoPath, regenerate = false) => {
+  if (!isFileExisting(videoPath)) return
   const [videoName, imgDir] = getVideoData(videoPath)
   if (!fs.existsSync(imgDir)) {
     fs.mkdirSync(imgDir)

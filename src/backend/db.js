@@ -1,5 +1,9 @@
 import { Video } from '../main/database/database'
 
+export const deleteVideo = async (videoPath) => {
+  await Video.destroy({ where: { filePath: videoPath } })
+}
+
 export const getVideos = async () => {
   return await Video.findAll({ raw: true })
 }
