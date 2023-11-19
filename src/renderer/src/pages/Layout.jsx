@@ -6,6 +6,12 @@ export default function Layout() {
     <div>
       <div className="menu">
         <Link to="/">Home</Link>
+        <br />
+        <Link to="/videos">Videos</Link>
+        <br />
+        <Link to="/galleries">Galleries</Link>
+        <br />
+        <Link to="/tags">Tags</Link>
       </div>
       <Outlet />
     </div>
