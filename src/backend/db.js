@@ -35,11 +35,15 @@ export const createVideos = async (videoPaths) => {
   Video.bulkCreate(validVideos)
 }
 
-export const createTag = async (tagTitle) => {
-  tagTitle = tagTitle.toLowerCase()
-  const existingTags = new Set((await getTags()).map((v) => v.title))
-  if (existingTags.has(tagTitle)) return
-  await Tag.create({ title: tagTitle })
+export const createTags = async (tagTitles) => {
+  const existingTags = new Set((await getTags()).map((t) => t.title))
+  const validTags = tagTitles
+    .toLowerCase()
+    .split(' ')
+    .map((tagTitle) => tagTitle.trim())
+    .filter((tagTitle) => tagTitle !== '' && !existingTags.has(tagTitle))
+    .map((tagTitle) => ({ title: tagTitle }))
+  Tag.bulkCreate(validTags)
 }
 
 export const createGallery = async (galleryPath) => {

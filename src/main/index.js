@@ -2,24 +2,7 @@ import { electronApp, is, optimizer } from '@electron-toolkit/utils'
 import { BrowserWindow, app, dialog, ipcMain, shell } from 'electron'
 import { join } from 'path'
 import icon from '../../resources/icon.png?asset'
-
-import {
-  createGallery,
-  createTag,
-  createVideos,
-  deleteGallery,
-  deleteTag,
-  deleteVideo,
-  getCombinationsData,
-  getGalleries,
-  getTags,
-  getVideoData,
-  getVideos,
-  updateVideoGalleries,
-  updateVideoTags
-} from '../backend/db'
-import { getGalleryImagePaths, isDirExisting } from '../backend/gallery'
-import { generateMissingTgps, generateTgp, isFileExisting, isTgpExisting } from '../backend/video'
+import ipcMethods from '../ipcMethods'
 import { setupDB } from './database/database'
 
 async function createWindow() {
@@ -83,30 +66,8 @@ app.whenReady().then(() => {
     optimizer.watchWindowShortcuts(window)
   })
 
-  const ipcMainHandlers = {
-    getDbVideos: getVideos,
-    createDbVideos: createVideos,
-    generateTgp: generateTgp,
-    isTgpExisting: isTgpExisting,
-    generateMissingTgps: generateMissingTgps,
-    isFileExisting: isFileExisting,
-    deleteVideo: deleteVideo,
-    createDbTag: createTag,
-    getDbTags: getTags,
-    deleteTag: deleteTag,
-    getDbGalleries: getGalleries,
-    createDbGallery: createGallery,
-    deleteGallery: deleteGallery,
-    isDirExisting: isDirExisting,
-    getGalleryImagePaths: getGalleryImagePaths,
-    getVideoData: getVideoData,
-    updateVideoTags: updateVideoTags,
-    updateVideoGalleries: updateVideoGalleries,
-    getCombinationsData: getCombinationsData
-  }
-
-  for (const methodName in ipcMainHandlers) {
-    ipcMain.handle(methodName, (_event, ...args) => ipcMainHandlers[methodName](...args))
+  for (const methodName in ipcMethods) {
+    ipcMain.handle(methodName, (_event, ...args) => ipcMethods[methodName](...args))
   }
 
   createWindow()

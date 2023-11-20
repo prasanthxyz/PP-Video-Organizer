@@ -1,5 +1,6 @@
 import {
   Button,
+  FormLabel,
   Input,
   Spinner,
   Table,
@@ -31,16 +32,16 @@ export default function Tags() {
     setTagInput(e.target.value)
   }
 
-  const handleCreateTag = async (e) => {
+  const handleCreateTags = async (e) => {
     setIsCreating(true)
-    await mainAdapter.createDbTag(tagInput)
+    await mainAdapter.createDbTags(tagInput)
     setIsCreating(false)
     document.getElementById('tagInput').value = ''
     await loadTags()
   }
 
   const handleDeleteTag = async (tagTitleToRemove) => {
-    await mainAdapter.deleteTag(tagTitleToRemove)
+    await mainAdapter.deleteDbTag(tagTitleToRemove)
     setDbTags(dbTags.filter((dbTag) => dbTag.title !== tagTitleToRemove))
   }
 
@@ -69,8 +70,9 @@ export default function Tags() {
 
   const addTagForm = (
     <div>
+      <FormLabel>Enter new tags (space separated)</FormLabel>
       <Input id="tagInput" onChange={updateTagInput} />
-      {isCreating ? <Spinner /> : <Button onClick={handleCreateTag}>Add</Button>}
+      {isCreating ? <Spinner /> : <Button onClick={handleCreateTags}>Add</Button>}
     </div>
   )
 

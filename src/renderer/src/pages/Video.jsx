@@ -28,7 +28,7 @@ export default function Video() {
     setTgpExists(await mainAdapter.isTgpExisting(videoPath))
     setAllTags((await mainAdapter.getDbTags()).map((tag) => tag.title))
     setAllGalleries((await mainAdapter.getDbGalleries()).map((gallery) => gallery.galleryPath))
-    const videoData = await mainAdapter.getVideoData(videoPath)
+    const videoData = await mainAdapter.getDbVideoData(videoPath)
     setSelectedTags(videoData['tags'].map((tag) => tag.title))
     setSelectedGalleries(videoData['galleries'].map((gallery) => gallery.galleryPath))
   }
@@ -44,11 +44,11 @@ export default function Video() {
   }
 
   const handleUpdateTags = async (checkedItems) => {
-    await mainAdapter.updateVideoTags(videoPath, checkedItems)
+    await mainAdapter.updateDbVideoTags(videoPath, checkedItems)
   }
 
   const handleUpdateGalleries = async (checkedItems) => {
-    await mainAdapter.updateVideoGalleries(videoPath, checkedItems)
+    await mainAdapter.updateDbVideoGalleries(videoPath, checkedItems)
   }
 
   const videoPathComponents = videoPath.replace(/\\/g, '/').split('/')

@@ -35,7 +35,7 @@ export default function Galleries() {
   }
 
   const handleDeleteGallery = async (galleryPathToRemove) => {
-    await mainAdapter.deleteGallery(galleryPathToRemove)
+    await mainAdapter.deleteDbGallery(galleryPathToRemove)
     setDbGalleries(dbGalleries.filter((dbGallery) => dbGallery.galleryPath !== galleryPathToRemove))
   }
 

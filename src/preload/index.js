@@ -1,34 +1,12 @@
 import { electronAPI } from '@electron-toolkit/preload'
 import { contextBridge, ipcRenderer } from 'electron'
+import ipcMethods from '../ipcMethods'
 
 // Custom APIs for renderer
 const api = {}
-
-const backendMethodNames = [
-  'getDbVideos',
-  'createDbVideos',
-  'generateTgp',
-  'isTgpExisting',
-  'generateMissingTgps',
-  'isFileExisting',
-  'deleteVideo',
-  'createDbTag',
-  'getDbTags',
-  'deleteTag',
-  'getDbGalleries',
-  'createDbGallery',
-  'deleteGallery',
-  'isDirExisting',
-  'chooseDirectory',
-  'getGalleryImagePaths',
-  'getVideoData',
-  'updateVideoTags',
-  'updateVideoGalleries',
-  'getCombinationsData'
-]
-backendMethodNames.forEach((methodName) => {
+for (const methodName in ipcMethods) {
   api[methodName] = (...args) => ipcRenderer.invoke(methodName, ...args)
-})
+}
 
 // Use `contextBridge` APIs to expose Electron APIs to
 // renderer only if context isolation is enabled, otherwise

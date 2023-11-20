@@ -25,7 +25,7 @@ export default function Videos() {
   }
 
   const handleDeleteVideo = async (videoPathToRemove) => {
-    await mainAdapter.deleteVideo(videoPathToRemove)
+    await mainAdapter.deleteDbVideo(videoPathToRemove)
     setDbVideos(dbVideos.filter((videoPath) => videoPath.filePath !== videoPathToRemove))
   }
 
