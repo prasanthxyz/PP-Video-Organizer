@@ -1,5 +1,6 @@
 import * as db from './backend/db'
 import * as gallery from './backend/gallery'
+import * as rps from './backend/rps'
 import * as video from './backend/video'
 
 const ipcMethods = {
@@ -21,7 +22,7 @@ const ipcMethods = {
   getDbVideoData: db.getVideoData,
   updateDbVideoTags: db.updateVideoTags,
   updateDbVideoGalleries: db.updateVideoGalleries,
-  getCombinationsData: db.getCombinationsData,
+  getCombinationsData: rps.getCombinationsData,
   deleteMissingDbVideos: video.deleteMissingVideos,
   deleteMissingDbGalleries: gallery.deleteMissingGalleries
 }

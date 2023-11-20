@@ -83,25 +83,16 @@ export const updateVideoGalleries = async (videoPath, updateObj) => {
   await videoObj.removeGalleries(updateObj['remove'])
 }
 
-export const getCombinationsData = async (videoPaths, tags, galleries) => {
-  const tagsSet = new Set(tags)
-  const galleriesSet = new Set(galleries)
-  const videos = await Video.findAll({
+export const getSelectedVideos = async (videoPaths) => {
+  const videoObjs = await Video.findAll({
     where: { filePath: { [Op.in]: videoPaths } },
     include: [Tag, Gallery]
   })
-  const combinationsData = []
-  for (const video of videos) {
-    const videoGalleries = (await video.getGalleries()).map((gallery) => gallery.galleryPath)
-    const commonGalleries = new Set(videoGalleries.filter((gallery) => galleriesSet.has(gallery)))
-    if (commonGalleries.size === 0) continue
-
-    const videoTags = (await video.getTags()).map((tag) => tag.title)
-    const commonTags = new Set(videoTags.filter((tag) => tagsSet.has(tag)))
-    if (commonTags.size !== tagsSet.size) continue
-    for (const gallery of commonGalleries) {
-      combinationsData.push([video.filePath, gallery])
-    }
-  }
-  return combinationsData
+  return await Promise.all(
+    videoObjs.map(async (v) => ({
+      videoPath: v.filePath,
+      videoTags: (await v.getTags()).map((t) => t.title),
+      videoGalleries: (await v.getGalleries()).map((g) => g.galleryPath)
+    }))
+  )
 }

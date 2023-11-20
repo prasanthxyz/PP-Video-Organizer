@@ -1,4 +1,5 @@
 import { Button, HStack, Tab, TabList, TabPanel, TabPanels, Tabs, VStack } from '@chakra-ui/react'
+import _ from 'lodash'
 import * as React from 'react'
 import mainAdapter from '../../../mainAdapter'
 import CheckBoxGroup from '../components/CheckBoxGroup'
@@ -34,7 +35,9 @@ export default function Home() {
   }
 
   const generateCombinations = async (videos, tags, galleries) => {
-    const allCombinations = await mainAdapter.getCombinationsData(videos, tags, galleries)
+    const allCombinations = _.shuffle(
+      await mainAdapter.getCombinationsData(videos, tags, galleries)
+    )
     setAllCombinations(allCombinations)
     setCombinationIndex(0)
   }
