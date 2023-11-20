@@ -69,14 +69,20 @@ export default function Video() {
   )
 
   const relatedTags = (
-    <CheckBoxGroup allItems={allTags} selectedItems={selectedTags} update={handleUpdateTags} />
+    <CheckBoxGroup
+      allItems={allTags}
+      selectedItems={selectedTags}
+      save={handleUpdateTags}
+      update={null}
+    />
   )
 
   const relatedGalleries = (
     <CheckBoxGroup
       allItems={allGalleries}
       selectedItems={selectedGalleries}
-      update={handleUpdateGalleries}
+      save={handleUpdateGalleries}
+      update={null}
     />
   )
 

@@ -53,15 +53,15 @@ export default function Home() {
   }
 
   const handleUpdateTags = (checkedItems) => {
-    setSelectedTags(checkedItems['data'])
+    setSelectedTags(checkedItems)
   }
 
   const handleUpdateGalleries = async (checkedItems) => {
-    setSelectedGalleries(checkedItems['data'])
+    setSelectedGalleries(checkedItems)
   }
 
   const handleUpdateVideos = async (checkedItems) => {
-    setSelectedVideos(checkedItems['data'])
+    setSelectedVideos(checkedItems)
   }
 
   const selection =
@@ -76,12 +76,19 @@ export default function Home() {
         <CheckBoxGroup
           allItems={allVideos}
           selectedItems={selectedVideos}
+          save={null}
           update={handleUpdateVideos}
         />
-        <CheckBoxGroup allItems={allTags} selectedItems={selectedTags} update={handleUpdateTags} />
+        <CheckBoxGroup
+          allItems={allTags}
+          selectedItems={selectedTags}
+          save={null}
+          update={handleUpdateTags}
+        />
         <CheckBoxGroup
           allItems={allGalleries}
           selectedItems={selectedGalleries}
+          save={null}
           update={handleUpdateGalleries}
         />
       </HStack>
