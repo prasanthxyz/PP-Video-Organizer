@@ -1,3 +1,4 @@
+import { Op } from 'sequelize'
 import { Gallery, Tag, Video } from '../main/database/database'
 
 export const deleteVideo = async (videoPath) => {
@@ -68,4 +69,27 @@ export const updateVideoGalleries = async (videoPath, updateObj) => {
   const videoObj = await Video.findOne({ where: { filePath: videoPath } })
   await videoObj.addGalleries(updateObj['add'])
   await videoObj.removeGalleries(updateObj['remove'])
+}
+
+export const getCombinationsData = async (videoPaths, tags, galleries) => {
+  const tagsSet = new Set(tags)
+  const galleriesSet = new Set(galleries)
+  const videos = await Video.findAll({
+    where: { filePath: { [Op.in]: videoPaths } },
+    include: [Tag, Gallery]
+  })
+  const combinationsData = []
+  for (const video of videos) {
+    const videoGalleries = (await video.getGalleries()).map((gallery) => gallery.galleryPath)
+    const commonGalleries = new Set(videoGalleries.filter((gallery) => galleriesSet.has(gallery)))
+    if (commonGalleries.size === 0) continue
+
+    const videoTags = (await video.getTags()).map((tag) => tag.title)
+    const commonTags = new Set(videoTags.filter((tag) => tagsSet.has(tag)))
+    if (commonTags.size !== tagsSet.size) continue
+    for (const gallery of commonGalleries) {
+      combinationsData.push([video.filePath, gallery])
+    }
+  }
+  return combinationsData
 }

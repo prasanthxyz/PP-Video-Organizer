@@ -17,7 +17,7 @@ export default function CheckBoxGroup({ allItems, selectedItems, update }) {
 
   const handleSave = async () => {
     setIsSaving(true)
-    const updateObj = { add: [], remove: [] }
+    const updateObj = { add: [], remove: [], data: value }
     for (const item of value) {
       if (!selectedItems.includes(item)) {
         updateObj['add'].push(item)

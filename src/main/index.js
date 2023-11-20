@@ -10,6 +10,7 @@ import {
   deleteGallery,
   deleteTag,
   deleteVideo,
+  getCombinationsData,
   getGalleries,
   getTags,
   getVideoData,
@@ -100,7 +101,8 @@ app.whenReady().then(() => {
     getGalleryImagePaths: getGalleryImagePaths,
     getVideoData: getVideoData,
     updateVideoTags: updateVideoTags,
-    updateVideoGalleries: updateVideoGalleries
+    updateVideoGalleries: updateVideoGalleries,
+    getCombinationsData: getCombinationsData
   }
 
   for (const methodName in ipcMainHandlers) {
