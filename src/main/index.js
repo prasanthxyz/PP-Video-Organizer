@@ -12,7 +12,9 @@ import {
   deleteVideo,
   getGalleries,
   getTags,
-  getVideos
+  getVideoData,
+  getVideos,
+  updateVideoTags
 } from '../backend/db'
 import { getGalleryImagePaths, isDirExisting } from '../backend/gallery'
 import { generateMissingTgps, generateTgp, isFileExisting, isTgpExisting } from '../backend/video'
@@ -94,7 +96,9 @@ app.whenReady().then(() => {
     createDbGallery: createGallery,
     deleteGallery: deleteGallery,
     isDirExisting: isDirExisting,
-    getGalleryImagePaths: getGalleryImagePaths
+    getGalleryImagePaths: getGalleryImagePaths,
+    getVideoData: getVideoData,
+    updateVideoTags: updateVideoTags
   }
 
   for (const methodName in ipcMainHandlers) {

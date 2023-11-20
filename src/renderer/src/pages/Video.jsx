@@ -3,14 +3,19 @@ import * as React from 'react'
 import { useParams } from 'react-router'
 import mainAdapter from '../../../mainAdapter'
 import VideoPlayer from '../components/VideoPlayer'
+import CheckBoxGroup from '../components/CheckBoxGroup'
 
 export default function Video() {
   const [tgpExists, setTgpExists] = React.useState(false)
   const [isGeneratingTgp, setIsGeneratingTgp] = React.useState(false)
+  const [allTags, setAllTags] = React.useState([])
+  const [selectedTags, setSelectedTags] = React.useState([])
 
   let { videoPath } = useParams()
   const setFilesExist = async () => {
     setTgpExists(await mainAdapter.isTgpExisting(videoPath))
+    setAllTags((await mainAdapter.getDbTags()).map((tag) => tag.title))
+    setSelectedTags((await mainAdapter.getVideoData(videoPath))['tags'].map((tag) => tag.title))
   }
   React.useEffect(() => {
     setFilesExist()
@@ -21,6 +26,10 @@ export default function Video() {
     await mainAdapter.generateTgp(videoPath, regenerate)
     setTgpExists(true)
     setIsGeneratingTgp(false)
+  }
+
+  const handleUpdateTags = async (checkedItems) => {
+    await mainAdapter.updateVideoTags(videoPath, checkedItems)
   }
 
   const videoPathComponents = videoPath.replace(/\\/g, '/').split('/')
@@ -40,6 +49,10 @@ export default function Video() {
     </Button>
   )
 
+  const relatedTags = (
+    <CheckBoxGroup allItems={allTags} selectedItems={selectedTags} update={handleUpdateTags} />
+  )
+
   const imgPath = getImgPath()
   return (
     <VStack>
@@ -57,6 +70,7 @@ export default function Video() {
         </TabPanels>
       </Tabs>
       {tgpButton}
+      {relatedTags}
     </VStack>
   )
 }

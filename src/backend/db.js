@@ -46,3 +46,19 @@ export const createGallery = async (galleryPath) => {
   if (existingGalleries.has(galleryPath)) return
   await Gallery.create({ galleryPath: galleryPath })
 }
+
+export const getVideoData = async (videoPath) => {
+  const videoObj = await Video.findOne({
+    where: { filePath: videoPath },
+    include: [Tag, Gallery]
+  })
+  return {
+    tags: await videoObj.getTags({ raw: true })
+  }
+}
+
+export const updateVideoTags = async (videoPath, updateObj) => {
+  const videoObj = await Video.findOne({ where: { filePath: videoPath } })
+  await videoObj.addTags(updateObj['add'])
+  await videoObj.removeTags(updateObj['remove'])
+}
