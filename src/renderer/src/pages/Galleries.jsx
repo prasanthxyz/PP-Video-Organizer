@@ -17,6 +17,7 @@ export default function Galleries() {
   const [dbGalleries, setDbGalleries] = React.useState([])
   const [isCreating, setIsCreating] = React.useState(false)
   const [galleryInput, setGalleryInput] = React.useState('')
+  const [isDeletingGalleries, setIsDeletingGalleries] = React.useState(false)
 
   React.useEffect(() => {
     loadGalleries()
@@ -37,6 +38,14 @@ export default function Galleries() {
   const handleDeleteGallery = async (galleryPathToRemove) => {
     await mainAdapter.deleteDbGallery(galleryPathToRemove)
     setDbGalleries(dbGalleries.filter((dbGallery) => dbGallery.galleryPath !== galleryPathToRemove))
+  }
+
+  const handleDeleteMissingGalleries = async () => {
+    setIsDeletingGalleries(true)
+    await mainAdapter.deleteMissingDbGalleries()
+    setDbGalleries([])
+    await loadGalleries()
+    setIsDeletingGalleries(false)
   }
 
   const getGalleryPathInput = async () => {
@@ -84,6 +93,11 @@ export default function Galleries() {
 
   return (
     <VStack>
+      {isDeletingGalleries ? (
+        <Spinner />
+      ) : (
+        <Button onClick={handleDeleteMissingGalleries}>Delete Missing Galleries</Button>
+      )}
       {dbGalleries.length > 0 && galleriesTable}
       {addGalleryForm}
     </VStack>

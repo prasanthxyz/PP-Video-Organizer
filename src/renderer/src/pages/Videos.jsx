@@ -1,5 +1,6 @@
 import {
   Button,
+  HStack,
   Input,
   Spinner,
   Table,
@@ -19,6 +20,7 @@ export default function Videos() {
   const [isUploading, setIsUploading] = React.useState(false)
   const [isGeneratingTgps, setIsGeneratingTgps] = React.useState(false)
   const [videoInputData, setVideoInputData] = React.useState({})
+  const [isDeletingVideos, setIsDeletingVideos] = React.useState(false)
 
   const updateVideoInputData = (e) => {
     setVideoInputData(e.target.files)
@@ -51,6 +53,14 @@ export default function Videos() {
     setDbVideos([])
     await loadVideos()
     setIsGeneratingTgps(false)
+  }
+
+  const handleDeleteMissingVideos = async () => {
+    setIsDeletingVideos(true)
+    await mainAdapter.deleteMissingDbVideos()
+    setDbVideos([])
+    await loadVideos()
+    setIsDeletingVideos(false)
   }
 
   React.useEffect(() => {
@@ -97,13 +107,20 @@ export default function Videos() {
   return (
     <div>
       <VStack>
-        {isGeneratingTgps ? (
-          <>
-            <Spinner /> Generating TGPs...
-          </>
-        ) : (
-          <Button onClick={handleGenerateMissingTgps}>Generate Missing TGPs</Button>
-        )}
+        <HStack>
+          {isGeneratingTgps ? (
+            <>
+              <Spinner /> Generating TGPs...
+            </>
+          ) : (
+            <Button onClick={handleGenerateMissingTgps}>Generate Missing TGPs</Button>
+          )}
+          {isDeletingVideos ? (
+            <Spinner />
+          ) : (
+            <Button onClick={handleDeleteMissingVideos}>Delete Missing Videos</Button>
+          )}
+        </HStack>
         {dbVideos.length > 0 && videosTable}
         {addVideoForm}
       </VStack>

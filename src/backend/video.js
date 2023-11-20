@@ -3,6 +3,12 @@ import * as fs from 'fs'
 import * as path from 'path'
 import * as db from './db'
 
+export const deleteMissingVideos = async () => {
+  const allVideos = (await db.getVideos()).map((v) => v.filePath)
+  const missingVideos = allVideos.filter((v) => !isFileExisting(v))
+  await db.deleteVideos(missingVideos)
+}
+
 export const generateMissingTgps = async () => {
   const existingVideos = await db.getVideos()
   existingVideos.forEach((video) => {

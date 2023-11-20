@@ -5,12 +5,20 @@ export const deleteVideo = async (videoPath) => {
   await Video.destroy({ where: { filePath: videoPath } })
 }
 
+export const deleteVideos = async (videoPaths) => {
+  await Video.destroy({ where: { filePath: { [Op.in]: videoPaths } } })
+}
+
 export const deleteTag = async (tagTitle) => {
   await Tag.destroy({ where: { title: tagTitle } })
 }
 
 export const deleteGallery = async (galleryPath) => {
   await Gallery.destroy({ where: { galleryPath: galleryPath } })
+}
+
+export const deleteGalleries = async (galleryPaths) => {
+  await Gallery.destroy({ where: { galleryPath: { [Op.in]: galleryPaths } } })
 }
 
 export const getVideos = async () => {
