@@ -17,15 +17,20 @@ export default function Home() {
   const setData = async () => {
     setAllTags((await mainAdapter.getDbTags()).map((tag) => tag.title))
     setSelectedTags([])
-    const allDbGalleries = (await mainAdapter.getDbGalleries()).map(
-      (gallery) => gallery.galleryPath
-    )
-    setAllGalleries(allDbGalleries)
-    setSelectedGalleries(allDbGalleries)
+
+    const allDbGalleries = (await mainAdapter.getDbGalleries()).map((g) => g.galleryPath)
+    const isGalleryExisting = await Promise.all(allDbGalleries.map(mainAdapter.isDirExisting))
+    const availableGalleries = allDbGalleries.filter((gallery, index) => isGalleryExisting[index])
+    setAllGalleries(availableGalleries)
+    setSelectedGalleries(availableGalleries)
+
     const allDbVideos = (await mainAdapter.getDbVideos()).map((dbVideo) => dbVideo.filePath)
-    setAllVideos(allDbVideos)
-    setSelectedVideos(allDbVideos)
-    await generateCombinations(allDbVideos, [], allDbGalleries)
+    const isVideoExisting = await Promise.all(allDbVideos.map(mainAdapter.isFileExisting))
+    const availableVideos = allDbVideos.filter((videoPath, index) => isVideoExisting[index])
+    setAllVideos(availableVideos)
+    setSelectedVideos(availableVideos)
+
+    await generateCombinations(availableVideos, [], availableGalleries)
   }
 
   const generateCombinations = async (videos, tags, galleries) => {
@@ -39,13 +44,7 @@ export default function Home() {
   }, [])
 
   const updateFilter = async () => {
-    const allCombinations = await mainAdapter.getCombinationsData(
-      selectedVideos,
-      selectedTags,
-      selectedGalleries
-    )
-    setAllCombinations(allCombinations)
-    setCombinationIndex(0)
+    await generateCombinations(selectedVideos, selectedTags, selectedGalleries)
   }
 
   const handleNext = () => {
