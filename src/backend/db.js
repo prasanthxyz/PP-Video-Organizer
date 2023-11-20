@@ -53,7 +53,8 @@ export const getVideoData = async (videoPath) => {
     include: [Tag, Gallery]
   })
   return {
-    tags: await videoObj.getTags({ raw: true })
+    tags: await videoObj.getTags({ raw: true }),
+    galleries: await videoObj.getGalleries({ raw: true })
   }
 }
 
@@ -61,4 +62,10 @@ export const updateVideoTags = async (videoPath, updateObj) => {
   const videoObj = await Video.findOne({ where: { filePath: videoPath } })
   await videoObj.addTags(updateObj['add'])
   await videoObj.removeTags(updateObj['remove'])
+}
+
+export const updateVideoGalleries = async (videoPath, updateObj) => {
+  const videoObj = await Video.findOne({ where: { filePath: videoPath } })
+  await videoObj.addGalleries(updateObj['add'])
+  await videoObj.removeGalleries(updateObj['remove'])
 }

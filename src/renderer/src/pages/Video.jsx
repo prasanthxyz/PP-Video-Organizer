@@ -1,21 +1,36 @@
-import { Button, Spinner, Tab, TabList, TabPanel, TabPanels, Tabs, VStack } from '@chakra-ui/react'
+import {
+  Button,
+  HStack,
+  Spinner,
+  Tab,
+  TabList,
+  TabPanel,
+  TabPanels,
+  Tabs,
+  VStack
+} from '@chakra-ui/react'
 import * as React from 'react'
 import { useParams } from 'react-router'
 import mainAdapter from '../../../mainAdapter'
-import VideoPlayer from '../components/VideoPlayer'
 import CheckBoxGroup from '../components/CheckBoxGroup'
+import VideoPlayer from '../components/VideoPlayer'
 
 export default function Video() {
   const [tgpExists, setTgpExists] = React.useState(false)
   const [isGeneratingTgp, setIsGeneratingTgp] = React.useState(false)
   const [allTags, setAllTags] = React.useState([])
   const [selectedTags, setSelectedTags] = React.useState([])
+  const [allGalleries, setAllGalleries] = React.useState([])
+  const [selectedGalleries, setSelectedGalleries] = React.useState([])
 
   let { videoPath } = useParams()
   const setFilesExist = async () => {
     setTgpExists(await mainAdapter.isTgpExisting(videoPath))
     setAllTags((await mainAdapter.getDbTags()).map((tag) => tag.title))
-    setSelectedTags((await mainAdapter.getVideoData(videoPath))['tags'].map((tag) => tag.title))
+    setAllGalleries((await mainAdapter.getDbGalleries()).map((gallery) => gallery.galleryPath))
+    const videoData = await mainAdapter.getVideoData(videoPath)
+    setSelectedTags(videoData['tags'].map((tag) => tag.title))
+    setSelectedGalleries(videoData['galleries'].map((gallery) => gallery.galleryPath))
   }
   React.useEffect(() => {
     setFilesExist()
@@ -30,6 +45,10 @@ export default function Video() {
 
   const handleUpdateTags = async (checkedItems) => {
     await mainAdapter.updateVideoTags(videoPath, checkedItems)
+  }
+
+  const handleUpdateGalleries = async (checkedItems) => {
+    await mainAdapter.updateVideoGalleries(videoPath, checkedItems)
   }
 
   const videoPathComponents = videoPath.replace(/\\/g, '/').split('/')
@@ -53,6 +72,14 @@ export default function Video() {
     <CheckBoxGroup allItems={allTags} selectedItems={selectedTags} update={handleUpdateTags} />
   )
 
+  const relatedGalleries = (
+    <CheckBoxGroup
+      allItems={allGalleries}
+      selectedItems={selectedGalleries}
+      update={handleUpdateGalleries}
+    />
+  )
+
   const imgPath = getImgPath()
   return (
     <VStack>
@@ -70,7 +97,10 @@ export default function Video() {
         </TabPanels>
       </Tabs>
       {tgpButton}
-      {relatedTags}
+      <HStack>
+        {relatedTags}
+        {relatedGalleries}
+      </HStack>
     </VStack>
   )
 }

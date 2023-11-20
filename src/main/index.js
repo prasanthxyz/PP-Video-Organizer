@@ -14,6 +14,7 @@ import {
   getTags,
   getVideoData,
   getVideos,
+  updateVideoGalleries,
   updateVideoTags
 } from '../backend/db'
 import { getGalleryImagePaths, isDirExisting } from '../backend/gallery'
@@ -98,7 +99,8 @@ app.whenReady().then(() => {
     isDirExisting: isDirExisting,
     getGalleryImagePaths: getGalleryImagePaths,
     getVideoData: getVideoData,
-    updateVideoTags: updateVideoTags
+    updateVideoTags: updateVideoTags,
+    updateVideoGalleries: updateVideoGalleries
   }
 
   for (const methodName in ipcMainHandlers) {

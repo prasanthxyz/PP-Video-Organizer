@@ -22,7 +22,8 @@ const backendMethodNames = [
   'chooseDirectory',
   'getGalleryImagePaths',
   'getVideoData',
-  'updateVideoTags'
+  'updateVideoTags',
+  'updateVideoGalleries'
 ]
 backendMethodNames.forEach((methodName) => {
   api[methodName] = (...args) => ipcRenderer.invoke(methodName, ...args)
