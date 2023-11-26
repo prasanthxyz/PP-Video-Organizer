@@ -1,10 +1,10 @@
-import { VStack } from '@chakra-ui/react'
 import _ from 'lodash'
 import * as React from 'react'
 import ImageGallery from 'react-image-gallery'
 import 'react-image-gallery/styles/css/image-gallery.css'
 import { useParams } from 'react-router'
 import mainAdapter from '../../../mainAdapter'
+import { Stack } from 'react-bootstrap'
 
 export default function Gallery() {
   const [galleryImages, setGalleryImages] = React.useState([])
@@ -36,9 +36,9 @@ export default function Gallery() {
   )
 
   return (
-    <VStack>
+    <Stack direction="vertical">
       <h3>{galleryName}</h3>
       {galleryImages.length > 0 && imgSlideShow}
-    </VStack>
+    </Stack>
   )
 }

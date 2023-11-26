@@ -1,9 +1,7 @@
 import * as db from './db'
 
-export const getCombinationsData = async (videoPaths, tags, galleries) => {
-  const tagsSet = new Set(tags)
-  const galleriesSet = new Set(galleries)
-  const videos = await db.getSelectedVideos(videoPaths)
+export const getCombinationsData = async (videoPaths, tagsSet, galleriesSet) => {
+  const videos = await db.getSelectedVideos([...videoPaths])
   const combinationsData = []
   for (const { videoPath, videoTags, videoGalleries } of videos) {
     const commonGalleries = videoGalleries.filter((gallery) => galleriesSet.has(gallery))

@@ -1,15 +1,5 @@
-import {
-  Button,
-  Spinner,
-  Table,
-  TableContainer,
-  Tbody,
-  Th,
-  Thead,
-  Tr,
-  VStack
-} from '@chakra-ui/react'
 import * as React from 'react'
+import { Button, Spinner, Stack, Table } from 'react-bootstrap'
 import mainAdapter from '../../../mainAdapter.js'
 import GalleryRow from '../components/GalleryRow.jsx'
 
@@ -53,26 +43,24 @@ export default function Galleries() {
   }
 
   const galleriesTable = (
-    <TableContainer>
-      <Table variant="simple">
-        <Thead>
-          <Tr>
-            <Th>Gallery</Th>
-            <Th>Exists?</Th>
-            <Th></Th>
-          </Tr>
-        </Thead>
-        <Tbody>
-          {dbGalleries.map((dbGallery) => (
-            <GalleryRow
-              key={dbGallery.galleryPath}
-              galleryPath={dbGallery.galleryPath}
-              deleteGallery={handleDeleteGallery}
-            />
-          ))}
-        </Tbody>
-      </Table>
-    </TableContainer>
+    <Table>
+      <thead>
+        <tr>
+          <th>Gallery</th>
+          <th>Exists?</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {dbGalleries.map((dbGallery) => (
+          <GalleryRow
+            key={dbGallery.galleryPath}
+            galleryPath={dbGallery.galleryPath}
+            deleteGallery={handleDeleteGallery}
+          />
+        ))}
+      </tbody>
+    </Table>
   )
 
   const addGalleryForm = (
@@ -92,7 +80,7 @@ export default function Galleries() {
   )
 
   return (
-    <VStack>
+    <Stack direction="vertical">
       {isDeletingGalleries ? (
         <Spinner />
       ) : (
@@ -100,6 +88,6 @@ export default function Galleries() {
       )}
       {dbGalleries.length > 0 && galleriesTable}
       {addGalleryForm}
-    </VStack>
+    </Stack>
   )
 }

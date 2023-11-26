@@ -11,7 +11,8 @@ export let Video = null
 export const setupDB = async () => {
   sequelize = new Sequelize({
     dialect: 'sqlite',
-    storage: 'pvorg.db'
+    storage: 'pvorg.db',
+    logging: false
   })
 
   createTables()

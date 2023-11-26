@@ -1,6 +1,6 @@
-import { CheckIcon, CloseIcon } from '@chakra-ui/icons'
-import { Button, Spinner, Td, Tr } from '@chakra-ui/react'
 import * as React from 'react'
+import { Button, Spinner } from 'react-bootstrap'
+import { Check2, X } from 'react-bootstrap-icons'
 import { Link } from 'react-router-dom'
 import mainAdapter from '../../../mainAdapter'
 
@@ -33,8 +33,8 @@ export default function VideoRow({ videoPath, deleteVideo }) {
   ) : (
     <>{videoName}</>
   )
-  const fileHealth = fileExists ? <CheckIcon /> : <CloseIcon />
-  const tgpHealth = !fileExists ? <></> : tgpExists ? <CheckIcon /> : <CloseIcon />
+  const fileHealth = fileExists ? <Check2 /> : <X />
+  const tgpHealth = !fileExists ? <></> : tgpExists ? <Check2 /> : <X />
   const genTgpButton = !fileExists ? (
     <></>
   ) : isGeneratingTgp ? (
@@ -47,12 +47,12 @@ export default function VideoRow({ videoPath, deleteVideo }) {
   const delVideoButton = <Button onClick={async () => await deleteVideo(videoPath)}>Delete</Button>
 
   return (
-    <Tr>
-      <Td>{fileNameView}</Td>
-      <Td>{fileHealth}</Td>
-      <Td>{tgpHealth}</Td>
-      <Td>{genTgpButton}</Td>
-      <Td>{delVideoButton}</Td>
-    </Tr>
+    <tr>
+      <td>{fileNameView}</td>
+      <td>{fileHealth}</td>
+      <td>{tgpHealth}</td>
+      <td>{genTgpButton}</td>
+      <td>{delVideoButton}</td>
+    </tr>
   )
 }

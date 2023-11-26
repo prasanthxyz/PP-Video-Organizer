@@ -1,17 +1,5 @@
-import {
-  Button,
-  HStack,
-  Input,
-  Spinner,
-  Table,
-  TableContainer,
-  Tbody,
-  Th,
-  Thead,
-  Tr,
-  VStack
-} from '@chakra-ui/react'
 import * as React from 'react'
+import { Button, Spinner, Stack, Table } from 'react-bootstrap'
 import mainAdapter from '../../../mainAdapter.js'
 import VideoRow from '../components/VideoRow.jsx'
 
@@ -68,33 +56,31 @@ export default function Videos() {
   }, [])
 
   const videosTable = (
-    <TableContainer>
-      <Table variant="simple">
-        <Thead>
-          <Tr>
-            <Th>Name</Th>
-            <Th>File</Th>
-            <Th>TGP</Th>
-            <Th></Th>
-            <Th></Th>
-          </Tr>
-        </Thead>
-        <Tbody>
-          {dbVideos.map((videoPath) => (
-            <VideoRow
-              videoPath={videoPath.filePath}
-              deleteVideo={handleDeleteVideo}
-              key={videoPath.filePath}
-            />
-          ))}
-        </Tbody>
-      </Table>
-    </TableContainer>
+    <Table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>File</th>
+          <th>TGP</th>
+          <th></th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {dbVideos.map((videoPath) => (
+          <VideoRow
+            videoPath={videoPath.filePath}
+            deleteVideo={handleDeleteVideo}
+            key={videoPath.filePath}
+          />
+        ))}
+      </tbody>
+    </Table>
   )
 
   const addVideoForm = (
     <div>
-      <Input id="filesInput" type="file" multiple="multiple" onChange={updateVideoInputData} />
+      <input id="filesInput" type="file" multiple="multiple" onChange={updateVideoInputData} />
       {isUploading ? (
         <>
           <Spinner /> Generating TGPs...
@@ -106,8 +92,8 @@ export default function Videos() {
   )
   return (
     <div>
-      <VStack>
-        <HStack>
+      <Stack direction="vertical">
+        <Stack direction="horizontal">
           {isGeneratingTgps ? (
             <>
               <Spinner /> Generating TGPs...
@@ -120,10 +106,10 @@ export default function Videos() {
           ) : (
             <Button onClick={handleDeleteMissingVideos}>Delete Missing Videos</Button>
           )}
-        </HStack>
+        </Stack>
         {dbVideos.length > 0 && videosTable}
         {addVideoForm}
-      </VStack>
+      </Stack>
     </div>
   )
 }

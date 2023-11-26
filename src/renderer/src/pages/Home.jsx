@@ -1,37 +1,37 @@
-import { Button, HStack, Tab, TabList, TabPanel, TabPanels, Tabs, VStack } from '@chakra-ui/react'
 import _ from 'lodash'
 import * as React from 'react'
 import mainAdapter from '../../../mainAdapter'
 import CheckBoxGroup from '../components/CheckBoxGroup'
 import RPS from '../components/RPS'
+import { Button, Stack, Tab, Tabs } from 'react-bootstrap'
 
 export default function Home() {
   const [allCombinations, setAllCombinations] = React.useState([])
   const [combinationIndex, setCombinationIndex] = React.useState(0)
   const [allVideos, setAllVideos] = React.useState([])
-  const [selectedVideos, setSelectedVideos] = React.useState([])
+  const [selectedVideos, setSelectedVideos] = React.useState(new Set())
   const [allTags, setAllTags] = React.useState([])
-  const [selectedTags, setSelectedTags] = React.useState([])
+  const [selectedTags, setSelectedTags] = React.useState(new Set())
   const [allGalleries, setAllGalleries] = React.useState([])
-  const [selectedGalleries, setSelectedGalleries] = React.useState([])
+  const [selectedGalleries, setSelectedGalleries] = React.useState(new Set())
 
   const setData = async () => {
     setAllTags((await mainAdapter.getDbTags()).map((tag) => tag.title))
-    setSelectedTags([])
+    setSelectedTags(new Set())
 
     const allDbGalleries = (await mainAdapter.getDbGalleries()).map((g) => g.galleryPath)
     const isGalleryExisting = await Promise.all(allDbGalleries.map(mainAdapter.isDirExisting))
     const availableGalleries = allDbGalleries.filter((gallery, index) => isGalleryExisting[index])
     setAllGalleries(availableGalleries)
-    setSelectedGalleries(availableGalleries)
+    setSelectedGalleries(new Set(availableGalleries))
 
     const allDbVideos = (await mainAdapter.getDbVideos()).map((dbVideo) => dbVideo.filePath)
     const isVideoExisting = await Promise.all(allDbVideos.map(mainAdapter.isFileExisting))
     const availableVideos = allDbVideos.filter((videoPath, index) => isVideoExisting[index])
     setAllVideos(availableVideos)
-    setSelectedVideos(availableVideos)
+    setSelectedVideos(new Set(availableVideos))
 
-    await generateCombinations(availableVideos, [], availableGalleries)
+    await generateCombinations(new Set(availableVideos), new Set(), new Set(availableGalleries))
   }
 
   const generateCombinations = async (videos, tags, galleries) => {
@@ -55,63 +55,41 @@ export default function Home() {
     setCombinationIndex(newIndex)
   }
 
-  const handleUpdateTags = (checkedItems) => {
-    setSelectedTags(checkedItems)
-  }
-
-  const handleUpdateGalleries = async (checkedItems) => {
-    setSelectedGalleries(checkedItems)
-  }
-
-  const handleUpdateVideos = async (checkedItems) => {
-    setSelectedVideos(checkedItems)
-  }
-
   const selection =
     allCombinations.length === 0 ? (
       <div>No combination found!</div>
     ) : (
       <RPS combination={allCombinations[combinationIndex]} />
     )
+
   const configuration = (
-    <VStack>
-      <HStack>
+    <Stack direction="vertical">
+      <Stack direction="horizontal">
         <CheckBoxGroup
           allItems={allVideos}
           selectedItems={selectedVideos}
-          save={null}
-          update={handleUpdateVideos}
+          update={setSelectedVideos}
         />
-        <CheckBoxGroup
-          allItems={allTags}
-          selectedItems={selectedTags}
-          save={null}
-          update={handleUpdateTags}
-        />
+        <CheckBoxGroup allItems={allTags} selectedItems={selectedTags} update={setSelectedTags} />
         <CheckBoxGroup
           allItems={allGalleries}
           selectedItems={selectedGalleries}
-          save={null}
-          update={handleUpdateGalleries}
+          update={setSelectedGalleries}
         />
-      </HStack>
+      </Stack>
       <Button onClick={updateFilter}>UPDATE</Button>
-    </VStack>
+    </Stack>
   )
 
   return (
-    <Tabs>
-      <TabList>
-        <Tab>Watch</Tab>
-        <Tab>Filter</Tab>
-      </TabList>
-      <TabPanels>
-        <TabPanel>
-          <Button onClick={handleNext}>Next</Button>
-          <div>{selection}</div>
-        </TabPanel>
-        <TabPanel>{configuration}</TabPanel>
-      </TabPanels>
+    <Tabs defaultActiveKey="watch">
+      <Tab eventKey="watch" title="Watch">
+        <Button onClick={handleNext}>Next</Button>
+        <div>{selection}</div>
+      </Tab>
+      <Tab eventKey="filter" title="Filter">
+        {configuration}
+      </Tab>
     </Tabs>
   )
 }

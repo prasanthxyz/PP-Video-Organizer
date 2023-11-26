@@ -1,18 +1,5 @@
-import {
-  Button,
-  FormLabel,
-  Input,
-  Spinner,
-  Table,
-  TableContainer,
-  Tbody,
-  Td,
-  Th,
-  Thead,
-  Tr,
-  VStack
-} from '@chakra-ui/react'
 import * as React from 'react'
+import { Button, FormLabel, Spinner, Stack, Table } from 'react-bootstrap'
 import mainAdapter from '../../../mainAdapter.js'
 
 export default function Tags() {
@@ -46,40 +33,38 @@ export default function Tags() {
   }
 
   const tagsTable = (
-    <TableContainer>
-      <Table variant="simple">
-        <Thead>
-          <Tr>
-            <Th>Tag</Th>
-            <Th></Th>
-          </Tr>
-        </Thead>
-        <Tbody>
-          {dbTags.map((dbTag) => (
-            <Tr key={dbTag.title}>
-              <Td>{dbTag.title}</Td>
-              <Td>
-                <Button onClick={async () => await handleDeleteTag(dbTag.title)}>Delete</Button>
-              </Td>
-            </Tr>
-          ))}
-        </Tbody>
-      </Table>
-    </TableContainer>
+    <Table>
+      <thead>
+        <tr>
+          <th>Tag</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {dbTags.map((dbTag) => (
+          <tr key={dbTag.title}>
+            <td>{dbTag.title}</td>
+            <td>
+              <Button onClick={async () => await handleDeleteTag(dbTag.title)}>Delete</Button>
+            </td>
+          </tr>
+        ))}
+      </tbody>
+    </Table>
   )
 
   const addTagForm = (
     <div>
       <FormLabel>Enter new tags (space separated)</FormLabel>
-      <Input id="tagInput" onChange={updateTagInput} />
+      <input id="tagInput" onChange={updateTagInput} />
       {isCreating ? <Spinner /> : <Button onClick={handleCreateTags}>Add</Button>}
     </div>
   )
 
   return (
-    <VStack>
+    <Stack direction="vertical">
       {dbTags.length > 0 && tagsTable}
       {addTagForm}
-    </VStack>
+    </Stack>
   )
 }

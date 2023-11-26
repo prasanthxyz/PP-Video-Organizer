@@ -1,27 +1,19 @@
-import {
-  Button,
-  HStack,
-  Spinner,
-  Tab,
-  TabList,
-  TabPanel,
-  TabPanels,
-  Tabs,
-  VStack
-} from '@chakra-ui/react'
 import * as React from 'react'
 import { useParams } from 'react-router'
 import mainAdapter from '../../../mainAdapter'
 import CheckBoxGroup from '../components/CheckBoxGroup'
 import VideoPlayer from '../components/VideoPlayer'
+import { Button, Spinner, Stack, Tab, Tabs } from 'react-bootstrap'
 
 export default function Video() {
   const [tgpExists, setTgpExists] = React.useState(false)
   const [isGeneratingTgp, setIsGeneratingTgp] = React.useState(false)
   const [allTags, setAllTags] = React.useState([])
-  const [selectedTags, setSelectedTags] = React.useState([])
+  const [selectedTags, setSelectedTags] = React.useState(new Set())
+  const [currentSelectedTags, setCurrentSelectedTags] = React.useState(new Set())
   const [allGalleries, setAllGalleries] = React.useState([])
-  const [selectedGalleries, setSelectedGalleries] = React.useState([])
+  const [selectedGalleries, setSelectedGalleries] = React.useState(new Set())
+  const [currentSelectedGalleries, setCurrentSelectedGalleries] = React.useState(new Set())
 
   let { videoPath } = useParams()
   const setFilesExist = async () => {
@@ -29,8 +21,12 @@ export default function Video() {
     setAllTags((await mainAdapter.getDbTags()).map((tag) => tag.title))
     setAllGalleries((await mainAdapter.getDbGalleries()).map((gallery) => gallery.galleryPath))
     const videoData = await mainAdapter.getDbVideoData(videoPath)
-    setSelectedTags(videoData['tags'].map((tag) => tag.title))
-    setSelectedGalleries(videoData['galleries'].map((gallery) => gallery.galleryPath))
+    const selectedTags = new Set(videoData['tags'].map((tag) => tag.title))
+    setSelectedTags(selectedTags)
+    setCurrentSelectedTags(selectedTags)
+    const selectedGalleries = new Set(videoData['galleries'].map((gallery) => gallery.galleryPath))
+    setSelectedGalleries(selectedGalleries)
+    setCurrentSelectedGalleries(selectedGalleries)
   }
   React.useEffect(() => {
     setFilesExist()
@@ -43,12 +39,30 @@ export default function Video() {
     setIsGeneratingTgp(false)
   }
 
-  const handleUpdateTags = async (checkedItems) => {
-    await mainAdapter.updateDbVideoTags(videoPath, checkedItems)
+  const getUpdateObj = (prevItems, curItems) => {
+    const updateObj = { add: [], remove: [] }
+
+    for (const item of curItems) {
+      if (!prevItems.has(item)) {
+        updateObj['add'].push(item)
+      }
+    }
+
+    for (const item of prevItems) {
+      if (!curItems.has(item)) {
+        updateObj['remove'].push(item)
+      }
+    }
+
+    return updateObj
   }
 
-  const handleUpdateGalleries = async (checkedItems) => {
-    await mainAdapter.updateDbVideoGalleries(videoPath, checkedItems)
+  const handleUpdateRelated = async () => {
+    const updateTagsObj = getUpdateObj(selectedTags, currentSelectedTags)
+    await mainAdapter.updateDbVideoTags(videoPath, updateTagsObj)
+
+    const updateGalleriesObj = getUpdateObj(selectedGalleries, currentSelectedGalleries)
+    await mainAdapter.updateDbVideoGalleries(videoPath, updateGalleriesObj)
   }
 
   const videoPathComponents = videoPath.replace(/\\/g, '/').split('/')
@@ -72,8 +86,7 @@ export default function Video() {
     <CheckBoxGroup
       allItems={allTags}
       selectedItems={selectedTags}
-      save={handleUpdateTags}
-      update={null}
+      update={setCurrentSelectedTags}
     />
   )
 
@@ -81,32 +94,28 @@ export default function Video() {
     <CheckBoxGroup
       allItems={allGalleries}
       selectedItems={selectedGalleries}
-      save={handleUpdateGalleries}
-      update={null}
+      update={setCurrentSelectedGalleries}
     />
   )
 
   const imgPath = getImgPath()
   return (
-    <VStack>
+    <Stack direction="vertical">
       <h3>{videoName}</h3>
-      <Tabs>
-        <TabList>
-          <Tab>TGP</Tab>
-          <Tab>Video</Tab>
-        </TabList>
-        <TabPanels>
-          <TabPanel>{tgpExists ? <img src={`file:///${imgPath}`} /> : <>TGP MISSING</>}</TabPanel>
-          <TabPanel>
-            <VideoPlayer autoplay={false} controls={true} sources={videoPath} />
-          </TabPanel>
-        </TabPanels>
+      <Tabs defaultActiveKey="tgp">
+        <Tab eventKey="tgp" title="TGP">
+          {tgpExists ? <img src={`file:///${imgPath}`} /> : <>TGP MISSING</>}
+        </Tab>
+        <Tab eventKey="video" title="Video">
+          <VideoPlayer autoplay={false} controls={true} sources={videoPath} />
+        </Tab>
       </Tabs>
       {tgpButton}
-      <HStack>
+      <Stack direction="horizontal">
         {relatedTags}
         {relatedGalleries}
-      </HStack>
-    </VStack>
+      </Stack>
+      <Button onClick={handleUpdateRelated}>Save</Button>
+    </Stack>
   )
 }

@@ -1,9 +1,9 @@
-import { Button, HStack } from '@chakra-ui/react'
 import _ from 'lodash'
 import * as React from 'react'
 import ImageGallery from 'react-image-gallery'
 import mainAdapter from '../../../mainAdapter'
 import VideoPlayer from './VideoPlayer'
+import { Button, Stack } from 'react-bootstrap'
 
 export default function RPS({ combination }) {
   const [galleryImages, setGalleryImages] = React.useState([])
@@ -53,7 +53,7 @@ export default function RPS({ combination }) {
   const tgp = <img src={`file:///${getImgPath()}`} />
 
   return (
-    <HStack>
+    <Stack direction="horizontal">
       <div>
         {videoName}
         {showVid ? videoPlayer : tgp}
@@ -63,6 +63,6 @@ export default function RPS({ combination }) {
         <h3>{galleryName}</h3>
         {galleryImages.length > 0 && imgSlideShow}
       </div>
-    </HStack>
+    </Stack>
   )
 }
