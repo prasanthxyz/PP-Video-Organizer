@@ -3,18 +3,13 @@ import * as React from 'react'
 import ImageGallery from 'react-image-gallery'
 import mainAdapter from '../../../mainAdapter'
 import VideoPlayer from './VideoPlayer'
-import { Button, Stack } from 'react-bootstrap'
+import { Button, Col, Row, Stack } from 'react-bootstrap'
 
-export default function RPS({ combination }) {
+export default function RPS({ combination, showVid }) {
   const [galleryImages, setGalleryImages] = React.useState([])
-  const [showVid, setShowVid] = React.useState(false)
 
   const videoPath = combination[0]
   const galleryPath = combination[1]
-
-  const toggleTgpVid = () => {
-    setShowVid(!showVid)
-  }
 
   const loadGalleryImages = async () => {
     const imagePaths = await mainAdapter.getGalleryImagePaths(galleryPath)
@@ -50,19 +45,20 @@ export default function RPS({ combination }) {
   )
 
   const videoPlayer = <VideoPlayer autoplay={false} controls={true} sources={videoPath} />
-  const tgp = <img src={`file:///${getImgPath()}`} />
+  const tgp = <img width="100%" src={`file:///${getImgPath()}`} />
 
   return (
-    <Stack direction="horizontal">
-      <div>
-        {videoName}
-        {showVid ? videoPlayer : tgp}
-        <Button onClick={toggleTgpVid}>{showVid ? 'Show TGP' : 'Show Video'}</Button>
-      </div>
-      <div>
-        <h3>{galleryName}</h3>
-        {galleryImages.length > 0 && imgSlideShow}
-      </div>
-    </Stack>
+    <>
+      <Row>
+        <Col xs={9}>
+          <p className="fs-5 text-end">{videoName}</p>
+          {showVid ? videoPlayer : tgp}
+        </Col>
+        <Col xs={3}>
+          <p className="fs-5">{galleryName}</p>
+          {galleryImages.length > 0 && imgSlideShow}
+        </Col>
+      </Row>
+    </>
   )
 }

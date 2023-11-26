@@ -12,16 +12,21 @@ export default function CheckBoxGroup({ allItems, selectedItems, update }) {
     await update(newValue)
   }
 
-  const checkBoxes = allItems.map((item) => (
-    <div key={item}>
-      <Form.Check
-        value={item}
-        label={item}
-        onChange={handleUpdate}
-        checked={selectedItems.has(item)}
-      />
-    </div>
-  ))
+  const checkBoxes = allItems.map((item) => {
+    const itemComponents = item.replace(/\\/g, '/').split('/')
+    const label = itemComponents[itemComponents.length - 1]
+    return (
+      <div key={item}>
+        <Form.Check
+          id={label}
+          value={item}
+          label={label}
+          onChange={handleUpdate}
+          checked={selectedItems.has(item)}
+        />
+      </div>
+    )
+  })
 
   return (
     <Stack direction="vertical">

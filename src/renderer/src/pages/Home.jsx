@@ -4,6 +4,8 @@ import { Button, Stack, Tab, Tabs } from 'react-bootstrap'
 import mainAdapter from '../../../mainAdapter'
 import CheckBoxGroup from '../components/CheckBoxGroup'
 import RPS from '../components/RPS'
+import RpsConfig from '../components/RpsConfig'
+import { useHotkeys } from 'react-hotkeys-hook'
 
 export default function Home() {
   const [allCombinations, setAllCombinations] = React.useState([])
@@ -17,6 +19,11 @@ export default function Home() {
   const [allGalleries, setAllGalleries] = React.useState([])
   const [selectedGalleries, setSelectedGalleries] = React.useState(new Set())
   const [prevSelectedGalleries, setPrevSelectedGalleries] = React.useState(new Set())
+  const [activeTab, setActiveTab] = React.useState('watch')
+  const [showVid, setShowVid] = React.useState(false)
+
+  useHotkeys('p', () => setShowVid(!showVid))
+  useHotkeys('f', () => setActiveTab('filter'))
 
   const setData = async () => {
     setAllTags((await mainAdapter.getDbTags()).map((tag) => tag.title))
@@ -46,6 +53,7 @@ export default function Home() {
     )
     setAllCombinations(allCombinations)
     setCombinationIndex(0)
+    setShowVid(false)
   }
 
   React.useEffect(() => {
@@ -60,15 +68,20 @@ export default function Home() {
   }
 
   const handleNext = () => {
+    if (allCombinations.length === 0) return
+    if (activeTab !== 'watch') setActiveTab('watch')
     const newIndex = combinationIndex === allCombinations.length - 1 ? 0 : combinationIndex + 1
     setCombinationIndex(newIndex)
+    setShowVid(false)
   }
+
+  useHotkeys('r', handleNext)
 
   const selection =
     allCombinations.length === 0 ? (
       <div>No combination found!</div>
     ) : (
-      <RPS combination={allCombinations[combinationIndex]} />
+      <RPS combination={allCombinations[combinationIndex]} showVid={showVid} />
     )
 
   const isSelectionChanged =
@@ -76,33 +89,27 @@ export default function Home() {
     !_.isEqual(selectedGalleries, prevSelectedGalleries) ||
     !_.isEqual(selectedTags, prevSelectedTags)
 
-  const configuration = (
-    <Stack direction="vertical">
-      <Stack direction="horizontal">
-        <CheckBoxGroup
-          allItems={allGalleries}
-          selectedItems={selectedGalleries}
-          update={setSelectedGalleries}
-        />
-        <CheckBoxGroup allItems={allTags} selectedItems={selectedTags} update={setSelectedTags} />
-        <CheckBoxGroup
-          allItems={allVideos}
-          selectedItems={selectedVideos}
-          update={setSelectedVideos}
-        />
-      </Stack>
-      {isSelectionChanged && <Button onClick={updateFilter}>UPDATE</Button>}
-    </Stack>
-  )
-
   return (
-    <Tabs defaultActiveKey="watch">
+    <Tabs activeKey={activeTab} onSelect={(tab) => setActiveTab(tab)}>
       <Tab eventKey="watch" title="Watch">
         <Button onClick={handleNext}>Next</Button>
+        <Button onClick={() => setShowVid(!showVid)}>{showVid ? 'Show TGP' : 'Show Video'}</Button>
         <div>{selection}</div>
       </Tab>
       <Tab eventKey="filter" title="Filter">
-        {configuration}
+        <RpsConfig
+          allGalleries={allGalleries}
+          setSelectedGalleries={setSelectedGalleries}
+          selectedGalleries={selectedGalleries}
+          allTags={allTags}
+          selectedTags={selectedTags}
+          setSelectedTags={setSelectedTags}
+          allVideos={allVideos}
+          selectedVideos={selectedVideos}
+          setSelectedVideos={setSelectedVideos}
+          isSelectionChanged={isSelectionChanged}
+          updateFilter={updateFilter}
+        />
       </Tab>
     </Tabs>
   )
