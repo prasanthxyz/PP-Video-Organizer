@@ -1,19 +1,20 @@
+import _ from 'lodash'
 import * as React from 'react'
+import { Button, Spinner, Stack, Tab, Tabs } from 'react-bootstrap'
 import { useParams } from 'react-router'
 import mainAdapter from '../../../mainAdapter'
 import CheckBoxGroup from '../components/CheckBoxGroup'
 import VideoPlayer from '../components/VideoPlayer'
-import { Button, Spinner, Stack, Tab, Tabs } from 'react-bootstrap'
 
 export default function Video() {
   const [tgpExists, setTgpExists] = React.useState(false)
   const [isGeneratingTgp, setIsGeneratingTgp] = React.useState(false)
   const [allTags, setAllTags] = React.useState([])
   const [selectedTags, setSelectedTags] = React.useState(new Set())
-  const [currentSelectedTags, setCurrentSelectedTags] = React.useState(new Set())
+  const [prevSelectedTags, setPrevSelectedTags] = React.useState(new Set())
   const [allGalleries, setAllGalleries] = React.useState([])
   const [selectedGalleries, setSelectedGalleries] = React.useState(new Set())
-  const [currentSelectedGalleries, setCurrentSelectedGalleries] = React.useState(new Set())
+  const [prevSelectedGalleries, setPrevSelectedGalleries] = React.useState(new Set())
 
   let { videoPath } = useParams()
   const setFilesExist = async () => {
@@ -23,11 +24,12 @@ export default function Video() {
     const videoData = await mainAdapter.getDbVideoData(videoPath)
     const selectedTags = new Set(videoData['tags'].map((tag) => tag.title))
     setSelectedTags(selectedTags)
-    setCurrentSelectedTags(selectedTags)
+    setPrevSelectedTags(selectedTags)
     const selectedGalleries = new Set(videoData['galleries'].map((gallery) => gallery.galleryPath))
     setSelectedGalleries(selectedGalleries)
-    setCurrentSelectedGalleries(selectedGalleries)
+    setPrevSelectedGalleries(selectedGalleries)
   }
+
   React.useEffect(() => {
     setFilesExist()
   }, [])
@@ -58,11 +60,14 @@ export default function Video() {
   }
 
   const handleUpdateRelated = async () => {
-    const updateTagsObj = getUpdateObj(selectedTags, currentSelectedTags)
+    const updateTagsObj = getUpdateObj(prevSelectedTags, selectedTags)
     await mainAdapter.updateDbVideoTags(videoPath, updateTagsObj)
 
-    const updateGalleriesObj = getUpdateObj(selectedGalleries, currentSelectedGalleries)
+    const updateGalleriesObj = getUpdateObj(prevSelectedGalleries, selectedGalleries)
     await mainAdapter.updateDbVideoGalleries(videoPath, updateGalleriesObj)
+
+    setPrevSelectedTags(selectedTags)
+    setPrevSelectedGalleries(selectedGalleries)
   }
 
   const videoPathComponents = videoPath.replace(/\\/g, '/').split('/')
@@ -83,22 +88,23 @@ export default function Video() {
   )
 
   const relatedTags = (
-    <CheckBoxGroup
-      allItems={allTags}
-      selectedItems={selectedTags}
-      update={setCurrentSelectedTags}
-    />
+    <CheckBoxGroup allItems={allTags} selectedItems={selectedTags} update={setSelectedTags} />
   )
 
   const relatedGalleries = (
     <CheckBoxGroup
       allItems={allGalleries}
       selectedItems={selectedGalleries}
-      update={setCurrentSelectedGalleries}
+      update={setSelectedGalleries}
     />
   )
 
   const imgPath = getImgPath()
+
+  const isSelectionChanged =
+    !_.isEqual(prevSelectedTags, selectedTags) ||
+    !_.isEqual(prevSelectedGalleries, selectedGalleries)
+
   return (
     <Stack direction="vertical">
       <h3>{videoName}</h3>
@@ -115,7 +121,7 @@ export default function Video() {
         {relatedTags}
         {relatedGalleries}
       </Stack>
-      <Button onClick={handleUpdateRelated}>Save</Button>
+      {isSelectionChanged && <Button onClick={handleUpdateRelated}>Save</Button>}
     </Stack>
   )
 }
