@@ -7,6 +7,7 @@ const api = {}
 for (const methodName in ipcMethods) {
   api[methodName] = (...args) => ipcRenderer.invoke(methodName, ...args)
 }
+api['chooseDirectory'] = (...args) => ipcRenderer.invoke('chooseDirectory', ...args)
 
 // Use `contextBridge` APIs to expose Electron APIs to
 // renderer only if context isolation is enabled, otherwise

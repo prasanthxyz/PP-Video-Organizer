@@ -25,7 +25,9 @@ export default function GalleryRow({ galleryPath, deleteGallery }) {
   )
   const galleryHealth = galleryExists ? <Check2 /> : <X />
   const delGalleryButton = (
-    <Button onClick={async () => await deleteGallery(galleryPath)}>Delete</Button>
+    <Button variant="danger" onClick={async () => await deleteGallery(galleryPath)}>
+      Delete
+    </Button>
   )
 
   return (

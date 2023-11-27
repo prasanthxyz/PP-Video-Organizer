@@ -41,6 +41,42 @@ export default function Galleries() {
   const getGalleryPathInput = async () => {
     setGalleryInput(await mainAdapter.chooseDirectory())
   }
+  const operations = (
+    <div className="d-flex">
+      {isCreating ? (
+        <Spinner />
+      ) : (
+        <>
+          <Button className="me-2" size="sm" onClick={async () => await getGalleryPathInput()}>
+            Select Gallery
+          </Button>
+          <div>{galleryInput}</div>
+          {galleryInput && (
+            <Button
+              variant="success"
+              className="ms-2"
+              size="sm"
+              onClick={async () => await handleCreateGallery(galleryInput)}
+            >
+              Submit
+            </Button>
+          )}
+        </>
+      )}
+      {isDeletingGalleries ? (
+        <Spinner className="ms-auto" />
+      ) : (
+        <Button
+          className="ms-auto"
+          variant="danger"
+          size="sm"
+          onClick={handleDeleteMissingGalleries}
+        >
+          Delete Missing Galleries
+        </Button>
+      )}
+    </div>
+  )
 
   const galleriesTable = (
     <Table>
@@ -63,31 +99,10 @@ export default function Galleries() {
     </Table>
   )
 
-  const addGalleryForm = (
-    <div>
-      {isCreating ? (
-        <Spinner />
-      ) : (
-        <>
-          <div>{galleryInput}</div>
-          <Button onClick={async () => await getGalleryPathInput()}>Select Gallery</Button>
-          {galleryInput !== '' && (
-            <Button onClick={async () => await handleCreateGallery(galleryInput)}>Add</Button>
-          )}
-        </>
-      )}
-    </div>
-  )
-
   return (
     <Stack direction="vertical">
-      {isDeletingGalleries ? (
-        <Spinner />
-      ) : (
-        <Button onClick={handleDeleteMissingGalleries}>Delete Missing Galleries</Button>
-      )}
+      {operations}
       {dbGalleries.length > 0 && galleriesTable}
-      {addGalleryForm}
     </Stack>
   )
 }
