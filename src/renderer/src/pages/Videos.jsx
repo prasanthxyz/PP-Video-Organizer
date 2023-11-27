@@ -56,26 +56,20 @@ export default function Videos() {
   }, [])
 
   const videosTable = (
-    <Table>
-      <thead>
-        <tr>
-          <th>Name</th>
-          <th>File</th>
-          <th>TGP</th>
-          <th></th>
-          <th></th>
-        </tr>
-      </thead>
-      <tbody>
-        {dbVideos.map((videoPath) => (
-          <VideoRow
-            videoPath={videoPath.filePath}
-            deleteVideo={handleDeleteVideo}
-            key={videoPath.filePath}
-          />
-        ))}
-      </tbody>
-    </Table>
+    <>
+      <p className="fs-5 mt-2 mb-0">Videos</p>
+      <Table>
+        <tbody>
+          {dbVideos.map((videoPath) => (
+            <VideoRow
+              videoPath={videoPath.filePath}
+              deleteVideo={handleDeleteVideo}
+              key={videoPath.filePath}
+            />
+          ))}
+        </tbody>
+      </Table>
+    </>
   )
 
   const addVideoForm = (
@@ -86,27 +80,43 @@ export default function Videos() {
           <Spinner /> Generating TGPs...
         </>
       ) : (
-        <Button onClick={handleCreateVideos}>Add</Button>
+        <Button
+          size="sm"
+          variant="success"
+          onClick={handleCreateVideos}
+          disabled={Array.from(videoInputData).length === 0}
+        >
+          Add new Video(s)
+        </Button>
       )}
     </div>
   )
   return (
     <div>
       <Stack direction="vertical">
-        <Stack direction="horizontal">
+        <div className="d-flex mt-3">
           {isGeneratingTgps ? (
             <>
               <Spinner /> Generating TGPs...
             </>
           ) : (
-            <Button onClick={handleGenerateMissingTgps}>Generate Missing TGPs</Button>
+            <Button size="sm" onClick={handleGenerateMissingTgps}>
+              Generate Missing TGPs
+            </Button>
           )}
           {isDeletingVideos ? (
-            <Spinner />
+            <Spinner className="ms-auto" />
           ) : (
-            <Button onClick={handleDeleteMissingVideos}>Delete Missing Videos</Button>
+            <Button
+              className="ms-auto"
+              size="sm"
+              variant="danger"
+              onClick={handleDeleteMissingVideos}
+            >
+              Delete Missing Videos
+            </Button>
           )}
-        </Stack>
+        </div>
         {dbVideos.length > 0 && videosTable}
         {addVideoForm}
       </Stack>
