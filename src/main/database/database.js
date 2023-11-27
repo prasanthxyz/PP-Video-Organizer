@@ -1,3 +1,4 @@
+import * as path from 'path'
 import { Sequelize } from 'sequelize'
 import GalleryModel from './GalleryModel'
 import TagModel from './TagModel'
@@ -8,10 +9,10 @@ export let Tag = null
 export let Gallery = null
 export let Video = null
 
-export const setupDB = async () => {
+export const setupDB = async (app) => {
   sequelize = new Sequelize({
     dialect: 'sqlite',
-    storage: 'pvorg.db',
+    storage: path.join(app.getPath('home'), 'pvorg.db'),
     logging: false
   })
 
@@ -19,11 +20,6 @@ export const setupDB = async () => {
 
   console.log('Syncing DB...')
   await sequelize.sync()
-}
-
-export const getDB = async () => {
-  if (sequelize === null) await setupDB()
-  return sequelize
 }
 
 const createTables = () => {

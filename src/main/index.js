@@ -50,7 +50,7 @@ async function createWindow() {
     mainWindow.loadFile(join(__dirname, '../renderer/index.html'))
   }
 
-  await setupDB()
+  await setupDB(app)
 }
 
 // This method will be called when Electron has finished
