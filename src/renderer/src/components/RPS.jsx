@@ -1,11 +1,11 @@
 import _ from 'lodash'
 import * as React from 'react'
+import { Col, Row } from 'react-bootstrap'
 import ImageGallery from 'react-image-gallery'
 import mainAdapter from '../../../mainAdapter'
 import VideoPlayer from './VideoPlayer'
-import { Button, Col, Row, Stack } from 'react-bootstrap'
 
-export default function RPS({ combination, showVid }) {
+export default function RPS({ combination, showVid, isVideoPlaying }) {
   const [galleryImages, setGalleryImages] = React.useState([])
 
   const videoPath = combination[0]
@@ -21,16 +21,11 @@ export default function RPS({ combination, showVid }) {
   }, [combination])
 
   const videoPathComponents = videoPath.replace(/\\/g, '/').split('/')
-  const videoName = videoPathComponents[videoPathComponents.length - 1]
-  const getImgPath = () => {
-    const imgPathComponents = videoPathComponents.slice(0, videoPathComponents.length - 1)
-    imgPathComponents.push('img')
-    imgPathComponents.push(videoPathComponents[videoPathComponents.length - 1] + '.jpg')
-    return imgPathComponents.join('/')
-  }
+  const imgPathComponents = videoPathComponents.slice(0, videoPathComponents.length - 1)
+  imgPathComponents.push('img')
+  imgPathComponents.push(videoPathComponents[videoPathComponents.length - 1] + '.jpg')
+  const imgPath = imgPathComponents.join('/')
 
-  const galleryPathComponents = galleryPath.replace(/\\/g, '/').split('/')
-  const galleryName = galleryPathComponents[galleryPathComponents.length - 1]
   const imgSlideShow = (
     <ImageGallery
       items={galleryImages.map((path) => ({ original: path }))}
@@ -43,21 +38,13 @@ export default function RPS({ combination, showVid }) {
     />
   )
 
-  const videoPlayer = <VideoPlayer autoplay={false} controls={true} sources={videoPath} />
-  const tgp = <img width="100%" src={`file:///${getImgPath()}`} />
+  const videoPlayer = <VideoPlayer autoplay={isVideoPlaying} controls={true} sources={videoPath} />
+  const tgp = <img width="100%" src={`file:///${imgPath}`} />
 
   return (
-    <>
-      <Row>
-        <Col xs={9}>
-          <p className="fs-5 text-end">{videoName}</p>
-          {showVid ? videoPlayer : tgp}
-        </Col>
-        <Col xs={3}>
-          <p className="fs-5">{galleryName}</p>
-          {galleryImages.length > 0 && imgSlideShow}
-        </Col>
-      </Row>
-    </>
+    <Row>
+      <Col xs={9}>{showVid ? videoPlayer : tgp}</Col>
+      <Col xs={3}>{galleryImages.length > 0 && imgSlideShow}</Col>
+    </Row>
   )
 }

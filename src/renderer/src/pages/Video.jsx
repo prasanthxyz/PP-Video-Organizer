@@ -1,6 +1,7 @@
 import _ from 'lodash'
 import * as React from 'react'
 import { Button, Col, Row, Spinner, Stack, Tab, Tabs } from 'react-bootstrap'
+import { useHotkeys } from 'react-hotkeys-hook'
 import { useParams } from 'react-router'
 import mainAdapter from '../../../mainAdapter'
 import CheckBoxGroup from '../components/CheckBoxGroup'
@@ -15,6 +16,32 @@ export default function Video() {
   const [allGalleries, setAllGalleries] = React.useState([])
   const [selectedGalleries, setSelectedGalleries] = React.useState(new Set())
   const [prevSelectedGalleries, setPrevSelectedGalleries] = React.useState(new Set())
+  const [activeTab, setActiveTab] = React.useState('video')
+  const [isVideoPlaying, setIsVideoPlaying] = React.useState(false)
+
+  useHotkeys('v', () => {
+    if (activeTab === 'video') return
+    setIsVideoPlaying(false)
+    setActiveTab('video')
+  })
+  useHotkeys('t', () => {
+    if (activeTab === 'tgp') return
+    setIsVideoPlaying(false)
+    setActiveTab('tgp')
+  })
+  useHotkeys('a', () => {
+    if (activeTab === 'relations') return
+    setIsVideoPlaying(false)
+    setActiveTab('relations')
+  })
+  useHotkeys('p', () => {
+    if (activeTab !== 'video') {
+      setActiveTab('video')
+      setIsVideoPlaying(true)
+    } else {
+      setIsVideoPlaying(!isVideoPlaying)
+    }
+  })
 
   let { videoPath } = useParams()
   const setFilesExist = async () => {
@@ -82,9 +109,14 @@ export default function Video() {
   const tgpButton = tgpExists ? (
     <></>
   ) : isGeneratingTgp ? (
-    <Spinner />
+    <Spinner className="mt-3 mb-4" />
   ) : (
-    <Button variant="success" size="sm" onClick={async () => await handleGenerateTgp()}>
+    <Button
+      variant="success"
+      size="sm"
+      className="mt-3 mb-4"
+      onClick={async () => await handleGenerateTgp()}
+    >
       Generate TGP
     </Button>
   )
@@ -110,32 +142,43 @@ export default function Video() {
   return (
     <Stack direction="vertical">
       <h6 className="fs-6">{videoName}</h6>
-      <Tabs defaultActiveKey="tgp">
-        <Tab eventKey="tgp" title="TGP">
-          {tgpExists ? <img width="100%" src={`file:///${imgPath}`} /> : <>TGP MISSING</>}
-        </Tab>
+      <Tabs
+        activeKey={activeTab}
+        onSelect={(tab) => {
+          setIsVideoPlaying(false)
+          setActiveTab(tab)
+        }}
+      >
         <Tab eventKey="video" title="Video">
-          <VideoPlayer autoplay={false} controls={true} sources={videoPath} />
+          <VideoPlayer autoplay={isVideoPlaying} controls={true} sources={videoPath} />
+        </Tab>
+        <Tab eventKey="tgp" title="TGP">
+          <Row>
+            <Col className="d-flex justify-content-center">
+              {tgpExists ? <img width="100%" src={`file:///${imgPath}`} /> : tgpButton}
+            </Col>
+          </Row>
+        </Tab>
+        <Tab eventKey="relations" title="Associations">
+          <Row>
+            <Col xs={4}>
+              <h6 className="fs-6">Tags</h6>
+              {relatedTags}
+            </Col>
+            <Col xs={4}>
+              <h6 className="fs-6">Galleries</h6>
+              {relatedGalleries}
+            </Col>
+            <Col xs={4}>
+              {isSelectionChanged && (
+                <Button variant="success" size="sm" className="my-2" onClick={handleUpdateRelated}>
+                  Save
+                </Button>
+              )}
+            </Col>
+          </Row>
         </Tab>
       </Tabs>
-      {tgpButton}
-      <Row>
-        <Col xs={4}>
-          <h6 className="fs-6">Tags</h6>
-          {relatedTags}
-        </Col>
-        <Col xs={4}>
-          <h6 className="fs-6">Galleries</h6>
-          {relatedGalleries}
-        </Col>
-        <Col xs={4}>
-          {isSelectionChanged && (
-            <Button variant="success" size="sm" className="my-2" onClick={handleUpdateRelated}>
-              Save
-            </Button>
-          )}
-        </Col>
-      </Row>
     </Stack>
   )
 }

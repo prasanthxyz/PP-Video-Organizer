@@ -1,6 +1,6 @@
 import _ from 'lodash'
 import * as React from 'react'
-import { Button, Row, Tab, Tabs } from 'react-bootstrap'
+import { Button, Col, Row, Tab, Tabs } from 'react-bootstrap'
 import { useHotkeys } from 'react-hotkeys-hook'
 import mainAdapter from '../../../mainAdapter'
 import RPS from '../components/RPS'
@@ -20,10 +20,30 @@ export default function Home() {
   const [prevSelectedGalleries, setPrevSelectedGalleries] = React.useState(new Set())
   const [activeTab, setActiveTab] = React.useState('watch')
   const [showVid, setShowVid] = React.useState(false)
+  const [isVideoPlaying, setIsVideoPlaying] = React.useState(false)
 
-  useHotkeys('p', () => setShowVid(!showVid))
-  useHotkeys('f', () => setActiveTab('filter'))
-  useHotkeys('w', () => setActiveTab('watch'))
+  useHotkeys('c', () => {
+    setIsVideoPlaying(false)
+    setActiveTab('filter')
+  })
+  useHotkeys('w', () => {
+    setIsVideoPlaying(false)
+    setActiveTab('watch')
+  })
+  useHotkeys('p', () => {
+    if (activeTab !== 'watch') return
+    if (!showVid) {
+      setShowVid(true)
+      setIsVideoPlaying(true)
+    } else {
+      setIsVideoPlaying(!isVideoPlaying)
+    }
+  })
+  useHotkeys('t', () => {
+    if (activeTab !== 'watch') return
+    setShowVid(false)
+  })
+  useHotkeys('v', () => setShowVid(true))
 
   const setData = async () => {
     setAllTags((await mainAdapter.getDbTags()).map((tag) => tag.title))
@@ -69,6 +89,7 @@ export default function Home() {
 
   const handleNext = () => {
     if (allCombinations.length === 0) return
+    setIsVideoPlaying(false)
     if (activeTab !== 'watch') setActiveTab('watch')
     const newIndex = combinationIndex === allCombinations.length - 1 ? 0 : combinationIndex + 1
     setCombinationIndex(newIndex)
@@ -79,9 +100,15 @@ export default function Home() {
 
   const selection =
     allCombinations.length === 0 ? (
-      <div>No combination found!</div>
+      <Row>
+        <Col>No combination found!</Col>
+      </Row>
     ) : (
-      <RPS combination={allCombinations[combinationIndex]} showVid={showVid} />
+      <RPS
+        combination={allCombinations[combinationIndex]}
+        showVid={showVid}
+        isVideoPlaying={isVideoPlaying}
+      />
     )
 
   const isSelectionChanged =
@@ -89,22 +116,38 @@ export default function Home() {
     !_.isEqual(selectedGalleries, prevSelectedGalleries) ||
     !_.isEqual(selectedTags, prevSelectedTags)
 
+  const videoPath = allCombinations.length > 0 ? allCombinations[combinationIndex][0] : ''
+  const videoPathComponents = videoPath.replace(/\\/g, '/').split('/')
+  const videoName = videoPathComponents[videoPathComponents.length - 1]
+  const galleryPath = allCombinations.length > 0 ? allCombinations[combinationIndex][1] : ''
+  const galleryPathComponents = galleryPath.replace(/\\/g, '/').split('/')
+  const galleryName = galleryPathComponents[galleryPathComponents.length - 1]
   return (
-    <Tabs activeKey={activeTab} onSelect={(tab) => setActiveTab(tab)}>
+    <Tabs
+      activeKey={activeTab}
+      onSelect={(tab) => {
+        setIsVideoPlaying(false)
+        setActiveTab(tab)
+      }}
+    >
       <Tab eventKey="watch" title="Watch">
-        <Row className="mt-2">
-          <div className="d-flex justify-content-between">
-            <Button className="ml-auto" onClick={() => setShowVid(!showVid)}>
+        <Row className="my-1">
+          <Col xs={9} className="d-flex justify-content-between">
+            <Button size="sm" variant="success" onClick={() => setShowVid(!showVid)}>
               {showVid ? 'Show TGP' : 'Show Video'}
             </Button>
-            <Button className="mr-auto" onClick={handleNext}>
+            <span className="fs-6">{videoName}</span>
+          </Col>
+          <Col xs={3} className="d-flex justify-content-between">
+            <span className="fs-6">{galleryName}</span>
+            <Button size="sm" onClick={handleNext}>
               Next
             </Button>
-          </div>
+          </Col>
         </Row>
-        <Row>{selection}</Row>
+        {selection}
       </Tab>
-      <Tab eventKey="filter" title="Filter">
+      <Tab eventKey="filter" title="Config">
         <RpsConfig
           allGalleries={allGalleries}
           setSelectedGalleries={setSelectedGalleries}

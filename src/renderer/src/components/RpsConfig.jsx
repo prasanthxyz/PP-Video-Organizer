@@ -5,7 +5,7 @@ export default function RpsConfig(props) {
   return (
     <>
       <Row>
-        <Col xs={4}>
+        <Col xs={3}>
           <h6 className="display-6 pb-3">Galleries</h6>
           <CheckBoxGroup
             allItems={props.allGalleries}
@@ -13,7 +13,7 @@ export default function RpsConfig(props) {
             update={props.setSelectedGalleries}
           />
         </Col>
-        <Col xs={4}>
+        <Col xs={3}>
           <h6 className="display-6 pb-3">Tags</h6>
           <CheckBoxGroup
             allItems={props.allTags}
@@ -29,8 +29,14 @@ export default function RpsConfig(props) {
             update={props.setSelectedVideos}
           />
         </Col>
+        <Col xs={2}>
+          {props.isSelectionChanged && (
+            <Button className="m-5" variant="success" size="sm" onClick={props.updateFilter}>
+              UPDATE
+            </Button>
+          )}
+        </Col>
       </Row>
-      <Row>{props.isSelectionChanged && <Button onClick={props.updateFilter}>UPDATE</Button>}</Row>
     </>
   )
 }
