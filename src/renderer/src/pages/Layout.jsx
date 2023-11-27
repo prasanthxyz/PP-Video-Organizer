@@ -1,9 +1,12 @@
 import React from 'react'
-import { Container, Nav, Navbar } from 'react-bootstrap'
-import { Link, Outlet } from 'react-router-dom'
+import { Button, Container, Nav, Navbar } from 'react-bootstrap'
+import { ArrowLeft } from 'react-bootstrap-icons'
+import { Outlet, useNavigate } from 'react-router-dom'
 import logo from '../assets/icon.png'
 
 export default function Layout() {
+  const navigate = useNavigate()
+
   return (
     <Container fluid>
       <Navbar expand="lg" className="bg-body-tertiary">
@@ -27,6 +30,9 @@ export default function Layout() {
               <Nav.Link href="#/tags">Tags</Nav.Link>
             </Nav>
           </Navbar.Collapse>
+          <Button size="sm" variant="dark" className="d-flex" onClick={() => navigate(-1)}>
+            <ArrowLeft />
+          </Button>
         </Container>
       </Navbar>
       <Outlet />
