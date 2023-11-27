@@ -4,7 +4,7 @@ import { Check2, X } from 'react-bootstrap-icons'
 import { Link } from 'react-router-dom'
 import mainAdapter from '../../../mainAdapter'
 
-export default function VideoRow({ videoPath, deleteVideo }) {
+export default function VideoRow({ videoPath, deleteVideo, index }) {
   const [tgpExists, setTgpExists] = React.useState(false)
   const [fileExists, setFileExists] = React.useState(false)
   const [isGeneratingTgp, setIsGeneratingTgp] = React.useState(false)
@@ -56,7 +56,10 @@ export default function VideoRow({ videoPath, deleteVideo }) {
 
   return (
     <tr>
-      <td>{fileNameView}</td>
+      <td className="col-1">
+        <div className="text-end">{index + 1}</div>
+      </td>
+      <td className="col-7">{fileNameView}</td>
       <td>{genTgpButton}</td>
       <td>{delVideoButton}</td>
       {!fileExists ? (

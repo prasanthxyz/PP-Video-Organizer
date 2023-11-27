@@ -42,7 +42,7 @@ export default function Galleries() {
     setGalleryInput(await mainAdapter.chooseDirectory())
   }
   const operations = (
-    <div className="d-flex">
+    <div className="d-flex my-3">
       {isCreating ? (
         <Spinner />
       ) : (

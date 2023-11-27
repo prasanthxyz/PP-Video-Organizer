@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { Button, Spinner, Stack, Table } from 'react-bootstrap'
+import { Button, Col, Row, Spinner, Table } from 'react-bootstrap'
 import mainAdapter from '../../../mainAdapter.js'
 import VideoRow from '../components/VideoRow.jsx'
 
@@ -60,8 +60,9 @@ export default function Videos() {
       <p className="fs-5 mt-2 mb-0">Videos</p>
       <Table>
         <tbody>
-          {dbVideos.map((videoPath) => (
+          {dbVideos.map((videoPath, index) => (
             <VideoRow
+              index={index}
               videoPath={videoPath.filePath}
               deleteVideo={handleDeleteVideo}
               key={videoPath.filePath}
@@ -72,54 +73,53 @@ export default function Videos() {
     </>
   )
 
-  const addVideoForm = (
-    <div>
-      <input id="filesInput" type="file" multiple="multiple" onChange={updateVideoInputData} />
-      {isUploading ? (
-        <>
-          <Spinner /> Generating TGPs...
-        </>
-      ) : (
-        <Button
-          size="sm"
-          variant="success"
-          onClick={handleCreateVideos}
-          disabled={Array.from(videoInputData).length === 0}
-        >
-          Add new Video(s)
-        </Button>
-      )}
-    </div>
+  const inputUI = (
+    <>
+      <Col xs={3}>
+        <input id="filesInput" type="file" multiple="multiple" onChange={updateVideoInputData} />
+      </Col>
+      <Col xs={3}>
+        {isUploading ? (
+          <>
+            <Spinner className="me-1" />
+            <span>Generating TGPs...</span>
+          </>
+        ) : (
+          <Button
+            size="sm"
+            variant="success"
+            onClick={handleCreateVideos}
+            disabled={Array.from(videoInputData).length === 0}
+          >
+            Add new Video(s)
+          </Button>
+        )}
+      </Col>
+      <Col xs={6} className="d-flex justify-content-end">
+        {isGeneratingTgps ? (
+          <>
+            <Spinner className="me-1" />
+            <span className="me-1">Generating TGPs...</span>
+          </>
+        ) : (
+          <Button className="me-3" size="sm" onClick={handleGenerateMissingTgps}>
+            Generate Missing TGPs
+          </Button>
+        )}
+        {isDeletingVideos ? (
+          <Spinner />
+        ) : (
+          <Button size="sm" variant="danger" onClick={handleDeleteMissingVideos}>
+            Delete Missing Videos
+          </Button>
+        )}
+      </Col>
+    </>
   )
   return (
     <div>
-      <Stack direction="vertical">
-        <div className="d-flex mt-3">
-          {isGeneratingTgps ? (
-            <>
-              <Spinner /> Generating TGPs...
-            </>
-          ) : (
-            <Button size="sm" onClick={handleGenerateMissingTgps}>
-              Generate Missing TGPs
-            </Button>
-          )}
-          {isDeletingVideos ? (
-            <Spinner className="ms-auto" />
-          ) : (
-            <Button
-              className="ms-auto"
-              size="sm"
-              variant="danger"
-              onClick={handleDeleteMissingVideos}
-            >
-              Delete Missing Videos
-            </Button>
-          )}
-        </div>
-        {dbVideos.length > 0 && videosTable}
-        {addVideoForm}
-      </Stack>
+      <Row className="mt-3">{inputUI}</Row>
+      <Row>{dbVideos.length > 0 && videosTable}</Row>
     </div>
   )
 }

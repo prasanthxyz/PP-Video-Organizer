@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { Button, Col, Row, Stack } from 'react-bootstrap'
+import { Button, Col, Row } from 'react-bootstrap'
 import CheckBoxGroup from './CheckBoxGroup'
 export default function RpsConfig(props) {
   return (

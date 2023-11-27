@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { Badge, Button, Form, Spinner, Stack } from 'react-bootstrap'
+import { Badge, Button, Form, Row, Spinner } from 'react-bootstrap'
 import { Plus, X } from 'react-bootstrap-icons'
 import mainAdapter from '../../../mainAdapter.js'
 
@@ -37,11 +37,14 @@ export default function Tags() {
     <div className="d-flex">
       <div className="flex-row">
         {dbTags.map((dbTag) => (
-          <Badge bg="info" className="my-2 mx-2" key={dbTag.title}>
-            <span className="mx-3">{dbTag.title}</span>
-            <Badge pill bg="danger" onClick={async () => await handleDeleteTag(dbTag.title)}>
-              <X />
-            </Badge>
+          <Badge bg="dark" className="my-2 mx-2" key={dbTag.title}>
+            <span className="mx-1">{dbTag.title}</span>
+            <X
+              size={15}
+              color="yellow"
+              cursor={'pointer'}
+              onClick={async () => await handleDeleteTag(dbTag.title)}
+            />
           </Badge>
         ))}
       </div>
@@ -50,13 +53,15 @@ export default function Tags() {
 
   const addTagForm = (
     <Form>
-      <Form.Group className="d-flex">
-        <Form.Label>Enter new tags (space separated)</Form.Label>
-        <Form.Control className="mx-3" type="text" id="tagInput" onChange={updateTagInput} />
+      <Form.Group className="d-flex my-3">
+        <Form.Label className="col-3 d-flex align-items-center">
+          Enter new tags (space separated)
+        </Form.Label>
+        <Form.Control className="me-3" type="text" id="tagInput" onChange={updateTagInput} />
         {isCreating ? (
           <Spinner />
         ) : (
-          <Button onClick={handleCreateTags}>
+          <Button className="d-flex align-items-center" onClick={handleCreateTags}>
             <Plus />
           </Button>
         )}
@@ -65,9 +70,9 @@ export default function Tags() {
   )
 
   return (
-    <Stack direction="vertical">
-      {dbTags.length > 0 && tagsTable}
-      {addTagForm}
-    </Stack>
+    <>
+      <Row>{addTagForm}</Row>
+      <Row>{dbTags.length > 0 && tagsTable}</Row>
+    </>
   )
 }
