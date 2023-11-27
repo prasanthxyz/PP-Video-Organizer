@@ -12,7 +12,7 @@ export default function RPS({ combination, showVid }) {
   const galleryPath = combination[1]
 
   const loadGalleryImages = async () => {
-    const imagePaths = await mainAdapter.getGalleryImagePaths(galleryPath)
+    const imagePaths = _.shuffle(await mainAdapter.getGalleryImagePaths(galleryPath))
     setGalleryImages(imagePaths.map((imagePath) => 'file:///' + imagePath.replace(/\\/g, '/')))
   }
 
@@ -40,7 +40,6 @@ export default function RPS({ combination, showVid }) {
       showFullscreenButton={false}
       disableKeyDown={true}
       slideInterval={2000}
-      startIndex={_.random(galleryImages.length - 1)}
     />
   )
 

@@ -1,11 +1,10 @@
 import _ from 'lodash'
 import * as React from 'react'
-import { Button, Stack, Tab, Tabs } from 'react-bootstrap'
+import { Button, Row, Tab, Tabs } from 'react-bootstrap'
+import { useHotkeys } from 'react-hotkeys-hook'
 import mainAdapter from '../../../mainAdapter'
-import CheckBoxGroup from '../components/CheckBoxGroup'
 import RPS from '../components/RPS'
 import RpsConfig from '../components/RpsConfig'
-import { useHotkeys } from 'react-hotkeys-hook'
 
 export default function Home() {
   const [allCombinations, setAllCombinations] = React.useState([])
@@ -24,6 +23,7 @@ export default function Home() {
 
   useHotkeys('p', () => setShowVid(!showVid))
   useHotkeys('f', () => setActiveTab('filter'))
+  useHotkeys('w', () => setActiveTab('watch'))
 
   const setData = async () => {
     setAllTags((await mainAdapter.getDbTags()).map((tag) => tag.title))
@@ -75,7 +75,7 @@ export default function Home() {
     setShowVid(false)
   }
 
-  useHotkeys('r', handleNext)
+  useHotkeys('n', handleNext)
 
   const selection =
     allCombinations.length === 0 ? (
@@ -92,9 +92,17 @@ export default function Home() {
   return (
     <Tabs activeKey={activeTab} onSelect={(tab) => setActiveTab(tab)}>
       <Tab eventKey="watch" title="Watch">
-        <Button onClick={handleNext}>Next</Button>
-        <Button onClick={() => setShowVid(!showVid)}>{showVid ? 'Show TGP' : 'Show Video'}</Button>
-        <div>{selection}</div>
+        <Row className="mt-2">
+          <div className="d-flex justify-content-between">
+            <Button className="ml-auto" onClick={() => setShowVid(!showVid)}>
+              {showVid ? 'Show TGP' : 'Show Video'}
+            </Button>
+            <Button className="mr-auto" onClick={handleNext}>
+              Next
+            </Button>
+          </div>
+        </Row>
+        <Row>{selection}</Row>
       </Tab>
       <Tab eventKey="filter" title="Filter">
         <RpsConfig

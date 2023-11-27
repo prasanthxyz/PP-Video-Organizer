@@ -1,5 +1,6 @@
 import * as React from 'react'
-import { Button, FormLabel, Spinner, Stack, Table } from 'react-bootstrap'
+import { Badge, Button, Form, Spinner, Stack } from 'react-bootstrap'
+import { Plus, X } from 'react-bootstrap-icons'
 import mainAdapter from '../../../mainAdapter.js'
 
 export default function Tags() {
@@ -33,32 +34,34 @@ export default function Tags() {
   }
 
   const tagsTable = (
-    <Table>
-      <thead>
-        <tr>
-          <th>Tag</th>
-          <th></th>
-        </tr>
-      </thead>
-      <tbody>
+    <div className="d-flex">
+      <div className="flex-row">
         {dbTags.map((dbTag) => (
-          <tr key={dbTag.title}>
-            <td>{dbTag.title}</td>
-            <td>
-              <Button onClick={async () => await handleDeleteTag(dbTag.title)}>Delete</Button>
-            </td>
-          </tr>
+          <Badge bg="info" className="my-2 mx-2" key={dbTag.title}>
+            <span className="mx-3">{dbTag.title}</span>
+            <Badge pill bg="danger" onClick={async () => await handleDeleteTag(dbTag.title)}>
+              <X />
+            </Badge>
+          </Badge>
         ))}
-      </tbody>
-    </Table>
+      </div>
+    </div>
   )
 
   const addTagForm = (
-    <div>
-      <FormLabel>Enter new tags (space separated)</FormLabel>
-      <input id="tagInput" onChange={updateTagInput} />
-      {isCreating ? <Spinner /> : <Button onClick={handleCreateTags}>Add</Button>}
-    </div>
+    <Form>
+      <Form.Group className="d-flex">
+        <Form.Label>Enter new tags (space separated)</Form.Label>
+        <Form.Control className="mx-3" type="text" id="tagInput" onChange={updateTagInput} />
+        {isCreating ? (
+          <Spinner />
+        ) : (
+          <Button onClick={handleCreateTags}>
+            <Plus />
+          </Button>
+        )}
+      </Form.Group>
+    </Form>
   )
 
   return (
