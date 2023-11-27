@@ -41,7 +41,7 @@ export const generateTgp = (videoPath, regenerate = false) => {
   }
 
   child_process.execSync(
-    `python -m vcsi.vcsi ${videoPath} -g 4x4 --metadata-font-size 0 -w 1500 -o ${imgDir}`,
+    `python -m vcsi.vcsi "${videoPath}" -g 4x4 --metadata-font-size 0 -w 1500 -o "${imgDir}"`,
     (error, _stdout, stderr) => {
       if (error) console.error(`error: ${error.message}`)
       if (stderr) console.error(`stderr: ${stderr}`)

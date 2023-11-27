@@ -1,6 +1,6 @@
 import _ from 'lodash'
 import * as React from 'react'
-import { Button, Spinner, Stack, Tab, Tabs } from 'react-bootstrap'
+import { Button, Col, Row, Spinner, Stack, Tab, Tabs } from 'react-bootstrap'
 import { useParams } from 'react-router'
 import mainAdapter from '../../../mainAdapter'
 import CheckBoxGroup from '../components/CheckBoxGroup'
@@ -34,9 +34,9 @@ export default function Video() {
     setFilesExist()
   }, [])
 
-  const handleGenerateTgp = async (regenerate = false) => {
+  const handleGenerateTgp = async () => {
     setIsGeneratingTgp(true)
-    await mainAdapter.generateTgp(videoPath, regenerate)
+    await mainAdapter.generateTgp(videoPath, false)
     setTgpExists(true)
     setIsGeneratingTgp(false)
   }
@@ -79,11 +79,13 @@ export default function Video() {
     return imgPathComponents.join('/')
   }
 
-  const tgpButton = isGeneratingTgp ? (
+  const tgpButton = tgpExists ? (
+    <></>
+  ) : isGeneratingTgp ? (
     <Spinner />
   ) : (
-    <Button onClick={async () => await handleGenerateTgp(tgpExists)}>
-      {tgpExists ? 'Regenerate' : 'Generate'} TGP
+    <Button variant="success" size="sm" onClick={async () => await handleGenerateTgp()}>
+      Generate TGP
     </Button>
   )
 
@@ -107,21 +109,33 @@ export default function Video() {
 
   return (
     <Stack direction="vertical">
-      <h3>{videoName}</h3>
+      <h6 className="fs-6">{videoName}</h6>
       <Tabs defaultActiveKey="tgp">
         <Tab eventKey="tgp" title="TGP">
-          {tgpExists ? <img src={`file:///${imgPath}`} /> : <>TGP MISSING</>}
+          {tgpExists ? <img width="100%" src={`file:///${imgPath}`} /> : <>TGP MISSING</>}
         </Tab>
         <Tab eventKey="video" title="Video">
           <VideoPlayer autoplay={false} controls={true} sources={videoPath} />
         </Tab>
       </Tabs>
       {tgpButton}
-      <Stack direction="horizontal">
-        {relatedTags}
-        {relatedGalleries}
-      </Stack>
-      {isSelectionChanged && <Button onClick={handleUpdateRelated}>Save</Button>}
+      <Row>
+        <Col xs={4}>
+          <h6 className="fs-6">Tags</h6>
+          {relatedTags}
+        </Col>
+        <Col xs={4}>
+          <h6 className="fs-6">Galleries</h6>
+          {relatedGalleries}
+        </Col>
+        <Col xs={4}>
+          {isSelectionChanged && (
+            <Button variant="success" size="sm" className="my-2" onClick={handleUpdateRelated}>
+              Save
+            </Button>
+          )}
+        </Col>
+      </Row>
     </Stack>
   )
 }
