@@ -4,6 +4,7 @@ import { join } from 'path'
 import icon from '../../resources/icon.png?asset'
 import ipcMethods from '../ipcMethods'
 import { setupDB } from './database/database'
+import { autoUpdater } from 'electron-updater'
 
 async function createWindow() {
   // Create the browser window.
@@ -56,6 +57,8 @@ async function createWindow() {
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.whenReady().then(() => {
+  autoUpdater.checkForUpdatesAndNotify()
+
   // Set app user model id for windows
   electronApp.setAppUserModelId('com.electron')
 

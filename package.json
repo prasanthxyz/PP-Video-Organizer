@@ -14,7 +14,28 @@
     "postinstall": "electron-builder install-app-deps",
     "build:win": "npm run build && electron-builder --win --config",
     "build:mac": "npm run build && electron-builder --mac --config",
-    "build:linux": "npm run build && electron-builder --linux --config"
+    "build:linux": "npm run build && electron-builder --linux --config",
+    "release": "electron-builder"
+  },
+  "build": {
+    "appId": "com.wordpress.prasanthxyz.pvorg",
+    "productName": "P Video Organizer",
+    "publish": [
+      {
+        "provider": "github",
+        "owner": "prasanthxyz",
+        "repo": "P-Video-Organizer"
+      }
+    ],
+    "win": {
+      "target": "nsis",
+      "publish": [
+        "github"
+      ]
+    },
+    "directories": {
+      "output": "dist"
+    }
   },
   "dependencies": {
     "@electron-toolkit/preload": "^2.0.0",
@@ -22,6 +43,7 @@
     "@emotion/react": "^11.11.1",
     "@emotion/styled": "^11.11.0",
     "bootstrap": "^5.3.2",
+    "electron-updater": "^6.1.7",
     "framer-motion": "^10.16.5",
     "pg-hstore": "^2.3.4",
     "react-bootstrap": "^2.9.1",
