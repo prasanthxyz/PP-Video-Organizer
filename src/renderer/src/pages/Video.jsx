@@ -162,11 +162,11 @@ export default function Video() {
         <Tab eventKey="relations" title="Associations">
           <Row>
             <Col xs={4}>
-              <h6 className="fs-6">Tags</h6>
+              <h6 className="display-6">Tags</h6>
               {relatedTags}
             </Col>
             <Col xs={4}>
-              <h6 className="fs-6">Galleries</h6>
+              <h6 className="display-6">Galleries</h6>
               {relatedGalleries}
             </Col>
             <Col xs={4}>
