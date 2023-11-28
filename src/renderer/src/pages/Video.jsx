@@ -150,12 +150,16 @@ export default function Video() {
         }}
       >
         <Tab eventKey="video" title="Video">
-          <VideoPlayer autoplay={isVideoPlaying} controls={true} sources={videoPath} />
+          <Row>
+            <Col xs={9} className="mx-auto">
+              <VideoPlayer autoplay={isVideoPlaying} controls={true} sources={videoPath} />
+            </Col>
+          </Row>
         </Tab>
         <Tab eventKey="tgp" title="TGP">
           <Row>
             <Col className="d-flex justify-content-center">
-              {tgpExists ? <img width="100%" src={`file:///${imgPath}`} /> : tgpButton}
+              {tgpExists ? <img className="mh-100 mw-100" src={`file:///${imgPath}`} /> : tgpButton}
             </Col>
           </Row>
         </Tab>
