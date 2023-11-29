@@ -1,5 +1,5 @@
 import React from 'react'
-import { Button, Container, Nav, Navbar } from 'react-bootstrap'
+import { Button, Container, Nav, Navbar, Stack } from 'react-bootstrap'
 import { ArrowLeft } from 'react-bootstrap-icons'
 import { useHotkeys } from 'react-hotkeys-hook'
 import { Outlet, useNavigate } from 'react-router-dom'
@@ -15,31 +15,28 @@ export default function Layout() {
 
   return (
     <Container fluid>
-      <Navbar expand="lg" className="bg-body-tertiary">
-        <Container>
-          <Navbar.Brand>
-            <img
-              src={logo}
-              width="30"
-              height="30"
-              className="d-inline-block align-top"
-              alt="PVORG"
-            />
-            &nbsp;&nbsp;PVORG
-          </Navbar.Brand>
-          <Navbar.Toggle aria-controls="basic-navbar-nav" />
-          <Navbar.Collapse id="basic-navbar-nav">
-            <Nav className="me-auto">
-              <Nav.Link href="#/">Random</Nav.Link>
-              <Nav.Link href="#/videos">Videos</Nav.Link>
-              <Nav.Link href="#/galleries">Galleries</Nav.Link>
-              <Nav.Link href="#/tags">Tags</Nav.Link>
-            </Nav>
-          </Navbar.Collapse>
-          <Button size="sm" variant="dark" className="d-flex" onClick={() => navigate(-1)}>
-            <ArrowLeft />
-          </Button>
-        </Container>
+      <Navbar className="bg-body-tertiary">
+        <Navbar.Brand>
+          <img src={logo} width="30" height="30" className="d-inline-block align-top" alt="PVORG" />
+          &nbsp;&nbsp;PVORG
+        </Navbar.Brand>
+        <Stack direction="horizontal" className="me-auto ms-3">
+          <Nav.Link className="me-2" href="#/">
+            Random
+          </Nav.Link>
+          <Nav.Link className="me-2" href="#/videos">
+            Videos
+          </Nav.Link>
+          <Nav.Link className="me-2" href="#/galleries">
+            Galleries
+          </Nav.Link>
+          <Nav.Link className="me-2" href="#/tags">
+            Tags
+          </Nav.Link>
+        </Stack>
+        <Button size="sm" variant="dark" className="d-flex" onClick={() => navigate(-1)}>
+          <ArrowLeft />
+        </Button>
       </Navbar>
       <Outlet />
     </Container>

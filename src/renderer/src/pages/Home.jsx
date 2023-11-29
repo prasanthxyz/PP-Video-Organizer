@@ -2,6 +2,7 @@ import _ from 'lodash'
 import * as React from 'react'
 import { Button, Col, Row, Tab, Tabs } from 'react-bootstrap'
 import { useHotkeys } from 'react-hotkeys-hook'
+import { Link } from 'react-router-dom'
 import mainAdapter from '../../../mainAdapter'
 import RPS from '../components/RPS'
 import RpsConfig from '../components/RpsConfig'
@@ -132,10 +133,14 @@ export default function Home() {
             <Button size="sm" variant="success" onClick={() => setShowVid(!showVid)}>
               {showVid ? 'Show TGP' : 'Show Video'}
             </Button>
-            <span className="fs-6">{videoName}</span>
+            <Link to={`/video/${videoPath}`} className="fs-6">
+              {videoName}
+            </Link>
           </Col>
           <Col xs={3} className="d-flex justify-content-between">
-            <span className="fs-6">{galleryName}</span>
+            <Link to={`/gallery/${galleryPath}`} className="fs-6">
+              {galleryName}
+            </Link>
             <Button size="sm" onClick={handleNext}>
               Next
             </Button>
