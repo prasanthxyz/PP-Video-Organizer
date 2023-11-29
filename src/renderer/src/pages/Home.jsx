@@ -36,14 +36,10 @@ export default function Home() {
       setShowVid(true)
       setIsVideoPlaying(true)
     } else {
-      setIsVideoPlaying(!isVideoPlaying)
+      setIsVideoPlaying(false)
+      setShowVid(false)
     }
   })
-  useHotkeys('t', () => {
-    if (activeTab !== 'watch') return
-    setShowVid(false)
-  })
-  useHotkeys('v', () => setShowVid(true))
 
   const setData = async () => {
     setAllTags((await mainAdapter.getDbTags()).map((tag) => tag.title))

@@ -20,24 +20,39 @@ A video organizer and random video selector with genre/gallery tagging and slide
 
 ## Keyboard Shortcuts
 
-### "Random" tab
+### Global
 
-- `w`: Go to Watch tab
-- `c`: Go to Config tab
-- `n`: Select Next Combination
-- `p`: Start/Stop playing video (works only from 'Watch', switches to Video if currently viewing TGP)
-- `t`: Switch to TGP
-- `v`: Switch to Video
+|           |                      |
+| --------- | -------------------- |
+| `Shift+r` | Go to Random page    |
+| `Shift+v` | Go to Videos page    |
+| `Shift+g` | Go to Galleries page |
+| `Shift+t` | Go to Tags page      |
 
-### Video Tab
+### "Random" page
 
-- `v`: Go to Video tab
-- `t`: Go to TGP tab
-- `a`: Go to Associations tab
-- `p`: Start/Stop playing video (switches to Video tab)
+|     |                                                      |
+| --- | ---------------------------------------------------- |
+| `w` | Go to Watch tab                                      |
+| `c` | Go to Config tab                                     |
+| `n` | Select Next Combination                              |
+| `p` | Toggle TGP and Video<br/>(works only in "Watch" tab) |
+
+### Video page
+
+|     |                                                    |
+| --- | -------------------------------------------------- |
+| `v` | Go to Video tab                                    |
+| `t` | Go to TGP tab                                      |
+| `a` | Go to Associations tab                             |
+| `p` | (Switch to Video tab and) Start/Stop playing video |
 
 ### Video Player
 
-- `0-9` numerical keys - seek video by 10% intervals
-- `Left/Right` arrows: seek video by 5 seconds
-- `f` for toggling full screen
+|                      |                             |
+| -------------------- | --------------------------- |
+| `0-9 numerical keys` | Seek video by 10% intervals |
+| `Left/Right arrows`  | Seek video by 5 seconds     |
+| `Up/Down arrows`     | Increase/decrease volume    |
+| `f`                  | Toggle full screen          |
+| `m`                  | Toggle mute                 |

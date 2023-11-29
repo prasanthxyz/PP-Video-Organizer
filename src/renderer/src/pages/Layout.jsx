@@ -1,11 +1,17 @@
 import React from 'react'
 import { Button, Container, Nav, Navbar } from 'react-bootstrap'
 import { ArrowLeft } from 'react-bootstrap-icons'
+import { useHotkeys } from 'react-hotkeys-hook'
 import { Outlet, useNavigate } from 'react-router-dom'
 import logo from '../assets/icon.png'
 
 export default function Layout() {
   const navigate = useNavigate()
+
+  useHotkeys('Shift+R', () => navigate('/'))
+  useHotkeys('Shift+V', () => navigate('/videos'))
+  useHotkeys('Shift+G', () => navigate('/galleries'))
+  useHotkeys('Shift+T', () => navigate('/tags'))
 
   return (
     <Container fluid>
