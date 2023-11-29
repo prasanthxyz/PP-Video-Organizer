@@ -26,7 +26,9 @@ const ipcMethods = {
   deleteMissingDbVideos: video.deleteMissingVideos,
   deleteMissingDbGalleries: gallery.deleteMissingGalleries,
   getDbGalleryData: db.getGalleryData,
-  updateDbGalleryVideos: db.updateGalleryVideos
+  updateDbGalleryVideos: db.updateGalleryVideos,
+  getDbTagData: db.getTagData,
+  updateDbTagVideos: db.updateTagVideos
 }
 
 export default ipcMethods

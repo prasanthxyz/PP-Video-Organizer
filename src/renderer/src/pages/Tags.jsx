@@ -1,12 +1,15 @@
 import * as React from 'react'
 import { Badge, Button, Form, Row, Spinner } from 'react-bootstrap'
 import { Plus, X } from 'react-bootstrap-icons'
+import { useNavigate } from 'react-router-dom'
 import mainAdapter from '../../../mainAdapter.js'
 
 export default function Tags() {
   const [dbTags, setDbTags] = React.useState([])
   const [isCreating, setIsCreating] = React.useState(false)
   const [tagInput, setTagInput] = React.useState('')
+
+  const navigate = useNavigate()
 
   React.useEffect(() => {
     loadTags()
@@ -38,7 +41,9 @@ export default function Tags() {
       <div className="flex-row">
         {dbTags.map((dbTag) => (
           <Badge bg="dark" className="my-2 mx-2" key={dbTag.title}>
-            <span className="mx-1">{dbTag.title}</span>
+            <span className="mx-2" role="button" onClick={() => navigate(`/tag/${dbTag.title}`)}>
+              {dbTag.title}
+            </span>
             <X
               size={15}
               color="yellow"
