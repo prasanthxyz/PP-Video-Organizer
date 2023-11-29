@@ -27,5 +27,7 @@ const createTables = () => {
   Gallery = sequelize.define('Gallery', GalleryModel)
   Video = sequelize.define('Video', VideoModel)
   Video.belongsToMany(Gallery, { through: 'VideoGallery' })
+  Gallery.belongsToMany(Video, { through: 'VideoGallery' })
   Video.belongsToMany(Tag, { through: 'VideoTag' })
+  Tag.belongsToMany(Video, { through: 'VideoTag' })
 }
