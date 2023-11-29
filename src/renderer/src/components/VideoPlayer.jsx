@@ -36,6 +36,7 @@ export default function VideoPlayer(props) {
       const player = (playerRef.current = videojs(videoElement, playerOptions, () => {
         videojs.log('player is ready')
       }))
+      player.on('play', () => player.focus())
       // You could update an existing player in the `else` block here
       // on prop change, for example:
     } else {
