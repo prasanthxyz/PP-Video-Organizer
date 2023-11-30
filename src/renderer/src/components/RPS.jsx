@@ -1,7 +1,6 @@
 import _ from 'lodash'
 import * as React from 'react'
-import { Col, Row } from 'react-bootstrap'
-import ImageGallery from 'react-image-gallery'
+import { Carousel, Col, Row } from 'react-bootstrap'
 import mainAdapter from '../../../mainAdapter'
 import VideoPlayer from './VideoPlayer'
 
@@ -27,15 +26,13 @@ export default function RPS({ combination, showVid, isVideoPlaying }) {
   const imgPath = imgPathComponents.join('/')
 
   const imgSlideShow = (
-    <ImageGallery
-      items={galleryImages.map((path) => ({ original: path }))}
-      autoPlay={true}
-      lazyLoad={true}
-      showThumbnails={false}
-      showFullscreenButton={false}
-      disableKeyDown={true}
-      slideInterval={2000}
-    />
+    <Carousel interval={2000} pause="hover" indicators={false}>
+      {galleryImages.map((path) => (
+        <Carousel.Item key={path}>
+          <img width="100%" src={path} />
+        </Carousel.Item>
+      ))}
+    </Carousel>
   )
 
   const videoPlayer = <VideoPlayer autoplay={isVideoPlaying} controls={true} sources={videoPath} />

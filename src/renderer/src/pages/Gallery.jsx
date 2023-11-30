@@ -1,8 +1,6 @@
 import _ from 'lodash'
 import * as React from 'react'
-import { Button, Col, Row } from 'react-bootstrap'
-import ImageGallery from 'react-image-gallery'
-import 'react-image-gallery/styles/css/image-gallery.css'
+import { Button, Carousel, Col, Row } from 'react-bootstrap'
 import { useParams } from 'react-router'
 import mainAdapter from '../../../mainAdapter'
 import CheckBoxGroup from '../components/CheckBoxGroup'
@@ -33,16 +31,13 @@ export default function Gallery() {
   const galleryPathComponents = galleryPath.replace(/\\/g, '/').split('/')
   const galleryName = galleryPathComponents[galleryPathComponents.length - 1]
   const imgSlideShow = (
-    <ImageGallery
-      items={galleryImages.map((path) => ({ original: path }))}
-      autoPlay={true}
-      lazyLoad={true}
-      showThumbnails={false}
-      showFullscreenButton={false}
-      disableKeyDown={true}
-      slideInterval={2000}
-      startIndex={_.random(galleryImages.length - 1)}
-    />
+    <Carousel interval={2000} pause="hover" indicators={false}>
+      {galleryImages.map((path) => (
+        <Carousel.Item key={path}>
+          <img width="100%" src={path} />
+        </Carousel.Item>
+      ))}
+    </Carousel>
   )
 
   const handleUpdateRelatedVideos = async () => {
