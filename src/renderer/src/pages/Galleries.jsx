@@ -1,10 +1,11 @@
 import * as React from 'react'
-import { Button, Spinner, Stack, Table } from 'react-bootstrap'
+import { Button, Col, Form, Row, Spinner, Table } from 'react-bootstrap'
 import mainAdapter from '../../../mainAdapter.js'
 import GalleryRow from '../components/GalleryRow.jsx'
 
 export default function Galleries() {
   const [dbGalleries, setDbGalleries] = React.useState([])
+  const [filterText, setFilterText] = React.useState('')
   const [isCreating, setIsCreating] = React.useState(false)
   const [galleryInput, setGalleryInput] = React.useState('')
   const [isDeletingGalleries, setIsDeletingGalleries] = React.useState(false)
@@ -88,21 +89,38 @@ export default function Galleries() {
         </tr>
       </thead>
       <tbody>
-        {dbGalleries.map((dbGallery) => (
-          <GalleryRow
-            key={dbGallery.galleryPath}
-            galleryPath={dbGallery.galleryPath}
-            deleteGallery={handleDeleteGallery}
-          />
-        ))}
+        {dbGalleries
+          .filter((dbGallery) => dbGallery.galleryPath.toLowerCase().includes(filterText))
+          .map((dbGallery) => (
+            <GalleryRow
+              key={dbGallery.galleryPath}
+              galleryPath={dbGallery.galleryPath}
+              deleteGallery={handleDeleteGallery}
+            />
+          ))}
       </tbody>
     </Table>
   )
 
   return (
-    <Stack direction="vertical">
+    <>
+      <Row className="mt-3">
+        <Col className="d-flex justify-content-center">
+          <Form.Group as={Row}>
+            <Form.Label column xs="2">
+              Filter
+            </Form.Label>
+            <Col>
+              <Form.Control
+                type="text"
+                onChange={(e) => setFilterText(e.target.value.toLowerCase())}
+              />
+            </Col>
+          </Form.Group>
+        </Col>
+      </Row>
       {operations}
       {dbGalleries.length > 0 && galleriesTable}
-    </Stack>
+    </>
   )
 }

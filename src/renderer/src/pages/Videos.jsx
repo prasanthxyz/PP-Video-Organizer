@@ -1,10 +1,11 @@
 import * as React from 'react'
-import { Button, Col, Row, Spinner, Table } from 'react-bootstrap'
+import { Button, Col, Form, Row, Spinner, Table } from 'react-bootstrap'
 import mainAdapter from '../../../mainAdapter.js'
 import VideoRow from '../components/VideoRow.jsx'
 
 export default function Videos() {
   const [dbVideos, setDbVideos] = React.useState([])
+  const [filterText, setFilterText] = React.useState('')
   const [isUploading, setIsUploading] = React.useState(false)
   const [isGeneratingTgps, setIsGeneratingTgps] = React.useState(false)
   const [videoInputData, setVideoInputData] = React.useState({})
@@ -60,14 +61,16 @@ export default function Videos() {
       <p className="fs-5 mt-2 mb-0">Videos</p>
       <Table>
         <tbody>
-          {dbVideos.map((videoPath, index) => (
-            <VideoRow
-              index={index}
-              videoPath={videoPath.filePath}
-              deleteVideo={handleDeleteVideo}
-              key={videoPath.filePath}
-            />
-          ))}
+          {dbVideos
+            .filter((videoPath) => videoPath.filePath.toLowerCase().includes(filterText))
+            .map((videoPath, index) => (
+              <VideoRow
+                index={index}
+                videoPath={videoPath.filePath}
+                deleteVideo={handleDeleteVideo}
+                key={videoPath.filePath}
+              />
+            ))}
         </tbody>
       </Table>
     </>
@@ -118,6 +121,21 @@ export default function Videos() {
   )
   return (
     <div>
+      <Row className="mt-3">
+        <Col className="d-flex justify-content-center">
+          <Form.Group as={Row}>
+            <Form.Label column xs="2">
+              Filter
+            </Form.Label>
+            <Col>
+              <Form.Control
+                type="text"
+                onChange={(e) => setFilterText(e.target.value.toLowerCase())}
+              />
+            </Col>
+          </Form.Group>
+        </Col>
+      </Row>
       <Row className="mt-3">{inputUI}</Row>
       <Row>{dbVideos.length > 0 && videosTable}</Row>
     </div>

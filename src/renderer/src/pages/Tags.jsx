@@ -1,10 +1,11 @@
 import * as React from 'react'
-import { Badge, Button, Form, Row, Spinner } from 'react-bootstrap'
+import { Badge, Button, Col, Form, Row, Spinner } from 'react-bootstrap'
 import { Plus, X } from 'react-bootstrap-icons'
 import { useNavigate } from 'react-router-dom'
 import mainAdapter from '../../../mainAdapter.js'
 
 export default function Tags() {
+  const [filterText, setFilterText] = React.useState('')
   const [dbTags, setDbTags] = React.useState([])
   const [isCreating, setIsCreating] = React.useState(false)
   const [tagInput, setTagInput] = React.useState('')
@@ -39,19 +40,21 @@ export default function Tags() {
   const tagsTable = (
     <div className="d-flex">
       <div className="flex-row">
-        {dbTags.map((dbTag) => (
-          <Badge bg="dark" className="my-2 mx-2" key={dbTag.title}>
-            <span className="mx-2" role="button" onClick={() => navigate(`/tag/${dbTag.title}`)}>
-              {dbTag.title}
-            </span>
-            <X
-              size={15}
-              color="yellow"
-              cursor={'pointer'}
-              onClick={async () => await handleDeleteTag(dbTag.title)}
-            />
-          </Badge>
-        ))}
+        {dbTags
+          .filter((dbTag) => dbTag.title.toLowerCase().includes(filterText))
+          .map((dbTag) => (
+            <Badge bg="dark" className="my-2 mx-2" key={dbTag.title}>
+              <span className="mx-2" role="button" onClick={() => navigate(`/tag/${dbTag.title}`)}>
+                {dbTag.title}
+              </span>
+              <X
+                size={15}
+                color="yellow"
+                cursor={'pointer'}
+                onClick={async () => await handleDeleteTag(dbTag.title)}
+              />
+            </Badge>
+          ))}
       </div>
     </div>
   )
@@ -76,8 +79,23 @@ export default function Tags() {
 
   return (
     <>
+      <Row className="mt-3">
+        <Col className="d-flex justify-content-center">
+          <Form.Group as={Row}>
+            <Form.Label column xs="2">
+              Filter
+            </Form.Label>
+            <Col>
+              <Form.Control
+                type="text"
+                onChange={(e) => setFilterText(e.target.value.toLowerCase())}
+              />
+            </Col>
+          </Form.Group>
+        </Col>
+      </Row>
+      <Row className="my-3">{dbTags.length > 0 && tagsTable}</Row>
       <Row>{addTagForm}</Row>
-      <Row>{dbTags.length > 0 && tagsTable}</Row>
     </>
   )
 }
