@@ -91,7 +91,14 @@ export default function Gallery() {
         <h3 className="display-6 text-center">{galleryName}</h3>
       </Row>
       <Row className="d-flex">
-        <Col xs={6}>{galleryImages.length > 0 && imgSlideShow}</Col>
+        <Col xs={6}>
+          <Row>
+            <Col className="text-center">{galleryPath}</Col>
+          </Row>
+          <Row>
+            <Col>{galleryImages.length > 0 && imgSlideShow}</Col>
+          </Row>
+        </Col>
         <Col xs={6}>{relatedVideos}</Col>
       </Row>
     </>

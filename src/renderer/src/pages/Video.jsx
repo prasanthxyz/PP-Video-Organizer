@@ -155,6 +155,11 @@ export default function Video() {
               <VideoPlayer autoplay={isVideoPlaying} controls={true} sources={videoPath} />
             </Col>
           </Row>
+          <Row className="mt-2">
+            <Col className="mx-auto" xs={9}>
+              {videoPath}
+            </Col>
+          </Row>
         </Tab>
         <Tab eventKey="tgp" title="TGP">
           <Row>
