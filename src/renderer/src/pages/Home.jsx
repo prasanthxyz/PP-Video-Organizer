@@ -3,25 +3,37 @@ import * as React from 'react'
 import { Button, Col, Row, Tab, Tabs } from 'react-bootstrap'
 import { useHotkeys } from 'react-hotkeys-hook'
 import { Link } from 'react-router-dom'
-import mainAdapter from '../../../mainAdapter'
+import { Context } from '../App'
 import RPS from '../components/RPS'
 import RpsConfig from '../components/RpsConfig'
 
 export default function Home() {
-  const [allCombinations, setAllCombinations] = React.useState([])
-  const [combinationIndex, setCombinationIndex] = React.useState(0)
-  const [allVideos, setAllVideos] = React.useState([])
-  const [selectedVideos, setSelectedVideos] = React.useState(new Set())
-  const [prevSelectedVideos, setPrevSelectedVideos] = React.useState(new Set())
-  const [allTags, setAllTags] = React.useState([])
-  const [selectedTags, setSelectedTags] = React.useState(new Set())
-  const [prevSelectedTags, setPrevSelectedTags] = React.useState(new Set())
-  const [allGalleries, setAllGalleries] = React.useState([])
-  const [selectedGalleries, setSelectedGalleries] = React.useState(new Set())
-  const [prevSelectedGalleries, setPrevSelectedGalleries] = React.useState(new Set())
   const [activeTab, setActiveTab] = React.useState('watch')
   const [showVid, setShowVid] = React.useState(false)
   const [isVideoPlaying, setIsVideoPlaying] = React.useState(false)
+  const [prevSelectedVideos, setPrevSelectedVideos] = React.useState(new Set())
+  const [prevSelectedTags, setPrevSelectedTags] = React.useState(new Set())
+  const [prevSelectedGalleries, setPrevSelectedGalleries] = React.useState(new Set())
+
+  const {
+    allCombinations,
+    setAllCombinations,
+    combinationIndex,
+    setCombinationIndex,
+    allVideos,
+    setAllVideos,
+    selectedVideos,
+    setSelectedVideos,
+    allTags,
+    setAllTags,
+    selectedTags,
+    setSelectedTags,
+    allGalleries,
+    setAllGalleries,
+    selectedGalleries,
+    setSelectedGalleries,
+    generateCombinations
+  } = React.useContext(Context)
 
   useHotkeys('c', () => {
     setIsVideoPlaying(false)
@@ -43,34 +55,9 @@ export default function Home() {
   })
 
   const setData = async () => {
-    setAllTags((await mainAdapter.getDbTags()).map((tag) => tag.title))
-    setSelectedTags(new Set())
     setPrevSelectedTags(new Set())
-
-    const allDbGalleries = (await mainAdapter.getDbGalleries()).map((g) => g.galleryPath)
-    const isGalleryExisting = await Promise.all(allDbGalleries.map(mainAdapter.isDirExisting))
-    const availableGalleries = allDbGalleries.filter((gallery, index) => isGalleryExisting[index])
-    setAllGalleries(availableGalleries)
-    setSelectedGalleries(new Set(availableGalleries))
-    setPrevSelectedGalleries(new Set(availableGalleries))
-
-    const allDbVideos = (await mainAdapter.getDbVideos()).map((dbVideo) => dbVideo.filePath)
-    const isVideoExisting = await Promise.all(allDbVideos.map(mainAdapter.isFileExisting))
-    const availableVideos = allDbVideos.filter((videoPath, index) => isVideoExisting[index])
-    setAllVideos(availableVideos)
-    setSelectedVideos(new Set(availableVideos))
-    setPrevSelectedVideos(new Set(availableVideos))
-
-    await generateCombinations(new Set(availableVideos), new Set(), new Set(availableGalleries))
-  }
-
-  const generateCombinations = async (videos, tags, galleries) => {
-    const allCombinations = _.shuffle(
-      await mainAdapter.getCombinationsData(videos, tags, galleries)
-    )
-    setAllCombinations(allCombinations)
-    setCombinationIndex(0)
-    setShowVid(false)
+    setPrevSelectedGalleries(new Set(allGalleries))
+    setPrevSelectedVideos(new Set(allVideos))
   }
 
   React.useEffect(() => {
@@ -81,6 +68,7 @@ export default function Home() {
     setPrevSelectedVideos(selectedVideos)
     setPrevSelectedTags(selectedTags)
     setPrevSelectedGalleries(selectedGalleries)
+    setShowVid(false)
     await generateCombinations(selectedVideos, selectedTags, selectedGalleries)
   }
 
