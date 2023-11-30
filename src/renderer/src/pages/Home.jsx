@@ -72,16 +72,19 @@ export default function Home() {
     await generateCombinations(selectedVideos, selectedTags, selectedGalleries)
   }
 
-  const handleNext = () => {
+  const navigateCombinations = (next = true) => {
     if (allCombinations.length === 0) return
     setIsVideoPlaying(false)
     if (activeTab !== 'watch') setActiveTab('watch')
-    const newIndex = combinationIndex === allCombinations.length - 1 ? 0 : combinationIndex + 1
-    setCombinationIndex(newIndex)
+    let newIndex = combinationIndex + (next ? 1 : -1)
+    if (newIndex < 0) newIndex += allCombinations.length
+    setCombinationIndex(newIndex % allCombinations.length)
     setShowVid(false)
   }
-
+  const handleNext = () => navigateCombinations(true)
+  const handleBack = () => navigateCombinations(false)
   useHotkeys('n', handleNext)
+  useHotkeys('b', handleBack)
 
   const selection =
     allCombinations.length === 0 ? (
@@ -129,9 +132,14 @@ export default function Home() {
             <Link to={`/gallery/${galleryPath}`} className="fs-6">
               {galleryName}
             </Link>
-            <Button size="sm" onClick={handleNext}>
-              Next
-            </Button>
+            <div>
+              <Button className="me-2" size="sm" onClick={handleBack}>
+                Back
+              </Button>
+              <Button size="sm" onClick={handleNext}>
+                Next
+              </Button>
+            </div>
           </Col>
         </Row>
         {selection}

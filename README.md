@@ -36,6 +36,7 @@ A video organizer and random video selector with genre/gallery tagging and slide
 | `w` | Go to Watch tab                                      |
 | `c` | Go to Config tab                                     |
 | `n` | Select Next Combination                              |
+| `b` | Select Previous Combination                          |
 | `p` | Toggle TGP and Video<br/>(works only in "Watch" tab) |
 
 ### Video page
