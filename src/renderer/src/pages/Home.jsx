@@ -1,19 +1,15 @@
-import _ from 'lodash'
 import * as React from 'react'
 import { Button, Col, Row, Tab, Tabs } from 'react-bootstrap'
 import { useHotkeys } from 'react-hotkeys-hook'
 import { Link } from 'react-router-dom'
 import { Context } from '../App'
+import CheckBoxGroups from '../components/CheckBoxGroups'
 import RPS from '../components/RPS'
-import RpsConfig from '../components/RpsConfig'
 
 export default function Home() {
   const [activeTab, setActiveTab] = React.useState('watch')
   const [showVid, setShowVid] = React.useState(false)
   const [isVideoPlaying, setIsVideoPlaying] = React.useState(false)
-  const [prevSelectedVideos, setPrevSelectedVideos] = React.useState(new Set())
-  const [prevSelectedTags, setPrevSelectedTags] = React.useState(new Set())
-  const [prevSelectedGalleries, setPrevSelectedGalleries] = React.useState(new Set())
 
   const {
     allCombinations,
@@ -54,28 +50,10 @@ export default function Home() {
     }
   })
 
-  const setData = async () => {
-    setPrevSelectedTags(new Set())
-    setPrevSelectedGalleries(new Set(allGalleries))
-    setPrevSelectedVideos(new Set(allVideos))
-  }
-
-  React.useEffect(() => {
-    setData()
-  }, [])
-
-  const updateFilter = async () => {
-    setPrevSelectedVideos(selectedVideos)
-    setPrevSelectedTags(selectedTags)
-    setPrevSelectedGalleries(selectedGalleries)
-    setShowVid(false)
-    await generateCombinations(selectedVideos, selectedTags, selectedGalleries)
-  }
-
   const navigateCombinations = (next = true) => {
+    if (activeTab !== 'watch') setActiveTab('watch')
     if (allCombinations.length === 0) return
     setIsVideoPlaying(false)
-    if (activeTab !== 'watch') setActiveTab('watch')
     let newIndex = combinationIndex + (next ? 1 : -1)
     if (newIndex < 0) newIndex += allCombinations.length
     setCombinationIndex(newIndex % allCombinations.length)
@@ -98,11 +76,6 @@ export default function Home() {
         isVideoPlaying={isVideoPlaying}
       />
     )
-
-  const isSelectionChanged =
-    !_.isEqual(selectedVideos, prevSelectedVideos) ||
-    !_.isEqual(selectedGalleries, prevSelectedGalleries) ||
-    !_.isEqual(selectedTags, prevSelectedTags)
 
   const videoPath = allCombinations.length > 0 ? allCombinations[combinationIndex][0] : ''
   const videoPathComponents = videoPath.replace(/\\/g, '/').split('/')
@@ -145,18 +118,21 @@ export default function Home() {
         {selection}
       </Tab>
       <Tab eventKey="filter" title="Config">
-        <RpsConfig
-          allGalleries={allGalleries}
-          setSelectedGalleries={setSelectedGalleries}
-          selectedGalleries={selectedGalleries}
-          allTags={allTags}
-          selectedTags={selectedTags}
-          setSelectedTags={setSelectedTags}
-          allVideos={allVideos}
-          selectedVideos={selectedVideos}
-          setSelectedVideos={setSelectedVideos}
-          isSelectionChanged={isSelectionChanged}
-          updateFilter={updateFilter}
+        <CheckBoxGroups
+          lists={[
+            {
+              heading: 'Galleries',
+              allItems: allGalleries,
+              selectedItems: selectedGalleries
+            },
+            { heading: 'Tags', allItems: allTags, selectedItems: selectedTags },
+            { heading: 'Videos', allItems: allVideos, selectedItems: selectedVideos }
+          ]}
+          saveHandlers={[setSelectedGalleries, setSelectedTags, setSelectedVideos]}
+          postSave={async ([selectedGalleries, selectedTags, selectedVideos]) => {
+            setShowVid(false)
+            await generateCombinations(selectedVideos, selectedTags, selectedGalleries)
+          }}
         />
       </Tab>
     </Tabs>

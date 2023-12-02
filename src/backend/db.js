@@ -91,28 +91,28 @@ export const getTagData = async (tagTitle) => {
   }
 }
 
-export const updateVideoTags = async (videoPath, updateObj) => {
+export const updateVideoTags = async (videoPath, diffObj) => {
   const videoObj = await Video.findOne({ where: { filePath: videoPath } })
-  await videoObj.addTags(updateObj['add'])
-  await videoObj.removeTags(updateObj['remove'])
+  await videoObj.addTags(diffObj['add'])
+  await videoObj.removeTags(diffObj['remove'])
 }
 
-export const updateVideoGalleries = async (videoPath, updateObj) => {
+export const updateVideoGalleries = async (videoPath, diffObj) => {
   const videoObj = await Video.findOne({ where: { filePath: videoPath } })
-  await videoObj.addGalleries(updateObj['add'])
-  await videoObj.removeGalleries(updateObj['remove'])
+  await videoObj.addGalleries(diffObj['add'])
+  await videoObj.removeGalleries(diffObj['remove'])
 }
 
-export const updateGalleryVideos = async (galleryPath, updateObj) => {
+export const updateGalleryVideos = async (galleryPath, diffObj) => {
   const galleryObj = await Gallery.findOne({ where: { galleryPath: galleryPath } })
-  await galleryObj.addVideos(updateObj['add'])
-  await galleryObj.removeVideos(updateObj['remove'])
+  await galleryObj.addVideos(diffObj['add'])
+  await galleryObj.removeVideos(diffObj['remove'])
 }
 
-export const updateTagVideos = async (tagTitle, updateObj) => {
+export const updateTagVideos = async (tagTitle, diffObj) => {
   const tagObj = await Tag.findOne({ where: { title: tagTitle } })
-  await tagObj.addVideos(updateObj['add'])
-  await tagObj.removeVideos(updateObj['remove'])
+  await tagObj.addVideos(diffObj['add'])
+  await tagObj.removeVideos(diffObj['remove'])
 }
 
 export const getSelectedVideos = async (videoPaths) => {
