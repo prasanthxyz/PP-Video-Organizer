@@ -10,11 +10,13 @@ export default function CheckBoxGroups({
 }) {
   const [prevSelectedItems, setPrevSelectedItems] = React.useState([])
   const [selectedItems, setSelectedItems] = React.useState([])
+  const [filterTexts, setFilterTexts] = React.useState([])
 
   React.useEffect(() => {
     const selectedItems = lists.map((list) => list.selectedItems)
     setSelectedItems(selectedItems)
     setPrevSelectedItems(selectedItems)
+    setFilterTexts(lists.map(() => ''))
   }, [lists])
 
   if (selectedItems.length === 0) return <></>
@@ -66,19 +68,36 @@ export default function CheckBoxGroups({
   const checkLists = lists.map((list, listIndex) => (
     <Col key={list.heading} className="w-50">
       <div className="display-6 mb-1">{list.heading}</div>
-      {list.allItems.map((item, itemIndex) => {
-        return (
-          <div key={item}>
-            <Form.Check
-              id={item}
-              value={item}
-              label={getLabel(item)}
-              onChange={(e) => handleChange(listIndex, itemIndex, e.target)}
-              checked={selectedItems[listIndex].has(item)}
-            />
-          </div>
-        )
-      })}
+      <Row>
+        <Col>
+          <Form.Control
+            type="text"
+            placeholder="Filter"
+            className="mt-1 mb-2"
+            value={filterTexts[listIndex]}
+            onChange={(e) => {
+              const newFilterTexts = [...filterTexts]
+              newFilterTexts[listIndex] = e.target.value.toLowerCase()
+              setFilterTexts(newFilterTexts)
+            }}
+          />
+        </Col>
+      </Row>
+      {list.allItems
+        .map((item, itemIndex) => {
+          return (
+            <div key={item}>
+              <Form.Check
+                id={item}
+                value={item}
+                label={getLabel(item)}
+                onChange={(e) => handleChange(listIndex, itemIndex, e.target)}
+                checked={selectedItems[listIndex].has(item)}
+              />
+            </div>
+          )
+        })
+        .filter((item) => item.key.toLowerCase().includes(filterTexts[listIndex]))}
     </Col>
   ))
   checkLists.push(
