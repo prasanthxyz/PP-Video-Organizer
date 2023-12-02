@@ -1,7 +1,7 @@
-import * as child_process from 'child_process'
 import * as fs from 'fs'
 import * as path from 'path'
 import * as db from './db'
+import { execCommand, isCommandExisting } from './utils'
 
 export const deleteMissingVideos = async () => {
   const allVideos = (await db.getVideos()).map((v) => v.filePath)
@@ -27,7 +27,7 @@ export const isTgpExisting = (videoPath) => {
   return fs.existsSync(imgFileName)
 }
 
-export const generateTgp = (videoPath, regenerate = false) => {
+export const generateTgp = async (videoPath, regenerate = false) => {
   if (!isFileExisting(videoPath)) return
   const [videoName, imgDir] = getVideoData(videoPath)
   if (!fs.existsSync(imgDir)) {
@@ -40,13 +40,22 @@ export const generateTgp = (videoPath, regenerate = false) => {
     fs.unlinkSync(imgFileName)
   }
 
-  child_process.execSync(
-    `python -m vcsi.vcsi "${videoPath}" -g 4x4 --metadata-font-size 0 -w 1500 -o "${imgDir}"`,
-    (error, _stdout, stderr) => {
-      if (error) console.error(`error: ${error.message}`)
-      if (stderr) console.error(`stderr: ${stderr}`)
-    }
-  )
+  const pythonExecutable = (await isCommandExisting('python'))
+    ? 'python'
+    : (await isCommandExisting('python3'))
+      ? 'python3'
+      : (await isCommandExisting('py'))
+        ? 'py'
+        : ''
+  if (pythonExecutable !== '') {
+    execCommand(
+      `${pythonExecutable} -m vcsi.vcsi "${videoPath}" -g 4x4 --metadata-font-size 0 -w 1500 -o "${imgDir}"`,
+      (error, _stdout, stderr) => {
+        if (error) console.error(`error: ${error.message}`)
+        if (stderr) console.error(`stderr: ${stderr}`)
+      }
+    )
+  }
 }
 
 const getVideoData = (videoPath) => {

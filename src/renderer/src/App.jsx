@@ -1,5 +1,6 @@
 import _ from 'lodash'
 import * as React from 'react'
+import { Col, Container, Row, Table } from 'react-bootstrap'
 import { HashRouter, Route, Routes } from 'react-router-dom'
 import mainAdapter from '../../mainAdapter.js'
 import Galleries from './pages/Galleries.jsx'
@@ -14,6 +15,8 @@ import Videos from './pages/Videos.jsx'
 export const Context = React.createContext(null)
 
 function App() {
+  const [isLoading, setIsLoading] = React.useState(true)
+  const [areExecutablesPresent, setAreExecutablesPresent] = React.useState([true, true, true, true])
   const [allCombinations, setAllCombinations] = React.useState([])
   const [combinationIndex, setCombinationIndex] = React.useState(0)
   const [allVideos, setAllVideos] = React.useState([])
@@ -23,7 +26,48 @@ function App() {
   const [allGalleries, setAllGalleries] = React.useState([])
   const [selectedGalleries, setSelectedGalleries] = React.useState(new Set())
 
+  const checkExecutables = async () => {
+    const pythonExecutable = (await mainAdapter.isCommandExisting('python'))
+      ? 'python'
+      : (await mainAdapter.isCommandExisting('python3'))
+        ? 'python3'
+        : (await mainAdapter.isCommandExisting('py'))
+          ? 'py'
+          : ''
+
+    let pipExecutable = ''
+    if (pythonExecutable !== '') {
+      try {
+        await mainAdapter.execCommand(`${pythonExecutable} -m pip --version`)
+        pipExecutable = `${pythonExecutable} -m pip`
+      } catch (_e) {}
+    }
+
+    let vcsiExists = false
+    if (pipExecutable !== '') {
+      const installedPackages = (
+        await mainAdapter.execCommand(`${pipExecutable} freeze`, { encoding: 'utf8' })
+      ).split('\n')
+      vcsiExists = installedPackages.filter((pkg) => pkg.startsWith('vcsi==')).length > 0
+    }
+
+    return [
+      await mainAdapter.isCommandExisting('ffmpeg'),
+      pythonExecutable !== '',
+      pipExecutable !== '',
+      vcsiExists
+    ]
+  }
+
   const setData = async () => {
+    const areExecutablesPresent = await checkExecutables()
+    setAreExecutablesPresent(areExecutablesPresent)
+
+    if (areExecutablesPresent.includes(false)) {
+      setIsLoading(false)
+      return
+    }
+
     setAllTags((await mainAdapter.getDbTags()).map((tag) => tag.title))
     setSelectedTags(new Set())
 
@@ -40,6 +84,7 @@ function App() {
     setSelectedVideos(new Set(availableVideos))
 
     await generateCombinations(new Set(availableVideos), new Set(), new Set(availableGalleries))
+    setIsLoading(false)
   }
 
   const generateCombinations = async (videos, tags, galleries) => {
@@ -53,6 +98,56 @@ function App() {
   React.useEffect(() => {
     setData()
   }, [])
+
+  if (isLoading)
+    return (
+      <Container fluid>
+        <Row className="d-flex align-items-center" style={{ height: '90vh' }}>
+          <Col className="text-center">
+            <div>Loading...</div>
+          </Col>
+        </Row>
+      </Container>
+    )
+
+  if (areExecutablesPresent.includes(false)) {
+    const packagesToInstall = [
+      ['ffmpeg', 'https://ffmpeg.org/', 'link'],
+      ['python', 'https://www.python.org/', 'link'],
+      ['pip', 'https://pip.pypa.io/en/stable/installation/', 'link'],
+      ['vcsi', 'python -m pip install vcsi', 'code']
+    ].filter((item, index) => !areExecutablesPresent[index])
+
+    return (
+      <Container fluid>
+        <Row className="d-flex align-items-center" style={{ height: '90vh' }}>
+          <Col>
+            <Row>
+              <Col className="d-flex justify-content-center">
+                <div className="mb-3">Please ensure these are installed and available in PATH</div>
+              </Col>
+            </Row>
+            <Row className="d-flex justify-content-center">
+              <Col xs={5}>
+                <Table>
+                  <tbody>
+                    {packagesToInstall.map(([name, instr, type]) => (
+                      <tr key={name}>
+                        <td>{name}</td>
+                        <td>
+                          {type === 'code' ? <code>{instr}</code> : <a href={instr}>{instr}</a>}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </Table>
+              </Col>
+            </Row>
+          </Col>
+        </Row>
+      </Container>
+    )
+  }
 
   return (
     <Context.Provider
