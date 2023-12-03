@@ -1,13 +1,9 @@
 import _ from 'lodash'
 import * as React from 'react'
 import { Button, Col, Form, Row } from 'react-bootstrap'
+import { getNameAndPathComponents } from '../utils'
 
-export default function CheckBoxGroups({
-  lists,
-  saveHandlers,
-  useDiffObj = false,
-  postSave = null
-}) {
+export default function CheckBoxGroups({ lists, saveHandlers, useDiffObj = false, postSave }) {
   const [prevSelectedItems, setPrevSelectedItems] = React.useState([])
   const [selectedItems, setSelectedItems] = React.useState([])
   const [filterTexts, setFilterTexts] = React.useState([])
@@ -41,21 +37,6 @@ export default function CheckBoxGroups({
     setSelectedItems(newSelectedItems)
   }
 
-  const getDiffObj = (prevItems, curItems) => {
-    const diffObj = { add: [], remove: [] }
-    for (const item of curItems) {
-      if (!prevItems.has(item)) {
-        diffObj['add'].push(item)
-      }
-    }
-    for (const item of prevItems) {
-      if (!curItems.has(item)) {
-        diffObj['remove'].push(item)
-      }
-    }
-    return diffObj
-  }
-
   const handleSave = async () => {
     for (let i = 0; i < lists.length; i++) await saveHandlers[i](selectedItems[i])
 
@@ -65,11 +46,6 @@ export default function CheckBoxGroups({
         )
       : selectedItems
     if (postSave !== null) await postSave(saveObjs)
-  }
-
-  const getLabel = (item) => {
-    const itemComponents = item.replace(/\\/g, '/').split('/')
-    return itemComponents[itemComponents.length - 1]
   }
 
   const checkLists = lists.map((list, listIndex) => (
@@ -115,7 +91,7 @@ export default function CheckBoxGroups({
               <Form.Check
                 id={item}
                 value={item}
-                label={getLabel(item)}
+                label={getNameAndPathComponents(item)[0]}
                 onChange={(e) => handleChange(listIndex, itemIndex, e.target)}
                 checked={selectedItems[listIndex].has(item)}
               />
@@ -132,4 +108,19 @@ export default function CheckBoxGroups({
   )
 
   return <Row className="mt-2">{checkLists}</Row>
+}
+
+const getDiffObj = (prevItems, curItems) => {
+  const diffObj = { add: [], remove: [] }
+  for (const item of curItems) {
+    if (!prevItems.has(item)) {
+      diffObj['add'].push(item)
+    }
+  }
+  for (const item of prevItems) {
+    if (!curItems.has(item)) {
+      diffObj['remove'].push(item)
+    }
+  }
+  return diffObj
 }

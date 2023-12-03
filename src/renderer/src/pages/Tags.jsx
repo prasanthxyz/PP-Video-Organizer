@@ -1,9 +1,10 @@
 import * as React from 'react'
-import { Badge, Button, Col, Form, Row, Spinner } from 'react-bootstrap'
+import { Badge, Button, Form, Row, Spinner } from 'react-bootstrap'
 import { Plus, X } from 'react-bootstrap-icons'
 import { useNavigate } from 'react-router-dom'
 import mainAdapter from '../../../mainAdapter.js'
 import { Context } from '../App.jsx'
+import FilterForm from '../components/FilterForm.jsx'
 
 export default function Tags() {
   const [filterText, setFilterText] = React.useState('')
@@ -88,19 +89,7 @@ export default function Tags() {
   return (
     <>
       <Row className="mt-3">
-        <Col className="d-flex justify-content-center">
-          <Form.Group as={Row}>
-            <Form.Label column xs="2">
-              Filter
-            </Form.Label>
-            <Col>
-              <Form.Control
-                type="text"
-                onChange={(e) => setFilterText(e.target.value.toLowerCase())}
-              />
-            </Col>
-          </Form.Group>
-        </Col>
+        <FilterForm setFilterText={setFilterText} />
       </Row>
       <Row className="my-3">{dbTags.length > 0 && tagsTable}</Row>
       <Row>{addTagForm}</Row>

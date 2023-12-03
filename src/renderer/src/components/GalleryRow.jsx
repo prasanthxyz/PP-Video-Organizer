@@ -3,6 +3,7 @@ import { Button } from 'react-bootstrap'
 import { Check2, X } from 'react-bootstrap-icons'
 import { Link } from 'react-router-dom'
 import mainAdapter from '../../../mainAdapter'
+import { getNameAndPathComponents } from '../utils'
 
 export default function GalleryRow({ index, galleryPath, deleteGallery }) {
   const [galleryExists, setGalleryExists] = React.useState(false)
@@ -15,15 +16,10 @@ export default function GalleryRow({ index, galleryPath, deleteGallery }) {
     setFilesExist()
   }, [])
 
-  const galleryPathComponents = galleryPath.replace(/\\/g, '/').split('/')
-  const galleryName = galleryPathComponents[galleryPathComponents.length - 1]
+  const galleryName = getNameAndPathComponents(galleryPath)[0]
 
-  const galleryNameView = galleryExists ? (
-    <Link to={`/gallery/${galleryPath}`}>{galleryName}</Link>
-  ) : (
-    <>{galleryName}</>
-  )
-  const galleryHealth = galleryExists ? <Check2 /> : <X />
+  const getGalleryLink = () => <Link to={`/gallery/${galleryPath}`}>{galleryName}</Link>
+
   const delGalleryButton = (
     <Button variant="danger" size="sm" onClick={async () => await deleteGallery(galleryPath)}>
       Delete
@@ -32,9 +28,9 @@ export default function GalleryRow({ index, galleryPath, deleteGallery }) {
 
   return (
     <tr>
-      <td>{index + 1}</td>
-      <td>{galleryNameView}</td>
-      <td>{galleryHealth}</td>
+      <td className="text-end col-1">{index + 1}</td>
+      <td>{galleryExists ? getGalleryLink() : galleryName}</td>
+      <td>{galleryExists ? <Check2 /> : <X />}</td>
       <td>{delGalleryButton}</td>
     </tr>
   )

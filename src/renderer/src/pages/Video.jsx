@@ -6,6 +6,7 @@ import mainAdapter from '../../../mainAdapter'
 import { Context } from '../App'
 import CheckBoxGroups from '../components/CheckBoxGroups'
 import VideoPlayer from '../components/VideoPlayer'
+import { getImgPathAndVideoName } from '../utils'
 
 export default function Video() {
   const [tgpExists, setTgpExists] = React.useState(false)
@@ -65,13 +66,7 @@ export default function Video() {
     setIsGeneratingTgp(false)
   }
 
-  const videoPathComponents = videoPath.replace(/\\/g, '/').split('/')
-  const videoName = videoPathComponents[videoPathComponents.length - 1]
-  const imgPath = [
-    ...videoPathComponents.slice(0, videoPathComponents.length - 1),
-    'img',
-    videoPathComponents[videoPathComponents.length - 1] + '.jpg'
-  ].join('/')
+  const { imgPath, videoName } = getImgPathAndVideoName(videoPath)
 
   const tgpButton = tgpExists ? (
     <></>

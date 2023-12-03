@@ -1,8 +1,8 @@
 import * as React from 'react'
 import { Button, Spinner } from 'react-bootstrap'
-import { Check2, X } from 'react-bootstrap-icons'
 import { Link } from 'react-router-dom'
 import mainAdapter from '../../../mainAdapter'
+import { getImgPathAndVideoName } from '../utils'
 
 export default function VideoRow({ videoPath, deleteVideo, index }) {
   const [tgpExists, setTgpExists] = React.useState(false)
@@ -18,36 +18,24 @@ export default function VideoRow({ videoPath, deleteVideo, index }) {
     setFilesExist()
   }, [])
 
-  const handleGenerateTgp = async (regenerate = false) => {
+  const handleGenerateTgp = async () => {
     setIsGeneratingTgp(true)
-    await mainAdapter.generateTgp(videoPath, regenerate)
+    await mainAdapter.generateTgp(videoPath)
     setTgpExists(true)
     setIsGeneratingTgp(false)
   }
 
-  const videoPathComponents = videoPath.replace(/\\/g, '/').split('/')
-  const videoName = videoPathComponents[videoPathComponents.length - 1]
+  const { videoName } = getImgPathAndVideoName(videoPath)
+  const getVideoLink = () => <Link to={`/video/${videoPath}`}>{videoName}</Link>
 
-  const fileNameView = fileExists ? (
-    <Link to={`/video/${videoPath}`}>{videoName}</Link>
-  ) : (
-    <>{videoName}</>
-  )
-  const fileHealth = fileExists ? <Check2 color="green" /> : <X color="red" />
-  const tgpHealth = !fileExists ? <></> : tgpExists ? <Check2 color="green" /> : <X color="red" />
-  const genTgpButton = !fileExists ? (
-    <></>
-  ) : isGeneratingTgp ? (
+  const genTgpButton = isGeneratingTgp ? (
     <Spinner />
   ) : (
-    <Button
-      size="sm"
-      variant={tgpExists ? 'secondary' : 'success'}
-      onClick={async () => await handleGenerateTgp(tgpExists)}
-    >
-      {tgpExists ? 'Regenerate' : 'Generate'} TGP
+    <Button size="sm" variant="success" onClick={handleGenerateTgp}>
+      Generate TGP
     </Button>
   )
+
   const delVideoButton = (
     <Button size="sm" variant="danger" onClick={async () => await deleteVideo(videoPath)}>
       Delete
@@ -56,19 +44,12 @@ export default function VideoRow({ videoPath, deleteVideo, index }) {
 
   return (
     <tr>
-      <td className="col-1">
-        <div className="text-end">{index + 1}</div>
-      </td>
-      <td className="col-7">{fileNameView}</td>
-      <td>{genTgpButton}</td>
+      <td className="col-1 text-end">{index + 1}</td>
+      <td className="col-7">{fileExists ? getVideoLink() : videoName}</td>
       <td>{delVideoButton}</td>
-      {!fileExists ? (
-        <td className="text-danger fw-bold">File missing!</td>
-      ) : !tgpExists ? (
-        <td className="text-warning fw-bold">TGP missing!</td>
-      ) : (
-        <td></td>
-      )}
+      <td className="text-danger fw-bold">
+        {!fileExists ? 'File missing!' : !tgpExists ? genTgpButton : ''}
+      </td>
     </tr>
   )
 }

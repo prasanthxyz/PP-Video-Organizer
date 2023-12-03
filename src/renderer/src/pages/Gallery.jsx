@@ -1,9 +1,10 @@
 import * as React from 'react'
-import { Carousel, Col, Row } from 'react-bootstrap'
+import { Col, Row } from 'react-bootstrap'
 import { useParams } from 'react-router'
 import mainAdapter from '../../../mainAdapter'
 import { Context } from '../App'
 import CheckBoxGroups from '../components/CheckBoxGroups'
+import ImageSlideShow from '../components/ImageSlideShow'
 
 export default function Gallery() {
   const [galleryImages, setGalleryImages] = React.useState([])
@@ -34,16 +35,6 @@ export default function Gallery() {
     loadData()
   }, [])
 
-  const imgSlideShow = (
-    <Carousel interval={2000} pause="hover" indicators={false}>
-      {galleryImages.map((path) => (
-        <Carousel.Item key={path}>
-          <img width="100%" src={path} />
-        </Carousel.Item>
-      ))}
-    </Carousel>
-  )
-
   const relatedVideos = (
     <CheckBoxGroups
       lists={[
@@ -69,7 +60,9 @@ export default function Gallery() {
         </Col>
       </Row>
       <Row>
-        <Col xs={6}>{galleryImages.length > 0 && imgSlideShow}</Col>
+        <Col xs={6}>
+          {galleryImages.length > 0 && <ImageSlideShow galleryImages={galleryImages} />}
+        </Col>
         <Col xs={6}>{relatedVideos}</Col>
       </Row>
     </>

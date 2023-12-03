@@ -1,7 +1,8 @@
 import * as React from 'react'
-import { Button, Col, Form, Row, Spinner, Table } from 'react-bootstrap'
+import { Button, Col, Row, Spinner, Table } from 'react-bootstrap'
 import mainAdapter from '../../../mainAdapter.js'
 import { Context } from '../App.jsx'
+import FilterForm from '../components/FilterForm.jsx'
 import GalleryRow from '../components/GalleryRow.jsx'
 
 export default function Galleries() {
@@ -47,8 +48,9 @@ export default function Galleries() {
   const getGalleryPathInput = async () => {
     setGalleryInput(await mainAdapter.chooseDirectory())
   }
+
   const operations = (
-    <Row className="my-3">
+    <>
       <Col xs={12} sm={6}>
         <Row>
           <Col>
@@ -95,57 +97,45 @@ export default function Galleries() {
           <div>{galleryInput}</div>
         </Row>
       </Col>
-    </Row>
+    </>
   )
 
   const galleriesTable = (
-    <Table>
-      <thead>
-        <tr>
-          <th></th>
-          <th>Gallery</th>
-          <th>Exists?</th>
-          <th></th>
-        </tr>
-      </thead>
-      <tbody>
-        {dbGalleries
-          .map((dbGallery, index) => (
-            <GalleryRow
-              key={dbGallery.galleryPath}
-              index={index}
-              galleryPath={dbGallery.galleryPath}
-              deleteGallery={handleDeleteGallery}
-            />
-          ))
-          .filter((galleryRow) => galleryRow.key.toLowerCase().includes(filterText))}
-      </tbody>
-    </Table>
+    <Col xs={12} sm={6}>
+      <Table>
+        <thead>
+          <tr>
+            <th></th>
+            <th>Gallery</th>
+            <th>Exists?</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          {dbGalleries
+            .map((dbGallery, index) => (
+              <GalleryRow
+                key={dbGallery.galleryPath}
+                index={index}
+                galleryPath={dbGallery.galleryPath}
+                deleteGallery={handleDeleteGallery}
+              />
+            ))
+            .filter((galleryRow) => galleryRow.key.toLowerCase().includes(filterText))}
+        </tbody>
+      </Table>
+    </Col>
   )
 
   return (
     <>
       <Row className="mt-3">
-        <Col className="d-flex justify-content-center" xs={12} sm={6}>
-          <Form.Group as={Row}>
-            <Form.Label column xs="2">
-              Filter
-            </Form.Label>
-            <Col>
-              <Form.Control
-                type="text"
-                onChange={(e) => setFilterText(e.target.value.toLowerCase())}
-              />
-            </Col>
-          </Form.Group>
-        </Col>
-      </Row>
-      {operations}
-      <Row>
         <Col xs={12} sm={6}>
-          {dbGalleries.length > 0 && galleriesTable}
+          <FilterForm setFilterText={setFilterText} />
         </Col>
       </Row>
+      <Row className="my-3">{operations}</Row>
+      <Row>{dbGalleries.length > 0 && galleriesTable}</Row>
     </>
   )
 }

@@ -11,6 +11,7 @@ import Tag from './pages/Tag.jsx'
 import Tags from './pages/Tags.jsx'
 import Video from './pages/Video.jsx'
 import Videos from './pages/Videos.jsx'
+import { getExecutablesStatus } from './utils.js'
 
 export const Context = React.createContext(null)
 
@@ -32,7 +33,7 @@ function App() {
   }, [])
 
   const setData = async () => {
-    const areExecutablesPresent = await checkExecutables()
+    const areExecutablesPresent = await getExecutablesStatus()
     setAreExecutablesPresent(areExecutablesPresent)
     if (areExecutablesPresent.includes(false)) {
       setIsLoading(false)
@@ -40,39 +41,6 @@ function App() {
     }
 
     await loadDataIfChanged()
-  }
-
-  const checkExecutables = async () => {
-    const pythonExecutable = (await mainAdapter.isCommandExisting('python'))
-      ? 'python'
-      : (await mainAdapter.isCommandExisting('python3'))
-        ? 'python3'
-        : (await mainAdapter.isCommandExisting('py'))
-          ? 'py'
-          : ''
-
-    let pipExecutable = ''
-    if (pythonExecutable !== '') {
-      try {
-        await mainAdapter.execCommand(`${pythonExecutable} -m pip --version`)
-        pipExecutable = `${pythonExecutable} -m pip`
-      } catch (_e) {}
-    }
-
-    let vcsiExists = false
-    if (pipExecutable !== '') {
-      const installedPackages = (
-        await mainAdapter.execCommand(`${pipExecutable} freeze`, { encoding: 'utf8' })
-      ).split('\n')
-      vcsiExists = installedPackages.filter((pkg) => pkg.startsWith('vcsi==')).length > 0
-    }
-
-    return [
-      await mainAdapter.isCommandExisting('ffmpeg'),
-      pythonExecutable !== '',
-      pipExecutable !== '',
-      vcsiExists
-    ]
   }
 
   const loadDataIfChanged = async () => {

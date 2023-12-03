@@ -1,7 +1,8 @@
 import * as React from 'react'
-import { Button, Col, Form, Row, Spinner, Table } from 'react-bootstrap'
+import { Button, Col, Row, Spinner, Table } from 'react-bootstrap'
 import mainAdapter from '../../../mainAdapter.js'
 import { Context } from '../App.jsx'
+import FilterForm from '../components/FilterForm.jsx'
 import VideoRow from '../components/VideoRow.jsx'
 
 export default function Videos() {
@@ -57,28 +58,6 @@ export default function Videos() {
     loadVideos()
   }, [])
 
-  const videosTable = (
-    <Row>
-      <Col>
-        <p className="fs-5 mt-2 mb-0">Videos</p>
-        <Table>
-          <tbody>
-            {dbVideos
-              .map((videoPath, index) => (
-                <VideoRow
-                  index={index}
-                  videoPath={videoPath.filePath}
-                  deleteVideo={handleDeleteVideo}
-                  key={videoPath.filePath}
-                />
-              ))
-              .filter((videoRow) => videoRow.key.toLowerCase().includes(filterText))}
-          </tbody>
-        </Table>
-      </Col>
-    </Row>
-  )
-
   const inputUI = (
     <>
       <Col xs={2}>
@@ -131,22 +110,31 @@ export default function Videos() {
       </Col>
     </>
   )
+
+  const videosTable = (
+    <Col>
+      <p className="fs-5 mt-2 mb-0">Videos</p>
+      <Table>
+        <tbody>
+          {dbVideos
+            .map((videoPath, index) => (
+              <VideoRow
+                index={index}
+                videoPath={videoPath.filePath}
+                deleteVideo={handleDeleteVideo}
+                key={videoPath.filePath}
+              />
+            ))
+            .filter((videoRow) => videoRow.key.toLowerCase().includes(filterText))}
+        </tbody>
+      </Table>
+    </Col>
+  )
+
   return (
     <div>
       <Row className="mt-3">
-        <Col className="d-flex justify-content-center">
-          <Form.Group as={Row}>
-            <Form.Label column xs="2">
-              Filter
-            </Form.Label>
-            <Col>
-              <Form.Control
-                type="text"
-                onChange={(e) => setFilterText(e.target.value.toLowerCase())}
-              />
-            </Col>
-          </Form.Group>
-        </Col>
+        <FilterForm setFilterText={setFilterText} />
       </Row>
       <Row className="mt-3">{inputUI}</Row>
       <Row>{dbVideos.length > 0 && videosTable}</Row>
