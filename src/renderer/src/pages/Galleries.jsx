@@ -1,6 +1,7 @@
 import * as React from 'react'
 import { Button, Col, Form, Row, Spinner, Table } from 'react-bootstrap'
 import mainAdapter from '../../../mainAdapter.js'
+import { Context } from '../App.jsx'
 import GalleryRow from '../components/GalleryRow.jsx'
 
 export default function Galleries() {
@@ -9,6 +10,8 @@ export default function Galleries() {
   const [isCreating, setIsCreating] = React.useState(false)
   const [galleryInput, setGalleryInput] = React.useState('')
   const [isDeletingGalleries, setIsDeletingGalleries] = React.useState(false)
+
+  const { setHasDataChanged } = React.useContext(Context)
 
   React.useEffect(() => {
     loadGalleries()
@@ -22,6 +25,7 @@ export default function Galleries() {
     setIsCreating(true)
     await mainAdapter.createDbGallery(galleryInput)
     setIsCreating(false)
+    setHasDataChanged(true)
     setGalleryInput('')
     await loadGalleries()
   }
@@ -29,6 +33,7 @@ export default function Galleries() {
   const handleDeleteGallery = async (galleryPathToRemove) => {
     await mainAdapter.deleteDbGallery(galleryPathToRemove)
     setDbGalleries(dbGalleries.filter((dbGallery) => dbGallery.galleryPath !== galleryPathToRemove))
+    setHasDataChanged(true)
   }
 
   const handleDeleteMissingGalleries = async () => {

@@ -1,6 +1,7 @@
 import * as React from 'react'
 import { Button, Col, Form, Row, Spinner, Table } from 'react-bootstrap'
 import mainAdapter from '../../../mainAdapter.js'
+import { Context } from '../App.jsx'
 import VideoRow from '../components/VideoRow.jsx'
 
 export default function Videos() {
@@ -11,13 +12,12 @@ export default function Videos() {
   const [videoInputData, setVideoInputData] = React.useState({})
   const [isDeletingVideos, setIsDeletingVideos] = React.useState(false)
 
-  const updateVideoInputData = (e) => {
-    setVideoInputData(e.target.files)
-  }
+  const { setHasDataChanged } = React.useContext(Context)
 
   const handleDeleteVideo = async (videoPathToRemove) => {
     await mainAdapter.deleteDbVideo(videoPathToRemove)
     setDbVideos(dbVideos.filter((videoPath) => videoPath.filePath !== videoPathToRemove))
+    setHasDataChanged(true)
   }
 
   const handleCreateVideos = async (e) => {
@@ -30,6 +30,7 @@ export default function Videos() {
     setIsUploading(false)
     document.getElementById('filesInput').value = ''
     await loadVideos()
+    setHasDataChanged(true)
   }
 
   const loadVideos = async () => {
@@ -79,7 +80,14 @@ export default function Videos() {
   const inputUI = (
     <>
       <Col xs={3}>
-        <input id="filesInput" type="file" multiple="multiple" onChange={updateVideoInputData} />
+        <input
+          id="filesInput"
+          type="file"
+          multiple="multiple"
+          onChange={(e) => {
+            setVideoInputData(e.target.files)
+          }}
+        />
       </Col>
       <Col xs={3}>
         {isUploading ? (

@@ -8,7 +8,11 @@ import CheckBoxGroups from '../components/CheckBoxGroups'
 export default function Tag() {
   const [selectedVideos, setSelectedVideos] = React.useState(new Set())
 
-  const { allVideos } = React.useContext(Context)
+  const { allVideos, hasDataChanged, loadDataIfChanged } = React.useContext(Context)
+
+  React.useEffect(() => {
+    loadDataIfChanged()
+  }, [hasDataChanged])
 
   let { tagTitle } = useParams()
 

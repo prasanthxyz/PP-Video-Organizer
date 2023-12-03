@@ -3,12 +3,15 @@ import { Badge, Button, Col, Form, Row, Spinner } from 'react-bootstrap'
 import { Plus, X } from 'react-bootstrap-icons'
 import { useNavigate } from 'react-router-dom'
 import mainAdapter from '../../../mainAdapter.js'
+import { Context } from '../App.jsx'
 
 export default function Tags() {
   const [filterText, setFilterText] = React.useState('')
   const [dbTags, setDbTags] = React.useState([])
   const [isCreating, setIsCreating] = React.useState(false)
   const [tagInput, setTagInput] = React.useState('')
+
+  const { setHasDataChanged } = React.useContext(Context)
 
   const navigate = useNavigate()
 
@@ -20,21 +23,19 @@ export default function Tags() {
     setDbTags(await mainAdapter.getDbTags())
   }
 
-  const updateTagInput = (e) => {
-    setTagInput(e.target.value)
-  }
-
   const handleCreateTags = async (e) => {
     setIsCreating(true)
     await mainAdapter.createDbTags(tagInput)
     setIsCreating(false)
     document.getElementById('tagInput').value = ''
     await loadTags()
+    setHasDataChanged(true)
   }
 
   const handleDeleteTag = async (tagTitleToRemove) => {
     await mainAdapter.deleteDbTag(tagTitleToRemove)
     setDbTags(dbTags.filter((dbTag) => dbTag.title !== tagTitleToRemove))
+    setHasDataChanged(true)
   }
 
   const tagsTable = (
@@ -65,7 +66,14 @@ export default function Tags() {
         <Form.Label className="col-3 d-flex align-items-center">
           Enter new tags (space separated)
         </Form.Label>
-        <Form.Control className="me-3" type="text" id="tagInput" onChange={updateTagInput} />
+        <Form.Control
+          className="me-3"
+          type="text"
+          id="tagInput"
+          onChange={(e) => {
+            setTagInput(e.target.value)
+          }}
+        />
         {isCreating ? (
           <Spinner />
         ) : (

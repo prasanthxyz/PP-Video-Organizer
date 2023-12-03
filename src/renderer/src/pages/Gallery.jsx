@@ -9,7 +9,11 @@ export default function Gallery() {
   const [galleryImages, setGalleryImages] = React.useState([])
   const [selectedVideos, setSelectedVideos] = React.useState(new Set())
 
-  const { allVideos } = React.useContext(Context)
+  const { allVideos, hasDataChanged, loadDataIfChanged } = React.useContext(Context)
+
+  React.useEffect(() => {
+    loadDataIfChanged()
+  }, [hasDataChanged])
 
   let { galleryPath } = useParams()
 

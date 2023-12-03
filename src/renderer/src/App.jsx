@@ -16,6 +16,7 @@ export const Context = React.createContext(null)
 
 function App() {
   const [isLoading, setIsLoading] = React.useState(true)
+  const [hasDataChanged, setHasDataChanged] = React.useState(true)
   const [areExecutablesPresent, setAreExecutablesPresent] = React.useState([true, true, true, true])
   const [allCombinations, setAllCombinations] = React.useState([])
   const [combinationIndex, setCombinationIndex] = React.useState(0)
@@ -25,6 +26,21 @@ function App() {
   const [selectedTags, setSelectedTags] = React.useState(new Set())
   const [allGalleries, setAllGalleries] = React.useState([])
   const [selectedGalleries, setSelectedGalleries] = React.useState(new Set())
+
+  React.useEffect(() => {
+    setData()
+  }, [])
+
+  const setData = async () => {
+    const areExecutablesPresent = await checkExecutables()
+    setAreExecutablesPresent(areExecutablesPresent)
+    if (areExecutablesPresent.includes(false)) {
+      setIsLoading(false)
+      return
+    }
+
+    await loadDataIfChanged()
+  }
 
   const checkExecutables = async () => {
     const pythonExecutable = (await mainAdapter.isCommandExisting('python'))
@@ -59,15 +75,10 @@ function App() {
     ]
   }
 
-  const setData = async () => {
-    const areExecutablesPresent = await checkExecutables()
-    setAreExecutablesPresent(areExecutablesPresent)
+  const loadDataIfChanged = async () => {
+    if (!hasDataChanged) return
 
-    if (areExecutablesPresent.includes(false)) {
-      setIsLoading(false)
-      return
-    }
-
+    setIsLoading(true)
     setAllTags((await mainAdapter.getDbTags()).map((tag) => tag.title))
     setSelectedTags(new Set())
 
@@ -84,6 +95,7 @@ function App() {
     setSelectedVideos(new Set(availableVideos))
 
     await generateCombinations(new Set(availableVideos), new Set(), new Set(availableGalleries))
+    setHasDataChanged(false)
     setIsLoading(false)
   }
 
@@ -94,10 +106,6 @@ function App() {
     setAllCombinations(allCombinations)
     setCombinationIndex(0)
   }
-
-  React.useEffect(() => {
-    setData()
-  }, [])
 
   if (isLoading)
     return (
@@ -153,22 +161,21 @@ function App() {
     <Context.Provider
       value={{
         allCombinations,
-        setAllCombinations,
         combinationIndex,
         setCombinationIndex,
         allVideos,
-        setAllVideos,
         selectedVideos,
         setSelectedVideos,
         allTags,
-        setAllTags,
         selectedTags,
         setSelectedTags,
         allGalleries,
-        setAllGalleries,
         selectedGalleries,
         setSelectedGalleries,
-        generateCombinations
+        generateCombinations,
+        setHasDataChanged,
+        hasDataChanged,
+        loadDataIfChanged
       }}
     >
       <HashRouter basename="/">

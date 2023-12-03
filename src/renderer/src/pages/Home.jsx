@@ -13,23 +13,25 @@ export default function Home() {
 
   const {
     allCombinations,
-    setAllCombinations,
     combinationIndex,
     setCombinationIndex,
     allVideos,
-    setAllVideos,
     selectedVideos,
     setSelectedVideos,
     allTags,
-    setAllTags,
     selectedTags,
     setSelectedTags,
     allGalleries,
-    setAllGalleries,
     selectedGalleries,
     setSelectedGalleries,
-    generateCombinations
+    generateCombinations,
+    hasDataChanged,
+    loadDataIfChanged
   } = React.useContext(Context)
+
+  React.useEffect(() => {
+    loadDataIfChanged()
+  }, [hasDataChanged])
 
   useHotkeys('c', () => {
     setIsVideoPlaying(false)
