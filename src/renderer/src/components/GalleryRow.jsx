@@ -4,7 +4,7 @@ import { Check2, X } from 'react-bootstrap-icons'
 import { Link } from 'react-router-dom'
 import mainAdapter from '../../../mainAdapter'
 
-export default function GalleryRow({ galleryPath, deleteGallery }) {
+export default function GalleryRow({ index, galleryPath, deleteGallery }) {
   const [galleryExists, setGalleryExists] = React.useState(false)
 
   const setFilesExist = async () => {
@@ -32,6 +32,7 @@ export default function GalleryRow({ galleryPath, deleteGallery }) {
 
   return (
     <tr>
+      <td>{index + 1}</td>
       <td>{galleryNameView}</td>
       <td>{galleryHealth}</td>
       <td>{delGalleryButton}</td>

@@ -48,46 +48,61 @@ export default function Galleries() {
     setGalleryInput(await mainAdapter.chooseDirectory())
   }
   const operations = (
-    <div className="d-flex my-3">
-      {isCreating ? (
-        <Spinner />
-      ) : (
-        <>
-          <Button className="me-2" size="sm" onClick={async () => await getGalleryPathInput()}>
-            Select Gallery
-          </Button>
+    <Row className="my-3">
+      <Col xs={12} sm={6}>
+        <Row>
+          <Col>
+            {isCreating ? (
+              <Spinner />
+            ) : (
+              <>
+                <Button
+                  className="me-2"
+                  size="sm"
+                  onClick={async () => await getGalleryPathInput()}
+                >
+                  Add new Gallery
+                </Button>
+                {galleryInput && (
+                  <Button
+                    variant="success"
+                    className="ms-2"
+                    size="sm"
+                    onClick={async () => await handleCreateGallery(galleryInput)}
+                  >
+                    Submit
+                  </Button>
+                )}
+              </>
+            )}
+          </Col>
+          <Col>
+            {isDeletingGalleries ? (
+              <Spinner className="ms-auto" />
+            ) : (
+              <Button
+                className="ms-auto"
+                variant="danger"
+                size="sm"
+                onClick={handleDeleteMissingGalleries}
+              >
+                Delete Missing Galleries
+              </Button>
+            )}
+          </Col>
+        </Row>
+        <Row>
           <div>{galleryInput}</div>
-          {galleryInput && (
-            <Button
-              variant="success"
-              className="ms-2"
-              size="sm"
-              onClick={async () => await handleCreateGallery(galleryInput)}
-            >
-              Submit
-            </Button>
-          )}
-        </>
-      )}
-      {isDeletingGalleries ? (
-        <Spinner className="ms-auto" />
-      ) : (
-        <Button
-          className="ms-auto"
-          variant="danger"
-          size="sm"
-          onClick={handleDeleteMissingGalleries}
-        >
-          Delete Missing Galleries
-        </Button>
-      )}
-    </div>
+        </Row>
+      </Col>
+    </Row>
   )
 
   const galleriesTable = (
     <Table>
       <thead>
         <tr>
+          <th></th>
           <th>Gallery</th>
           <th>Exists?</th>
           <th></th>
@@ -95,14 +110,15 @@ export default function Galleries() {
       </thead>
       <tbody>
         {dbGalleries
-          .filter((dbGallery) => dbGallery.galleryPath.toLowerCase().includes(filterText))
-          .map((dbGallery) => (
+          .map((dbGallery, index) => (
             <GalleryRow
               key={dbGallery.galleryPath}
+              index={index}
               galleryPath={dbGallery.galleryPath}
               deleteGallery={handleDeleteGallery}
             />
-          ))}
+          ))
+          .filter((galleryRow) => galleryRow.key.toLowerCase().includes(filterText))}
       </tbody>
     </Table>
   )
@@ -110,7 +126,7 @@ export default function Galleries() {
   return (
     <>
       <Row className="mt-3">
-        <Col className="d-flex justify-content-center">
+        <Col className="d-flex justify-content-center" xs={12} sm={6}>
           <Form.Group as={Row}>
             <Form.Label column xs="2">
               Filter
@@ -125,7 +141,11 @@ export default function Galleries() {
         </Col>
       </Row>
       {operations}
-      {dbGalleries.length > 0 && galleriesTable}
+      <Row>
+        <Col xs={12} sm={6}>
+          {dbGalleries.length > 0 && galleriesTable}
+        </Col>
+      </Row>
     </>
   )
 }

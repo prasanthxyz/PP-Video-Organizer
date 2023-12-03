@@ -58,72 +58,76 @@ export default function Videos() {
   }, [])
 
   const videosTable = (
-    <>
-      <p className="fs-5 mt-2 mb-0">Videos</p>
-      <Table>
-        <tbody>
-          {dbVideos
-            .filter((videoPath) => videoPath.filePath.toLowerCase().includes(filterText))
-            .map((videoPath, index) => (
-              <VideoRow
-                index={index}
-                videoPath={videoPath.filePath}
-                deleteVideo={handleDeleteVideo}
-                key={videoPath.filePath}
-              />
-            ))}
-        </tbody>
-      </Table>
-    </>
+    <Row>
+      <Col>
+        <p className="fs-5 mt-2 mb-0">Videos</p>
+        <Table>
+          <tbody>
+            {dbVideos
+              .map((videoPath, index) => (
+                <VideoRow
+                  index={index}
+                  videoPath={videoPath.filePath}
+                  deleteVideo={handleDeleteVideo}
+                  key={videoPath.filePath}
+                />
+              ))
+              .filter((videoRow) => videoRow.key.toLowerCase().includes(filterText))}
+          </tbody>
+        </Table>
+      </Col>
+    </Row>
   )
 
   const inputUI = (
     <>
-      <Col xs={3}>
+      <Col xs={2}>
+        <label className="btn btn-primary btn-sm" htmlFor="filesInput">
+          Add new Video(s)
+        </label>
         <input
           id="filesInput"
           type="file"
+          style={{ visibility: 'hidden' }}
           multiple="multiple"
           onChange={(e) => {
             setVideoInputData(e.target.files)
           }}
         />
       </Col>
-      <Col xs={3}>
-        {isUploading ? (
-          <>
-            <Spinner className="me-1" />
-            <span>Generating TGPs...</span>
-          </>
-        ) : (
-          <Button
-            size="sm"
-            variant="success"
-            onClick={handleCreateVideos}
-            disabled={Array.from(videoInputData).length === 0}
-          >
-            Add new Video(s)
-          </Button>
-        )}
+      <Col xs={2}>
+        {Array.from(videoInputData).length !== 0 &&
+          (isUploading ? (
+            <>
+              <Spinner className="me-1" />
+              <span>Generating TGPs...</span>
+            </>
+          ) : (
+            <Button size="sm" variant="success" onClick={handleCreateVideos}>
+              Submit {Array.from(videoInputData).length} file(s)
+            </Button>
+          ))}
       </Col>
-      <Col xs={6} className="d-flex justify-content-end">
-        {isGeneratingTgps ? (
-          <>
-            <Spinner className="me-1" />
-            <span className="me-1">Generating TGPs...</span>
-          </>
-        ) : (
-          <Button className="me-3" size="sm" onClick={handleGenerateMissingTgps}>
-            Generate Missing TGPs
-          </Button>
-        )}
-        {isDeletingVideos ? (
-          <Spinner />
-        ) : (
-          <Button size="sm" variant="danger" onClick={handleDeleteMissingVideos}>
-            Delete Missing Videos
-          </Button>
-        )}
+      <Col xs={8} className="d-flex justify-content-end">
+        <div>
+          {isGeneratingTgps ? (
+            <>
+              <Spinner className="me-1" />
+              <span className="me-1">Generating TGPs...</span>
+            </>
+          ) : (
+            <Button className="me-3" size="sm" onClick={handleGenerateMissingTgps}>
+              Generate Missing TGPs
+            </Button>
+          )}
+          {isDeletingVideos ? (
+            <Spinner />
+          ) : (
+            <Button size="sm" variant="danger" onClick={handleDeleteMissingVideos}>
+              Delete Missing Videos
+            </Button>
+          )}
+        </div>
       </Col>
     </>
   )
