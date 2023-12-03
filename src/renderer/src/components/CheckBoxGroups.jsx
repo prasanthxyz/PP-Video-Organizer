@@ -34,6 +34,13 @@ export default function CheckBoxGroups({
     setSelectedItems(newSelectedItems)
   }
 
+  const handleSelectAll = (listIndex, checked) => {
+    const newSet = checked ? new Set(lists[listIndex].allItems) : new Set()
+    const newSelectedItems = [...selectedItems]
+    newSelectedItems[listIndex] = newSet
+    setSelectedItems(newSelectedItems)
+  }
+
   const getDiffObj = (prevItems, curItems) => {
     const diffObj = { add: [], remove: [] }
     for (const item of curItems) {
@@ -67,7 +74,25 @@ export default function CheckBoxGroups({
 
   const checkLists = lists.map((list, listIndex) => (
     <Col key={list.heading} className="w-50">
-      <div className="display-6 mb-1">{list.heading}</div>
+      <Row>
+        <Col>
+          <div className="fs-3 mb-1">{list.heading}</div>
+        </Col>
+        <Col className="d-flex align-items-center">
+          <Form.Check
+            label="Select All"
+            checked={selectedItems[listIndex].size === list.allItems.length}
+            ref={(input) => {
+              if (input) {
+                input.indeterminate =
+                  selectedItems[listIndex].size !== 0 &&
+                  selectedItems[listIndex].size !== list.allItems.length
+              }
+            }}
+            onChange={(e) => handleSelectAll(listIndex, e.target.checked)}
+          />
+        </Col>
+      </Row>
       <Row>
         <Col>
           <Form.Control
