@@ -1,8 +1,9 @@
 import * as React from 'react'
-import { Button, Spinner } from 'react-bootstrap'
+import { Button } from 'react-bootstrap'
 import { Link } from 'react-router-dom'
 import mainAdapter from '../../../mainAdapter'
 import { getImgPathAndVideoName } from '../utils'
+import SpinnerOr from './SpinnerOr'
 
 export default function VideoRow({ videoPath, deleteVideo, index }) {
   const [tgpExists, setTgpExists] = React.useState(false)
@@ -28,12 +29,15 @@ export default function VideoRow({ videoPath, deleteVideo, index }) {
   const { videoName } = getImgPathAndVideoName(videoPath)
   const getVideoLink = () => <Link to={`/video/${videoPath}`}>{videoName}</Link>
 
-  const genTgpButton = isGeneratingTgp ? (
-    <Spinner />
-  ) : (
-    <Button size="sm" variant="success" onClick={handleGenerateTgp}>
-      Generate TGP
-    </Button>
+  const genTgpButton = (
+    <SpinnerOr
+      isSpinner={isGeneratingTgp}
+      msg={<span className="text-success">Generating TGP...</span>}
+    >
+      <Button size="sm" variant="success" onClick={handleGenerateTgp}>
+        Generate TGP
+      </Button>
+    </SpinnerOr>
   )
 
   const delVideoButton = (

@@ -1,9 +1,10 @@
 import * as React from 'react'
-import { Button, Col, Row, Spinner, Table } from 'react-bootstrap'
+import { Button, Col, Row, Table } from 'react-bootstrap'
 import mainAdapter from '../../../mainAdapter.js'
 import { Context } from '../App.jsx'
 import FilterForm from '../components/FilterForm.jsx'
 import GalleryRow from '../components/GalleryRow.jsx'
+import SpinnerOr from '../components/SpinnerOr.jsx'
 
 export default function Galleries() {
   const [dbGalleries, setDbGalleries] = React.useState([])
@@ -54,34 +55,24 @@ export default function Galleries() {
       <Col xs={12} sm={6}>
         <Row>
           <Col>
-            {isCreating ? (
-              <Spinner />
-            ) : (
-              <>
+            <SpinnerOr isSpinner={isCreating} msg="Creating...">
+              <Button className="me-2" size="sm" onClick={async () => await getGalleryPathInput()}>
+                Add new Gallery
+              </Button>
+              {galleryInput && (
                 <Button
-                  className="me-2"
+                  variant="success"
+                  className="ms-2"
                   size="sm"
-                  onClick={async () => await getGalleryPathInput()}
+                  onClick={async () => await handleCreateGallery(galleryInput)}
                 >
-                  Add new Gallery
+                  Submit
                 </Button>
-                {galleryInput && (
-                  <Button
-                    variant="success"
-                    className="ms-2"
-                    size="sm"
-                    onClick={async () => await handleCreateGallery(galleryInput)}
-                  >
-                    Submit
-                  </Button>
-                )}
-              </>
-            )}
+              )}
+            </SpinnerOr>
           </Col>
           <Col>
-            {isDeletingGalleries ? (
-              <Spinner className="ms-auto" />
-            ) : (
+            <SpinnerOr isSpinner={isDeletingGalleries} msg="Deleting...">
               <Button
                 className="ms-auto"
                 variant="danger"
@@ -90,7 +81,7 @@ export default function Galleries() {
               >
                 Delete Missing Galleries
               </Button>
-            )}
+            </SpinnerOr>
           </Col>
         </Row>
         <Row>

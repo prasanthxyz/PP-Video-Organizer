@@ -1,8 +1,9 @@
 import * as React from 'react'
-import { Button, Col, Row, Spinner, Table } from 'react-bootstrap'
+import { Button, Col, Row, Table } from 'react-bootstrap'
 import mainAdapter from '../../../mainAdapter.js'
 import { Context } from '../App.jsx'
 import FilterForm from '../components/FilterForm.jsx'
+import SpinnerOr from '../components/SpinnerOr.jsx'
 import VideoRow from '../components/VideoRow.jsx'
 
 export default function Videos() {
@@ -75,37 +76,26 @@ export default function Videos() {
         />
       </Col>
       <Col xs={2}>
-        {Array.from(videoInputData).length !== 0 &&
-          (isUploading ? (
-            <>
-              <Spinner className="me-1" />
-              <span>Generating TGPs...</span>
-            </>
-          ) : (
+        {Array.from(videoInputData).length !== 0 && (
+          <SpinnerOr isSpinner={isUploading} msg="Generating TGPs...">
             <Button size="sm" variant="success" onClick={handleCreateVideos}>
               Submit {Array.from(videoInputData).length} file(s)
             </Button>
-          ))}
+          </SpinnerOr>
+        )}
       </Col>
       <Col xs={8} className="d-flex justify-content-end">
-        <div>
-          {isGeneratingTgps ? (
-            <>
-              <Spinner className="me-1" />
-              <span className="me-1">Generating TGPs...</span>
-            </>
-          ) : (
+        <div className="d-flex">
+          <SpinnerOr isSpinner={isGeneratingTgps} msg="Generating TGPs...">
             <Button className="me-3" size="sm" onClick={handleGenerateMissingTgps}>
               Generate Missing TGPs
             </Button>
-          )}
-          {isDeletingVideos ? (
-            <Spinner />
-          ) : (
+          </SpinnerOr>
+          <SpinnerOr isSpinner={isDeletingVideos} msg="Deleting...">
             <Button size="sm" variant="danger" onClick={handleDeleteMissingVideos}>
               Delete Missing Videos
             </Button>
-          )}
+          </SpinnerOr>
         </div>
       </Col>
     </>

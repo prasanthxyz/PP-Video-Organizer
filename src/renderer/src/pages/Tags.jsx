@@ -1,10 +1,11 @@
 import * as React from 'react'
-import { Badge, Button, Form, Row, Spinner } from 'react-bootstrap'
-import { Plus, X } from 'react-bootstrap-icons'
+import { Badge, Button, Form, Row } from 'react-bootstrap'
+import { X } from 'react-bootstrap-icons'
 import { useNavigate } from 'react-router-dom'
 import mainAdapter from '../../../mainAdapter.js'
 import { Context } from '../App.jsx'
 import FilterForm from '../components/FilterForm.jsx'
+import SpinnerOr from '../components/SpinnerOr.jsx'
 
 export default function Tags() {
   const [filterText, setFilterText] = React.useState('')
@@ -75,13 +76,11 @@ export default function Tags() {
             setTagInput(e.target.value)
           }}
         />
-        {isCreating ? (
-          <Spinner />
-        ) : (
-          <Button className="d-flex align-items-center" onClick={handleCreateTags}>
-            <Plus />
+        <SpinnerOr isSpinner={isCreating} msg="Creating...">
+          <Button size="sm" variant="success" onClick={handleCreateTags}>
+            Submit
           </Button>
-        )}
+        </SpinnerOr>
       </Form.Group>
     </Form>
   )

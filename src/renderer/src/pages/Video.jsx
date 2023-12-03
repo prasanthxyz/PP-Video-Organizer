@@ -1,10 +1,11 @@
 import * as React from 'react'
-import { Button, Col, Row, Spinner, Tab, Tabs } from 'react-bootstrap'
+import { Button, Col, Row, Tab, Tabs } from 'react-bootstrap'
 import { useHotkeys } from 'react-hotkeys-hook'
 import { useParams } from 'react-router'
 import mainAdapter from '../../../mainAdapter'
 import { Context } from '../App'
 import CheckBoxGroups from '../components/CheckBoxGroups'
+import SpinnerOr from '../components/SpinnerOr'
 import VideoPlayer from '../components/VideoPlayer'
 import { getImgPathAndVideoName } from '../utils'
 
@@ -61,26 +62,21 @@ export default function Video() {
 
   const handleGenerateTgp = async () => {
     setIsGeneratingTgp(true)
-    await mainAdapter.generateTgp(videoPath, false)
+    await mainAdapter.generateTgp(videoPath)
     setTgpExists(true)
     setIsGeneratingTgp(false)
   }
 
   const { imgPath, videoName } = getImgPathAndVideoName(videoPath)
 
-  const tgpButton = tgpExists ? (
-    <></>
-  ) : isGeneratingTgp ? (
-    <Spinner className="mt-3 mb-4" />
+  const tgpTabContent = tgpExists ? (
+    <img className="mh-100 mw-100" src={`file:///${imgPath}`} />
   ) : (
-    <Button
-      variant="success"
-      size="sm"
-      className="mt-3 mb-4"
-      onClick={async () => await handleGenerateTgp()}
-    >
-      Generate TGP
-    </Button>
+    <SpinnerOr isSpinner={isGeneratingTgp} msg="Generating TGP...">
+      <Button variant="success" size="sm" onClick={async () => await handleGenerateTgp()}>
+        Generate TGP
+      </Button>
+    </SpinnerOr>
   )
 
   const relatedItems = (
@@ -136,14 +132,8 @@ export default function Video() {
                 </Row>
               </Tab>
               <Tab eventKey="tgp" title="TGP">
-                <Row>
-                  <Col className="d-flex justify-content-center">
-                    {tgpExists ? (
-                      <img className="mh-100 mw-100" src={`file:///${imgPath}`} />
-                    ) : (
-                      tgpButton
-                    )}
-                  </Col>
+                <Row className="mt-3">
+                  <Col className="d-flex justify-content-center">{tgpTabContent}</Col>
                 </Row>
               </Tab>
               <Tab eventKey="relations" title="Associations">
