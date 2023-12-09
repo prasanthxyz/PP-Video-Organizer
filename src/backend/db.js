@@ -33,14 +33,8 @@ export const getGalleries = async () => {
   return await Gallery.findAll({ raw: true })
 }
 
-export const createVideos = async (videoPaths) => {
-  const existingVideos = new Set((await getVideos()).map((v) => v.filePath))
-  const validVideos = videoPaths
-    .filter((videoPath) => !existingVideos.has(videoPath))
-    .map((videoPath) => ({
-      filePath: videoPath
-    }))
-  Video.bulkCreate(validVideos)
+export const createVideos = async (videos) => {
+  await Video.bulkCreate(videos)
 }
 
 export const createTags = async (tagTitles) => {

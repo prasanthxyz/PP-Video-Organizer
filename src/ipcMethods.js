@@ -6,7 +6,6 @@ import * as video from './backend/video'
 
 const ipcMethods = {
   getDbVideos: db.getVideos,
-  createDbVideos: db.createVideos,
   generateTgp: video.generateTgp,
   isTgpExisting: video.isTgpExisting,
   generateMissingTgps: video.generateMissingTgps,
@@ -31,7 +30,8 @@ const ipcMethods = {
   getDbTagData: db.getTagData,
   updateDbTagVideos: db.updateTagVideos,
   isCommandExisting: utils.isCommandExisting,
-  execCommand: utils.execCommand
+  execCommand: utils.execCommand,
+  addVideos: video.addVideos
 }
 
 export default ipcMethods

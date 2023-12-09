@@ -16,6 +16,10 @@ export default function Videos() {
 
   const { setHasDataChanged } = React.useContext(Context)
 
+  React.useEffect(() => {
+    loadVideos()
+  }, [])
+
   const handleDeleteVideo = async (videoPathToRemove) => {
     await mainAdapter.deleteDbVideo(videoPathToRemove)
     setDbVideos(dbVideos.filter((videoPath) => videoPath.filePath !== videoPathToRemove))
@@ -25,10 +29,7 @@ export default function Videos() {
   const handleCreateVideos = async (e) => {
     setIsUploading(true)
     const videoPaths = Array.from(videoInputData).map((video) => video.path)
-    await mainAdapter.createDbVideos(videoPaths)
-    for (const videoPath of videoPaths) {
-      await mainAdapter.generateTgp(videoPath)
-    }
+    await mainAdapter.addVideos(videoPaths)
     setIsUploading(false)
     document.getElementById('filesInput').value = ''
     await loadVideos()
@@ -36,7 +37,9 @@ export default function Videos() {
   }
 
   const loadVideos = async () => {
-    setDbVideos(await mainAdapter.getDbVideos())
+    setDbVideos(
+      (await mainAdapter.getDbVideos()).map((video, index) => ({ ...video, sl: index + 1 }))
+    )
   }
 
   const handleGenerateMissingTgps = async () => {
@@ -54,10 +57,6 @@ export default function Videos() {
     await loadVideos()
     setIsDeletingVideos(false)
   }
-
-  React.useEffect(() => {
-    loadVideos()
-  }, [])
 
   const inputUI = (
     <>
@@ -100,16 +99,25 @@ export default function Videos() {
   const videosTable = (
     <Col>
       <p className="fs-5 mt-2 mb-0">Videos</p>
-      <Table>
+      <Table size="sm">
+        <thead>
+          <tr>
+            <th>SL</th>
+            <th>Video</th>
+            <th></th>
+            <th>Error</th>
+            <th>Quality</th>
+            <th>Width</th>
+            <th>Height</th>
+            <th>FR</th>
+            <th>BR/1000</th>
+            <th>Minutes</th>
+          </tr>
+        </thead>
         <tbody>
           {dbVideos
-            .map((videoPath, index) => (
-              <VideoRow
-                index={index}
-                videoPath={videoPath.filePath}
-                deleteVideo={handleDeleteVideo}
-                key={videoPath.filePath}
-              />
+            .map((video) => (
+              <VideoRow video={video} deleteVideo={handleDeleteVideo} key={video.filePath} />
             ))
             .filter((videoRow) => videoRow.key.toLowerCase().includes(filterText))}
         </tbody>

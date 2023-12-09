@@ -1,7 +1,50 @@
+import ffprobe from 'ffprobe'
+import ffprobeStatic from 'ffprobe-static'
 import * as fs from 'fs'
 import * as path from 'path'
 import * as db from './db'
+
 import { execCommand, isCommandExisting } from './utils'
+
+export const addVideos = async (videoPaths) => {
+  const existingVideos = new Set((await db.getVideos()).map((v) => v.filePath))
+  const newVideos = []
+
+  for (const videoPath of videoPaths) {
+    if (existingVideos.has(videoPath)) continue
+    try {
+      const videoInfo = await getVideoStream(videoPath)
+      if (
+        [videoInfo.width, videoInfo.height, videoInfo.duration, videoInfo.duration_ts].some(
+          isNaN
+        ) ||
+        videoInfo.duration_ts < 1000
+      )
+        continue
+
+      const video = {
+        filePath: videoPath,
+        width: videoInfo.width,
+        height: videoInfo.height,
+        bitRate: parseFloat(videoInfo.bit_rate),
+        duration: parseFloat(videoInfo.duration) / 60
+      }
+      const [num, den] = videoInfo['avg_frame_rate'].split('/').map(parseFloat)
+      video.frameRate = num / den
+      // QUALITY METRIC
+      // normalize width*height to 640 x 480, framerate to 30, and get corresponding bit-rate
+      video.quality =
+        (video.bitRate * ((video.width * video.height) / (640 * 480))) / (video.frameRate / 30)
+
+      await generateTgp(videoPath)
+      newVideos.push(video)
+    } catch (e) {
+      continue
+    }
+  }
+
+  await db.createVideos(newVideos)
+}
 
 export const deleteMissingVideos = async () => {
   const allVideos = (await db.getVideos()).map((v) => v.filePath)
@@ -56,6 +99,12 @@ export const generateTgp = async (videoPath, regenerate = false) => {
       }
     )
   }
+}
+
+const getVideoStream = async (videoPath) => {
+  const data = await ffprobe(videoPath, { path: ffprobeStatic.path })
+  for (const stream of data['streams']) if (stream.codec_type === 'video') return stream
+  return null
 }
 
 const getVideoData = (videoPath) => {
