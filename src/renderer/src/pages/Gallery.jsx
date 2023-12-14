@@ -1,10 +1,8 @@
 import * as React from 'react'
-import { Col, Row } from 'react-bootstrap'
 import { useParams } from 'react-router'
 import mainAdapter from '../../../mainAdapter'
 import { Context } from '../App'
-import CheckBoxGroups from '../components/CheckBoxGroups'
-import ImageSlideShow from '../components/ImageSlideShow'
+import GalleryView from '../views/galleries/Gallery'
 
 export default function Gallery() {
   const [galleryImages, setGalleryImages] = React.useState([])
@@ -35,36 +33,13 @@ export default function Gallery() {
     loadData()
   }, [])
 
-  const relatedVideos = (
-    <CheckBoxGroups
-      lists={[
-        {
-          heading: 'Videos',
-          allItems: allVideos,
-          selectedItems: selectedVideos
-        }
-      ]}
-      saveHandlers={[setSelectedVideos]}
-      postSave={async ([videosDiffObj]) => {
-        await mainAdapter.updateDbGalleryVideos(galleryPath, videosDiffObj)
-      }}
-      useDiffObj={true}
-    />
-  )
-
   return (
-    <>
-      <Row>
-        <Col>
-          <h3 className="display-6 text-center">{galleryPath}</h3>
-        </Col>
-      </Row>
-      <Row>
-        <Col xs={6}>
-          {galleryImages.length > 0 && <ImageSlideShow galleryImages={galleryImages} />}
-        </Col>
-        <Col xs={6}>{relatedVideos}</Col>
-      </Row>
-    </>
+    <GalleryView
+      galleryPath={galleryPath}
+      galleryImages={galleryImages}
+      allVideos={allVideos}
+      selectedVideos={selectedVideos}
+      setSelectedVideos={setSelectedVideos}
+    />
   )
 }

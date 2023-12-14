@@ -1,9 +1,8 @@
 import * as React from 'react'
-import { Col, Row } from 'react-bootstrap'
 import { useParams } from 'react-router'
 import mainAdapter from '../../../mainAdapter'
 import { Context } from '../App'
-import CheckBoxGroups from '../components/CheckBoxGroups'
+import TagView from '../views/tags/Tag'
 
 export default function Tag() {
   const [selectedVideos, setSelectedVideos] = React.useState(new Set())
@@ -26,33 +25,12 @@ export default function Tag() {
     loadData()
   }, [])
 
-  const relatedVideos = (
-    <CheckBoxGroups
-      lists={[
-        {
-          heading: 'Videos',
-          allItems: allVideos,
-          selectedItems: selectedVideos
-        }
-      ]}
-      saveHandlers={[setSelectedVideos]}
-      postSave={async ([videosDiffObj]) => {
-        await mainAdapter.updateDbTagVideos(tagTitle, videosDiffObj)
-      }}
-      useDiffObj={true}
-    />
-  )
-
   return (
-    <>
-      <Row>
-        <Col>
-          <h3 className="display-6 text-center mt-2">{tagTitle}</h3>
-        </Col>
-      </Row>
-      <Row>
-        <Col xs={12}>{relatedVideos}</Col>
-      </Row>
-    </>
+    <TagView
+      tagTitle={tagTitle}
+      allVideos={allVideos}
+      selectedVideos={selectedVideos}
+      setSelectedVideos={setSelectedVideos}
+    />
   )
 }

@@ -1,6 +1,5 @@
 import _ from 'lodash'
 import * as React from 'react'
-import { Col, Container, Row, Table } from 'react-bootstrap'
 import { HashRouter, Route, Routes } from 'react-router-dom'
 import mainAdapter from '../../mainAdapter.js'
 import Galleries from './pages/Galleries.jsx'
@@ -12,6 +11,8 @@ import Tags from './pages/Tags.jsx'
 import Video from './pages/Video.jsx'
 import Videos from './pages/Videos.jsx'
 import { getExecutablesStatus } from './utils.js'
+import Loading from './views/app/Loading.jsx'
+import MissingExecutables from './views/app/MissingExecutables.jsx'
 
 export const Context = React.createContext(null)
 
@@ -75,16 +76,7 @@ function App() {
     setCombinationIndex(0)
   }
 
-  if (isLoading)
-    return (
-      <Container fluid>
-        <Row className="d-flex align-items-center" style={{ height: '90vh' }}>
-          <Col className="text-center">
-            <div>Loading...</div>
-          </Col>
-        </Row>
-      </Container>
-    )
+  if (isLoading) return <Loading />
 
   if (areExecutablesPresent.includes(false)) {
     const packagesToInstall = [
@@ -94,35 +86,7 @@ function App() {
       ['vcsi', 'python -m pip install vcsi', 'code']
     ].filter((item, index) => !areExecutablesPresent[index])
 
-    return (
-      <Container fluid>
-        <Row className="d-flex align-items-center" style={{ height: '90vh' }}>
-          <Col>
-            <Row>
-              <Col className="d-flex justify-content-center">
-                <div className="mb-3">Please ensure these are installed and available in PATH</div>
-              </Col>
-            </Row>
-            <Row className="d-flex justify-content-center">
-              <Col xs={5}>
-                <Table>
-                  <tbody>
-                    {packagesToInstall.map(([name, instr, type]) => (
-                      <tr key={name}>
-                        <td>{name}</td>
-                        <td>
-                          {type === 'code' ? <code>{instr}</code> : <a href={instr}>{instr}</a>}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </Table>
-              </Col>
-            </Row>
-          </Col>
-        </Row>
-      </Container>
-    )
+    return <MissingExecutables packagesToInstall={packagesToInstall} />
   }
 
   return (

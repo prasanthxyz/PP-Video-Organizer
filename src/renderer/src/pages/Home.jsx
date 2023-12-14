@@ -1,11 +1,7 @@
 import * as React from 'react'
-import { Button, Col, Row, Tab, Tabs } from 'react-bootstrap'
 import { useHotkeys } from 'react-hotkeys-hook'
-import { Link } from 'react-router-dom'
 import { Context } from '../App'
-import CheckBoxGroups from '../components/CheckBoxGroups'
-import RPS from '../components/RPS'
-import { getImgPathAndVideoName, getNameAndPathComponents } from '../utils'
+import HomeView from '../views/home/Home'
 
 export default function Home() {
   const [activeTab, setActiveTab] = React.useState('watch')
@@ -55,87 +51,19 @@ export default function Home() {
   const galleryPath =
     gs.allCombinations.length > 0 ? gs.allCombinations[gs.combinationIndex][1] : ''
 
-  const controlBar =
-    gs.allCombinations.length === 0 ? (
-      <></>
-    ) : (
-      <>
-        <Col xs={9} className="d-flex justify-content-between">
-          <Button size="sm" variant="success" onClick={() => setShowVid(!showVid)}>
-            {showVid ? 'Show TGP' : 'Show Video'}
-          </Button>
-          <Link to={`/video/${videoPath}`} className="fs-6">
-            {getImgPathAndVideoName(videoPath).videoName}
-          </Link>
-        </Col>
-        <Col xs={3} className="d-flex justify-content-between">
-          <Link to={`/gallery/${galleryPath}`} className="fs-6">
-            {getNameAndPathComponents(galleryPath)[0]}
-          </Link>
-          <div>
-            <Button className="me-2" size="sm" onClick={handleBack}>
-              Back
-            </Button>
-            <Button size="sm" onClick={handleNext}>
-              Next
-            </Button>
-          </div>
-        </Col>
-      </>
-    )
-
-  const selectedCombination = (
-    <Col>
-      {gs.allCombinations.length === 0 ? (
-        'No combination found!'
-      ) : (
-        <RPS
-          combination={gs.allCombinations[gs.combinationIndex]}
-          showVid={showVid}
-          isVideoPlaying={isVideoPlaying}
-        />
-      )}
-    </Col>
-  )
-
   return (
-    <Tabs
-      activeKey={activeTab}
-      onSelect={(tab) => {
-        setIsVideoPlaying(false)
-        setActiveTab(tab)
-      }}
-    >
-      <Tab eventKey="watch" title="Watch">
-        <Row className="my-1">{controlBar}</Row>
-        <Row>{selectedCombination}</Row>
-      </Tab>
-      <Tab eventKey="filter" title="Config">
-        <CheckBoxGroups
-          lists={[
-            {
-              heading: 'Galleries',
-              allItems: gs.allGalleries,
-              selectedItems: gs.selectedGalleries
-            },
-            {
-              heading: 'Tags',
-              allItems: gs.allTags,
-              selectedItems: gs.selectedTags
-            },
-            {
-              heading: 'Videos',
-              allItems: gs.allVideos,
-              selectedItems: gs.selectedVideos
-            }
-          ]}
-          saveHandlers={[gs.setSelectedGalleries, gs.setSelectedTags, gs.setSelectedVideos]}
-          postSave={async ([selectedGalleries, selectedTags, selectedVideos]) => {
-            setShowVid(false)
-            await gs.generateCombinations(selectedVideos, selectedTags, selectedGalleries)
-          }}
-        />
-      </Tab>
-    </Tabs>
+    <HomeView
+      activeTab={activeTab}
+      setIsVideoPlaying={setIsVideoPlaying}
+      setActiveTab={setActiveTab}
+      gs={gs}
+      showVid={showVid}
+      setShowVid={setShowVid}
+      videoPath={videoPath}
+      galleryPath={galleryPath}
+      handleBack={handleBack}
+      handleNext={handleNext}
+      isVideoPlaying={isVideoPlaying}
+    />
   )
 }

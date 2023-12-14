@@ -1,11 +1,8 @@
 import * as React from 'react'
-import { Badge, Button, Form, Row } from 'react-bootstrap'
-import { X } from 'react-bootstrap-icons'
 import { useNavigate } from 'react-router-dom'
 import mainAdapter from '../../../mainAdapter.js'
 import { Context } from '../App.jsx'
-import FilterForm from '../components/FilterForm.jsx'
-import SpinnerOr from '../components/SpinnerOr.jsx'
+import TagsView from '../views/tags/Tags.jsx'
 
 export default function Tags() {
   const [filterText, setFilterText] = React.useState('')
@@ -40,58 +37,16 @@ export default function Tags() {
     setHasDataChanged(true)
   }
 
-  const tagsTable = (
-    <div className="d-flex">
-      <div className="flex-row">
-        {dbTags
-          .filter((dbTag) => dbTag.title.toLowerCase().includes(filterText))
-          .map((dbTag) => (
-            <Badge bg="dark" className="my-2 mx-2" key={dbTag.title}>
-              <span className="mx-2" role="button" onClick={() => navigate(`/tag/${dbTag.title}`)}>
-                {dbTag.title}
-              </span>
-              <X
-                size={15}
-                color="yellow"
-                cursor={'pointer'}
-                onClick={async () => await handleDeleteTag(dbTag.title)}
-              />
-            </Badge>
-          ))}
-      </div>
-    </div>
-  )
-
-  const addTagForm = (
-    <Form>
-      <Form.Group className="d-flex my-3">
-        <Form.Label className="col-3 d-flex align-items-center">
-          Enter new tags (space separated)
-        </Form.Label>
-        <Form.Control
-          className="me-3"
-          type="text"
-          id="tagInput"
-          onChange={(e) => {
-            setTagInput(e.target.value)
-          }}
-        />
-        <SpinnerOr isSpinner={isCreating} msg="Creating...">
-          <Button size="sm" variant="success" onClick={handleCreateTags}>
-            Submit
-          </Button>
-        </SpinnerOr>
-      </Form.Group>
-    </Form>
-  )
-
   return (
-    <>
-      <Row className="mt-3">
-        <FilterForm setFilterText={setFilterText} />
-      </Row>
-      <Row className="my-3">{dbTags.length > 0 && tagsTable}</Row>
-      <Row>{addTagForm}</Row>
-    </>
+    <TagsView
+      setFilterText={setFilterText}
+      dbTags={dbTags}
+      filterText={filterText}
+      navigate={navigate}
+      handleDeleteTag={handleDeleteTag}
+      setTagInput={setTagInput}
+      isCreating={isCreating}
+      handleCreateTags={handleCreateTags}
+    />
   )
 }

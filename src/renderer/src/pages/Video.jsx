@@ -1,13 +1,10 @@
 import * as React from 'react'
-import { Button, Col, Row, Tab, Tabs } from 'react-bootstrap'
 import { useHotkeys } from 'react-hotkeys-hook'
 import { useParams } from 'react-router'
 import mainAdapter from '../../../mainAdapter'
 import { Context } from '../App'
-import CheckBoxGroups from '../components/CheckBoxGroups'
-import SpinnerOr from '../components/SpinnerOr'
-import VideoPlayer from '../components/VideoPlayer'
 import { getImgPathAndVideoName } from '../utils'
+import VideoView from '../views/videos/Video'
 
 export default function Video() {
   const [tgpExists, setTgpExists] = React.useState(false)
@@ -69,80 +66,24 @@ export default function Video() {
 
   const { imgPath, videoName } = getImgPathAndVideoName(videoPath)
 
-  const tgpTabContent = tgpExists ? (
-    <img className="mh-100 mw-100" src={`file:///${imgPath}`} />
-  ) : (
-    <SpinnerOr isSpinner={isGeneratingTgp} msg="Generating TGP...">
-      <Button variant="success" size="sm" onClick={async () => await handleGenerateTgp()}>
-        Generate TGP
-      </Button>
-    </SpinnerOr>
-  )
-
-  const relatedItems = (
-    <CheckBoxGroups
-      lists={[
-        {
-          heading: 'Tags',
-          allItems: allTags,
-          selectedItems: selectedTags
-        },
-        {
-          heading: 'Galleries',
-          allItems: allGalleries,
-          selectedItems: selectedGalleries
-        }
-      ]}
-      saveHandlers={[setSelectedTags, setSelectedGalleries]}
-      postSave={async ([tagsDiffObj, galleriesDiffObj]) => {
-        await mainAdapter.updateDbVideoTags(videoPath, tagsDiffObj)
-        await mainAdapter.updateDbVideoGalleries(videoPath, galleriesDiffObj)
-      }}
-      useDiffObj={true}
-    />
-  )
-
   return (
-    <Row>
-      <Col>
-        <Row>
-          <Col>
-            <h6 className="fs-6">{videoName}</h6>
-          </Col>
-        </Row>
-        <Row>
-          <Col>
-            <Tabs
-              activeKey={activeTab}
-              onSelect={(tab) => {
-                setIsVideoPlaying(false)
-                setActiveTab(tab)
-              }}
-            >
-              <Tab eventKey="video" title="Video">
-                <Row>
-                  <Col xs={9} className="mx-auto mt-2">
-                    <VideoPlayer autoplay={isVideoPlaying} controls={true} sources={videoPath} />
-                  </Col>
-                </Row>
-                <Row className="mt-2">
-                  <Col className="mx-auto" xs={9}>
-                    {videoPath}
-                  </Col>
-                </Row>
-              </Tab>
-              <Tab eventKey="tgp" title="TGP">
-                <Row className="mt-3">
-                  <Col className="d-flex justify-content-center">{tgpTabContent}</Col>
-                </Row>
-              </Tab>
-              <Tab eventKey="relations" title="Associations">
-                {relatedItems}
-              </Tab>
-            </Tabs>
-          </Col>
-        </Row>
-      </Col>
-    </Row>
+    <VideoView
+      videoName={videoName}
+      activeTab={activeTab}
+      setIsVideoPlaying={setIsVideoPlaying}
+      setActiveTab={setActiveTab}
+      isVideoPlaying={isVideoPlaying}
+      videoPath={videoPath}
+      tgpExists={tgpExists}
+      imgPath={imgPath}
+      isGeneratingTgp={isGeneratingTgp}
+      handleGenerateTgp={handleGenerateTgp}
+      allTags={allTags}
+      selectedTags={selectedTags}
+      allGalleries={allGalleries}
+      selectedGalleries={selectedGalleries}
+      setSelectedTags={setSelectedTags}
+      setSelectedGalleries={setSelectedGalleries}
+    />
   )
 }
