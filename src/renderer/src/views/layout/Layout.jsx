@@ -1,10 +1,17 @@
 import { Button, Container, Nav, Navbar } from 'react-bootstrap'
-import { ArrowLeft, ToggleOff, ToggleOn } from 'react-bootstrap-icons'
+import { ArrowLeft, ArrowRepeat, ToggleOff, ToggleOn } from 'react-bootstrap-icons'
 import { Outlet } from 'react-router-dom'
 import darkIcon from '../../assets/darkicon.png'
 import lightIcon from '../../assets/lighticon.png'
 
-export default function Layout({ isDarkMode, PAGES, activeNav, toggleDarkMode, navigate }) {
+export default function Layout({
+  isDarkMode,
+  PAGES,
+  activeNav,
+  toggleDarkMode,
+  navigate,
+  setHasDataChanged
+}) {
   return (
     <>
       <Navbar className="bg-body-secondary px-3">
@@ -30,6 +37,14 @@ export default function Layout({ isDarkMode, PAGES, activeNav, toggleDarkMode, n
             </Nav.Link>
           ))}
         </Nav>
+        <Button
+          size="sm"
+          variant="warning"
+          className="d-flex me-2"
+          onClick={() => setHasDataChanged(true)}
+        >
+          <ArrowRepeat />
+        </Button>
         <Button size="sm" className="d-flex me-2" onClick={() => navigate(-1)}>
           <ArrowLeft />
         </Button>
