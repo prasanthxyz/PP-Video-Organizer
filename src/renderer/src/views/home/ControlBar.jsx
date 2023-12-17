@@ -10,12 +10,12 @@ function ControlBar({ showVid, setShowVid, videoPath, galleryPath, handleBack, h
         <Button size="sm" variant="success" onClick={() => setShowVid(!showVid)}>
           {showVid ? 'Show TGP' : 'Show Video'}
         </Button>
-        <Link to={`/video/${videoPath}`} className="fs-6">
+        <Link to={`/video/${encodeURIComponent(videoPath)}`} className="fs-6">
           {getImgPathAndVideoName(videoPath).videoName}
         </Link>
       </Col>
       <Col xs={3} className="d-flex justify-content-between">
-        <Link to={`/gallery/${galleryPath}`} className="fs-6">
+        <Link to={`/gallery/${encodeURIComponent(galleryPath)}`} className="fs-6">
           {getNameAndPathComponents(galleryPath)[0]}
         </Link>
         <div>

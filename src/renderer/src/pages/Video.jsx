@@ -45,6 +45,7 @@ export default function Video() {
   })
 
   let { videoPath } = useParams()
+  videoPath = decodeURIComponent(videoPath)
 
   const setFilesExist = async () => {
     setTgpExists(await mainAdapter.isTgpExisting(videoPath))

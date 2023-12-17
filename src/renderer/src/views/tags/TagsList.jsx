@@ -9,7 +9,11 @@ function TagsList({ dbTags, filterText, navigate, handleDeleteTag }) {
           .filter((dbTag) => dbTag.title.toLowerCase().includes(filterText))
           .map((dbTag) => (
             <Badge bg="dark" className="my-2 mx-2" key={dbTag.title}>
-              <span className="mx-2" role="button" onClick={() => navigate(`/tag/${dbTag.title}`)}>
+              <span
+                className="mx-2"
+                role="button"
+                onClick={() => navigate(`/tag/${encodeURIComponent(dbTag.title)}`)}
+              >
                 {dbTag.title}
               </span>
               <X

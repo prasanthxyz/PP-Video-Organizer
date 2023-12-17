@@ -26,7 +26,9 @@ export default function VideoRow({ video, deleteVideo, index }) {
   }
 
   const { videoName } = getImgPathAndVideoName(video.filePath)
-  const getVideoLink = () => <Link to={`/video/${video.filePath}`}>{videoName}</Link>
+  const getVideoLink = () => (
+    <Link to={`/video/${encodeURIComponent(video.filePath)}`}>{videoName}</Link>
+  )
 
   return (
     <VideoRowView

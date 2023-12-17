@@ -17,7 +17,9 @@ export default function GalleryRow({ index, galleryPath, deleteGallery }) {
 
   const galleryName = getNameAndPathComponents(galleryPath)[0]
 
-  const getGalleryLink = () => <Link to={`/gallery/${galleryPath}`}>{galleryName}</Link>
+  const getGalleryLink = () => (
+    <Link to={`/gallery/${encodeURIComponent(galleryPath)}`}>{galleryName}</Link>
+  )
 
   return (
     <GalleryRowView

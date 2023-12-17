@@ -7,7 +7,7 @@ function RPS({ showVid, getImgPathAndVideoName, galleryImages, videoPath, isVide
     <Row>
       <Col xs={9}>
         {showVid ? (
-          <VideoPlayer autoplay={isVideoPlaying} controls={true} sources={videoPath} />
+          <VideoPlayer autoplay={isVideoPlaying} controls={true} sources={`file:///${videoPath}`} />
         ) : (
           <img width="100%" src={`file:///${getImgPathAndVideoName(videoPath).imgPath}`} />
         )}

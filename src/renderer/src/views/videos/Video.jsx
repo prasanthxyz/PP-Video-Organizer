@@ -42,7 +42,11 @@ function Video({
               <Tab eventKey="video" title="Video">
                 <Row>
                   <Col xs={9} className="mx-auto mt-2">
-                    <VideoPlayer autoplay={isVideoPlaying} controls={true} sources={videoPath} />
+                    <VideoPlayer
+                      autoplay={isVideoPlaying}
+                      controls={true}
+                      sources={`file:///${videoPath}`}
+                    />
                   </Col>
                 </Row>
                 <Row className="mt-2">

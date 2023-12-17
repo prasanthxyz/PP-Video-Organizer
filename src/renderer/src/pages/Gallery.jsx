@@ -15,6 +15,7 @@ export default function Gallery() {
   }, [hasDataChanged])
 
   let { galleryPath } = useParams()
+  galleryPath = decodeURIComponent(galleryPath)
 
   const loadData = async () => {
     setGalleryImages(

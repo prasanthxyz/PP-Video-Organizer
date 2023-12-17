@@ -14,6 +14,7 @@ export default function Tag() {
   }, [hasDataChanged])
 
   let { tagTitle } = useParams()
+  tagTitle = decodeURIComponent(tagTitle)
 
   const loadData = async () => {
     setSelectedVideos(
