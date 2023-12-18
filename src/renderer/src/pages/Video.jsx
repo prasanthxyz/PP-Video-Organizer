@@ -2,9 +2,8 @@ import * as React from 'react'
 import { useHotkeys } from 'react-hotkeys-hook'
 import { useParams } from 'react-router'
 import mainAdapter from '../../../mainAdapter'
-import { Context } from '../App'
-import useAvailableGalleries from '../hooks/galleries'
-import useAvailableTags from '../hooks/tags'
+import { useAllGalleries } from '../hooks/galleries'
+import { useAllTags } from '../hooks/tags'
 import { getImgPathAndVideoName } from '../utils'
 import VideoView from '../views/videos/Video'
 
@@ -16,8 +15,8 @@ export default function Video() {
   const [activeTab, setActiveTab] = React.useState('video')
   const [isVideoPlaying, setIsVideoPlaying] = React.useState(false)
 
-  const allTags = useAvailableTags().data
-  const allGalleries = useAvailableGalleries().data
+  const allTags = useAllTags().data
+  const allGalleries = useAllGalleries().data
 
   useHotkeys('v', () => {
     if (activeTab === 'video') return

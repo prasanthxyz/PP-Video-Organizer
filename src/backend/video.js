@@ -50,6 +50,15 @@ export const getAvailableVideos = async () => {
   return (await db.getVideos()).map((v) => v.filePath).filter(isFileExisting)
 }
 
+export const getAllVideos = async () => {
+  return (await db.getVideos()).map((video) => ({
+    ...video,
+    id: video.filePath,
+    isAvailable: isFileExisting(video.filePath),
+    isTgpAvailable: isTgpExisting(video.filePath)
+  }))
+}
+
 export const deleteMissingVideos = async () => {
   const allVideos = (await db.getVideos()).map((v) => v.filePath)
   const missingVideos = allVideos.filter((v) => !isFileExisting(v))

@@ -12,7 +12,7 @@ export default function RelatedVideos({
       lists={[
         {
           heading: 'Videos',
-          allItems: allVideos,
+          allItems: allVideos.map((v) => v.id),
           selectedItems: selectedVideos
         }
       ]}

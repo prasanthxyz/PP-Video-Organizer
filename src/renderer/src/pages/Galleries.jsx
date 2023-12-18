@@ -1,10 +1,10 @@
 import * as React from 'react'
 import mainAdapter from '../../../mainAdapter.js'
 import { Context } from '../App.jsx'
+import { useAllGalleries } from '../hooks/galleries.js'
 import GalleriesView from '../views/galleries/Galleries.jsx'
 
 export default function Galleries() {
-  const [dbGalleries, setDbGalleries] = React.useState([])
   const [filterText, setFilterText] = React.useState('')
   const [isCreating, setIsCreating] = React.useState(false)
   const [galleryInput, setGalleryInput] = React.useState('')
@@ -12,13 +12,7 @@ export default function Galleries() {
 
   const { setHasDataChanged } = React.useContext(Context)
 
-  React.useEffect(() => {
-    loadGalleries()
-  }, [])
-
-  const loadGalleries = async () => {
-    setDbGalleries(await mainAdapter.getDbGalleries())
-  }
+  const dbGalleries = useAllGalleries().data || []
 
   const handleCreateGallery = async (e) => {
     setIsCreating(true)
@@ -26,20 +20,20 @@ export default function Galleries() {
     setIsCreating(false)
     setHasDataChanged(true)
     setGalleryInput('')
-    await loadGalleries()
+    // await loadGalleries()
   }
 
   const handleDeleteGallery = async (galleryPathToRemove) => {
     await mainAdapter.deleteDbGallery(galleryPathToRemove)
-    setDbGalleries(dbGalleries.filter((dbGallery) => dbGallery.galleryPath !== galleryPathToRemove))
+    // setDbGalleries(dbGalleries.filter((dbGallery) => dbGallery.galleryPath !== galleryPathToRemove))
     setHasDataChanged(true)
   }
 
   const handleDeleteMissingGalleries = async () => {
     setIsDeletingGalleries(true)
     await mainAdapter.deleteMissingDbGalleries()
-    setDbGalleries([])
-    await loadGalleries()
+    // setDbGalleries([])
+    // await loadGalleries()
     setIsDeletingGalleries(false)
   }
 

@@ -23,3 +23,11 @@ export const deleteMissingGalleries = async () => {
 export const getAvailableGalleries = async () => {
   return (await db.getGalleries()).map((g) => g.galleryPath).filter(isDirExisting)
 }
+
+export const getAllGalleries = async () => {
+  return (await db.getGalleries()).map((gallery) => ({
+    ...gallery,
+    id: gallery.galleryPath,
+    isAvailable: isDirExisting(gallery.galleryPath)
+  }))
+}

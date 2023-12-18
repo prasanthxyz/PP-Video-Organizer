@@ -1,6 +1,7 @@
 import * as React from 'react'
 import { Col, Table } from 'react-bootstrap'
-import GalleryRow from '../../components/GalleryRow.jsx'
+import { getNameAndPathComponents } from '../../utils.js'
+import GalleryRowView from '../../views/galleries/GalleryRow'
 
 export default function GalleriesTable({ dbGalleries, handleDeleteGallery, filterText }) {
   return (
@@ -17,11 +18,13 @@ export default function GalleriesTable({ dbGalleries, handleDeleteGallery, filte
         <tbody>
           {dbGalleries
             .map((dbGallery, index) => (
-              <GalleryRow
+              <GalleryRowView
                 key={dbGallery.galleryPath}
                 index={index}
-                galleryPath={dbGallery.galleryPath}
+                galleryExists={dbGallery.isAvailable}
+                galleryName={getNameAndPathComponents(dbGallery.galleryPath)[0]}
                 deleteGallery={handleDeleteGallery}
+                galleryPath={dbGallery.galleryPath}
               />
             ))
             .filter((galleryRow) => galleryRow.key.toLowerCase().includes(filterText))}

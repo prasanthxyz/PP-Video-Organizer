@@ -2,9 +2,9 @@ import * as React from 'react'
 import { useHotkeys } from 'react-hotkeys-hook'
 import { Context } from '../App'
 import useCombinations from '../hooks/combinations'
-import useAvailableGalleries from '../hooks/galleries'
-import useAvailableTags from '../hooks/tags'
-import useAvailableVideos from '../hooks/videos'
+import { useAvailableGalleries } from '../hooks/galleries'
+import { useAvailableTags } from '../hooks/tags'
+import { useAvailableVideos } from '../hooks/videos'
 import CenterMessage from '../views/app/CenterMessage'
 import HomeView from '../views/home/Home'
 
@@ -13,9 +13,9 @@ export default function Home() {
   const [showVid, setShowVid] = React.useState(false)
   const [isVideoPlaying, setIsVideoPlaying] = React.useState(false)
 
-  const allVideos = useAvailableVideos().data
-  const allTags = useAvailableTags().data
-  const allGalleries = useAvailableGalleries().data
+  const availableVideos = useAvailableVideos().data
+  const availableTags = useAvailableTags().data
+  const availableGalleries = useAvailableGalleries().data
 
   const gs = React.useContext(Context)
   const [isGeneratingCombinations, combinations, combinationIndex, setCombinationIndex] =
@@ -64,9 +64,9 @@ export default function Home() {
       activeTab={activeTab}
       setIsVideoPlaying={setIsVideoPlaying}
       setActiveTab={setActiveTab}
-      allVideos={allVideos}
-      allTags={allTags}
-      allGalleries={allGalleries}
+      availableVideos={availableVideos}
+      availableTags={availableTags}
+      availableGalleries={availableGalleries}
       combinations={combinations}
       combinationIndex={combinationIndex}
       gs={gs}

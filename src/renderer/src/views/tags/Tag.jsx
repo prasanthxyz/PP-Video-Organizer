@@ -16,7 +16,7 @@ function Tag({ tagTitle, allVideos, selectedVideos, setSelectedVideos }) {
             lists={[
               {
                 heading: 'Videos',
-                allItems: allVideos,
+                allItems: allVideos.map((v) => v.id),
                 selectedItems: selectedVideos
               }
             ]}

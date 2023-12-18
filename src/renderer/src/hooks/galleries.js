@@ -1,6 +1,10 @@
 import { useQuery } from 'react-query'
 import mainAdapter from '../../../mainAdapter'
 
-export default function useAvailableGalleries() {
+export function useAvailableGalleries() {
   return useQuery('availableGalleries', () => mainAdapter.getAvailableGalleries())
+}
+
+export function useAllGalleries() {
+  return useQuery('allGalleries', () => mainAdapter.getAllGalleries())
 }

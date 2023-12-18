@@ -11,9 +11,9 @@ function Home({
   gs,
   combinations,
   combinationIndex,
-  allVideos,
-  allTags,
-  allGalleries,
+  availableVideos,
+  availableTags,
+  availableGalleries,
   showVid,
   setShowVid,
   videoPath,
@@ -57,17 +57,17 @@ function Home({
           lists={[
             {
               heading: 'Galleries',
-              allItems: allGalleries,
+              allItems: availableGalleries,
               selectedItems: gs.selectedGalleries
             },
             {
               heading: 'Tags',
-              allItems: allTags,
+              allItems: availableTags,
               selectedItems: gs.selectedTags
             },
             {
               heading: 'Videos',
-              allItems: allVideos,
+              allItems: availableVideos,
               selectedItems: gs.selectedVideos
             }
           ]}

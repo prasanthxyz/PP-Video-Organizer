@@ -1,10 +1,8 @@
-import _ from 'lodash'
 import * as React from 'react'
 import { HashRouter, Route, Routes } from 'react-router-dom'
-import mainAdapter from '../../mainAdapter.js'
-import useAvailableGalleries from './hooks/galleries.js'
-import useAvailableTags from './hooks/tags.js'
-import useAvailableVideos from './hooks/videos.js'
+import { useAvailableGalleries } from './hooks/galleries.js'
+import { useAvailableTags } from './hooks/tags.js'
+import { useAvailableVideos } from './hooks/videos.js'
 import Galleries from './pages/Galleries.jsx'
 import Gallery from './pages/Gallery.jsx'
 import Home from './pages/Home.jsx'
@@ -31,11 +29,16 @@ function App() {
   const availableTags = useAvailableTags()
   const availableGalleries = useAvailableGalleries()
 
-  const loadInitialSelection = async () => {
-    setSelectedTags(new Set())
-    setSelectedGalleries(new Set(availableGalleries.data))
-    setSelectedVideos(new Set(availableVideos.data))
-  }
+  React.useEffect(() => {
+    const loadInitialSelection = async () => {
+      setSelectedTags(new Set())
+      setSelectedGalleries(new Set(availableGalleries.data))
+      setSelectedVideos(new Set(availableVideos.data))
+    }
+
+    if (availableVideos.isSuccess && availableTags.isSuccess && availableGalleries.isSuccess)
+      loadInitialSelection()
+  }, [availableVideos.isSuccess, availableTags.isSuccess, availableGalleries.isSuccess])
 
   const checkExecutables = async () => {
     setExecutablesStatus(await getExecutablesStatus())
@@ -59,11 +62,6 @@ function App() {
   }
 
   if (availableVideos.isLoading || availableTags.isLoading || availableGalleries.isLoading) {
-    return <CenterMessage msg="Loading..." />
-  }
-
-  if (selectedGalleries.size !== availableGalleries.data.length) {
-    loadInitialSelection()
     return <CenterMessage msg="Loading..." />
   }
 

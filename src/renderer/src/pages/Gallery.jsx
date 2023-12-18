@@ -1,15 +1,14 @@
 import * as React from 'react'
 import { useParams } from 'react-router'
 import mainAdapter from '../../../mainAdapter'
-import { Context } from '../App'
-import useAvailableVideos from '../hooks/videos'
+import { useAllVideos } from '../hooks/videos'
 import GalleryView from '../views/galleries/Gallery'
 
 export default function Gallery() {
   const [galleryImages, setGalleryImages] = React.useState([])
   const [selectedVideos, setSelectedVideos] = React.useState(new Set())
 
-  const allVideos = useAvailableVideos().data
+  const allVideos = useAllVideos().data
 
   let { galleryPath } = useParams()
   galleryPath = decodeURIComponent(galleryPath)

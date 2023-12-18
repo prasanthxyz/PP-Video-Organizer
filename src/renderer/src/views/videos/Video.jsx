@@ -79,12 +79,12 @@ function Video({
                   lists={[
                     {
                       heading: 'Tags',
-                      allItems: allTags,
+                      allItems: allTags.map((t) => t.id),
                       selectedItems: selectedTags
                     },
                     {
                       heading: 'Galleries',
-                      allItems: allGalleries,
+                      allItems: allGalleries.map((g) => g.id),
                       selectedItems: selectedGalleries
                     }
                   ]}
