@@ -16,14 +16,8 @@ export default function Video() {
   const [activeTab, setActiveTab] = React.useState('video')
   const [isVideoPlaying, setIsVideoPlaying] = React.useState(false)
 
-  const { hasDataChanged, loadDataIfChanged } = React.useContext(Context)
-
   const allTags = useAvailableTags().data
   const allGalleries = useAvailableGalleries().data
-
-  React.useEffect(() => {
-    loadDataIfChanged()
-  }, [hasDataChanged])
 
   useHotkeys('v', () => {
     if (activeTab === 'video') return

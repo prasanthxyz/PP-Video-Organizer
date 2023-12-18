@@ -23,9 +23,6 @@ function App() {
   const [isCheckingExecutables, setIsCheckingExecutables] = React.useState(true)
   const [executablesStatus, setExecutablesStatus] = React.useState([true, true, true, true])
 
-  const [hasDataChanged, setHasDataChanged] = React.useState(true)
-  const [allCombinations, setAllCombinations] = React.useState([])
-  const [combinationIndex, setCombinationIndex] = React.useState(0)
   const [selectedVideos, setSelectedVideos] = React.useState(new Set())
   const [selectedTags, setSelectedTags] = React.useState(new Set())
   const [selectedGalleries, setSelectedGalleries] = React.useState(new Set())
@@ -34,26 +31,10 @@ function App() {
   const availableTags = useAvailableTags()
   const availableGalleries = useAvailableGalleries()
 
-  const loadDataIfChanged = async () => {
-    if (!hasDataChanged) return
-
-    const selectedTags = new Set()
-    const selectedGalleries = new Set(availableGalleries.data)
-    const selectedVideos = new Set(availableVideos.data)
-
-    setSelectedTags(selectedTags)
-    setSelectedGalleries(selectedGalleries)
-    setSelectedVideos(selectedVideos)
-    await generateCombinations(selectedVideos, selectedTags, selectedGalleries)
-    setHasDataChanged(false)
-  }
-
-  const generateCombinations = async (videos, tags, galleries) => {
-    const allCombinations = _.shuffle(
-      await mainAdapter.getCombinationsData(videos, tags, galleries)
-    )
-    setAllCombinations(allCombinations)
-    setCombinationIndex(0)
+  const loadInitialSelection = async () => {
+    setSelectedTags(new Set())
+    setSelectedGalleries(new Set(availableGalleries.data))
+    setSelectedVideos(new Set(availableVideos.data))
   }
 
   const checkExecutables = async () => {
@@ -77,34 +58,24 @@ function App() {
     return <MissingExecutables packagesToInstall={packagesToInstall} />
   }
 
-  const isLoading =
-    availableVideos.isLoading || availableTags.isLoading || availableGalleries.isLoading
-
-  if (isLoading) {
+  if (availableVideos.isLoading || availableTags.isLoading || availableGalleries.isLoading) {
     return <CenterMessage msg="Loading..." />
   }
 
   if (selectedGalleries.size !== availableGalleries.data.length) {
-    loadDataIfChanged()
+    loadInitialSelection()
     return <CenterMessage msg="Loading..." />
   }
 
   return (
     <Context.Provider
       value={{
-        allCombinations,
-        combinationIndex,
-        setCombinationIndex,
         selectedVideos,
         setSelectedVideos,
         selectedTags,
         setSelectedTags,
         selectedGalleries,
-        setSelectedGalleries,
-        generateCombinations,
-        setHasDataChanged,
-        hasDataChanged,
-        loadDataIfChanged
+        setSelectedGalleries
       }}
     >
       <HashRouter basename="/">

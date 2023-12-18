@@ -8,13 +8,7 @@ import TagView from '../views/tags/Tag'
 export default function Tag() {
   const [selectedVideos, setSelectedVideos] = React.useState(new Set())
 
-  const { hasDataChanged, loadDataIfChanged } = React.useContext(Context)
-
   const allVideos = useAvailableVideos().data
-
-  React.useEffect(() => {
-    loadDataIfChanged()
-  }, [hasDataChanged])
 
   let { tagTitle } = useParams()
   tagTitle = decodeURIComponent(tagTitle)

@@ -1,9 +1,11 @@
 import * as React from 'react'
 import { useHotkeys } from 'react-hotkeys-hook'
 import { Context } from '../App'
+import useCombinations from '../hooks/combinations'
 import useAvailableGalleries from '../hooks/galleries'
 import useAvailableTags from '../hooks/tags'
 import useAvailableVideos from '../hooks/videos'
+import CenterMessage from '../views/app/CenterMessage'
 import HomeView from '../views/home/Home'
 
 export default function Home() {
@@ -16,10 +18,8 @@ export default function Home() {
   const allGalleries = useAvailableGalleries().data
 
   const gs = React.useContext(Context)
-
-  React.useEffect(() => {
-    gs.loadDataIfChanged()
-  }, [gs.hasDataChanged])
+  const [isGeneratingCombinations, combinations, combinationIndex, setCombinationIndex] =
+    useCombinations(gs.selectedVideos, gs.selectedTags, gs.selectedGalleries)
 
   useHotkeys('c', () => {
     setIsVideoPlaying(false)
@@ -42,11 +42,11 @@ export default function Home() {
 
   const navigateCombinations = (next = true) => {
     if (activeTab !== 'watch') setActiveTab('watch')
-    if (gs.allCombinations.length === 0) return
+    if (combinations.length === 0) return
     setIsVideoPlaying(false)
-    let newIndex = gs.combinationIndex + (next ? 1 : -1)
-    if (newIndex < 0) newIndex += gs.allCombinations.length
-    gs.setCombinationIndex(newIndex % gs.allCombinations.length)
+    let newIndex = combinationIndex + (next ? 1 : -1)
+    if (newIndex < 0) newIndex += combinations.length
+    setCombinationIndex(newIndex % combinations.length)
     setShowVid(false)
   }
   const handleNext = () => navigateCombinations(true)
@@ -54,9 +54,10 @@ export default function Home() {
   useHotkeys('n', handleNext)
   useHotkeys('b', handleBack)
 
-  const videoPath = gs.allCombinations.length > 0 ? gs.allCombinations[gs.combinationIndex][0] : ''
-  const galleryPath =
-    gs.allCombinations.length > 0 ? gs.allCombinations[gs.combinationIndex][1] : ''
+  const videoPath = combinations.length > 0 ? combinations[combinationIndex][0] : ''
+  const galleryPath = combinations.length > 0 ? combinations[combinationIndex][1] : ''
+
+  if (isGeneratingCombinations) return <CenterMessage msg="Generating combinations..." />
 
   return (
     <HomeView
@@ -66,6 +67,8 @@ export default function Home() {
       allVideos={allVideos}
       allTags={allTags}
       allGalleries={allGalleries}
+      combinations={combinations}
+      combinationIndex={combinationIndex}
       gs={gs}
       showVid={showVid}
       setShowVid={setShowVid}

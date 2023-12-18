@@ -2,14 +2,14 @@ import * as React from 'react'
 import { Col } from 'react-bootstrap'
 import RPS from '../../components/RPS'
 
-function SelectedCombination({ gs, showVid, isVideoPlaying }) {
+function SelectedCombination({ combinations, combinationIndex, showVid, isVideoPlaying }) {
   return (
     <Col>
-      {gs.allCombinations.length === 0 ? (
+      {combinations.length === 0 ? (
         'No combination found!'
       ) : (
         <RPS
-          combination={gs.allCombinations[gs.combinationIndex]}
+          combination={combinations[combinationIndex]}
           showVid={showVid}
           isVideoPlaying={isVideoPlaying}
         />

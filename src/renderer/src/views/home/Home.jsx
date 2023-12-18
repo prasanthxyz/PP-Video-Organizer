@@ -9,6 +9,8 @@ function Home({
   setIsVideoPlaying,
   setActiveTab,
   gs,
+  combinations,
+  combinationIndex,
   allVideos,
   allTags,
   allGalleries,
@@ -30,7 +32,7 @@ function Home({
     >
       <Tab eventKey="watch" title="Watch">
         <Row className="my-1">
-          {gs.allCombinations.length !== 0 && (
+          {combinations.length !== 0 && (
             <ControlBar
               showVid={showVid}
               setShowVid={setShowVid}
@@ -42,7 +44,12 @@ function Home({
           )}
         </Row>
         <Row>
-          <SelectedCombination gs={gs} showVid={showVid} isVideoPlaying={isVideoPlaying} />
+          <SelectedCombination
+            combinations={combinations}
+            combinationIndex={combinationIndex}
+            showVid={showVid}
+            isVideoPlaying={isVideoPlaying}
+          />
         </Row>
       </Tab>
       <Tab eventKey="filter" title="Config">
@@ -67,7 +74,6 @@ function Home({
           saveHandlers={[gs.setSelectedGalleries, gs.setSelectedTags, gs.setSelectedVideos]}
           postSave={async ([selectedGalleries, selectedTags, selectedVideos]) => {
             setShowVid(false)
-            await gs.generateCombinations(selectedVideos, selectedTags, selectedGalleries)
           }}
         />
       </Tab>
