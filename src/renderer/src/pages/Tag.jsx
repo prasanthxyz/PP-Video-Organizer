@@ -2,12 +2,15 @@ import * as React from 'react'
 import { useParams } from 'react-router'
 import mainAdapter from '../../../mainAdapter'
 import { Context } from '../App'
+import useAvailableVideos from '../hooks/videos'
 import TagView from '../views/tags/Tag'
 
 export default function Tag() {
   const [selectedVideos, setSelectedVideos] = React.useState(new Set())
 
-  const { allVideos, hasDataChanged, loadDataIfChanged } = React.useContext(Context)
+  const { hasDataChanged, loadDataIfChanged } = React.useContext(Context)
+
+  const allVideos = useAvailableVideos().data
 
   React.useEffect(() => {
     loadDataIfChanged()

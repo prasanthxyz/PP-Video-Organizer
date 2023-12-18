@@ -9,6 +9,9 @@ function Home({
   setIsVideoPlaying,
   setActiveTab,
   gs,
+  allVideos,
+  allTags,
+  allGalleries,
   showVid,
   setShowVid,
   videoPath,
@@ -47,17 +50,17 @@ function Home({
           lists={[
             {
               heading: 'Galleries',
-              allItems: gs.allGalleries,
+              allItems: allGalleries,
               selectedItems: gs.selectedGalleries
             },
             {
               heading: 'Tags',
-              allItems: gs.allTags,
+              allItems: allTags,
               selectedItems: gs.selectedTags
             },
             {
               heading: 'Videos',
-              allItems: gs.allVideos,
+              allItems: allVideos,
               selectedItems: gs.selectedVideos
             }
           ]}

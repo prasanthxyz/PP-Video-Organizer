@@ -1,12 +1,19 @@
 import * as React from 'react'
 import { useHotkeys } from 'react-hotkeys-hook'
 import { Context } from '../App'
+import useAvailableGalleries from '../hooks/galleries'
+import useAvailableTags from '../hooks/tags'
+import useAvailableVideos from '../hooks/videos'
 import HomeView from '../views/home/Home'
 
 export default function Home() {
   const [activeTab, setActiveTab] = React.useState('watch')
   const [showVid, setShowVid] = React.useState(false)
   const [isVideoPlaying, setIsVideoPlaying] = React.useState(false)
+
+  const allVideos = useAvailableVideos().data
+  const allTags = useAvailableTags().data
+  const allGalleries = useAvailableGalleries().data
 
   const gs = React.useContext(Context)
 
@@ -56,6 +63,9 @@ export default function Home() {
       activeTab={activeTab}
       setIsVideoPlaying={setIsVideoPlaying}
       setActiveTab={setActiveTab}
+      allVideos={allVideos}
+      allTags={allTags}
+      allGalleries={allGalleries}
       gs={gs}
       showVid={showVid}
       setShowVid={setShowVid}

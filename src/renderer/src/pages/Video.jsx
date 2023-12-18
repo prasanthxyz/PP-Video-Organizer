@@ -3,6 +3,8 @@ import { useHotkeys } from 'react-hotkeys-hook'
 import { useParams } from 'react-router'
 import mainAdapter from '../../../mainAdapter'
 import { Context } from '../App'
+import useAvailableGalleries from '../hooks/galleries'
+import useAvailableTags from '../hooks/tags'
 import { getImgPathAndVideoName } from '../utils'
 import VideoView from '../views/videos/Video'
 
@@ -14,7 +16,10 @@ export default function Video() {
   const [activeTab, setActiveTab] = React.useState('video')
   const [isVideoPlaying, setIsVideoPlaying] = React.useState(false)
 
-  const { allTags, allGalleries, hasDataChanged, loadDataIfChanged } = React.useContext(Context)
+  const { hasDataChanged, loadDataIfChanged } = React.useContext(Context)
+
+  const allTags = useAvailableTags().data
+  const allGalleries = useAvailableGalleries().data
 
   React.useEffect(() => {
     loadDataIfChanged()

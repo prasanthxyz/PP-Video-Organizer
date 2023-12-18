@@ -1,6 +1,7 @@
 import * as db from './backend/db'
 import * as gallery from './backend/gallery'
 import * as rps from './backend/rps'
+import * as tag from './backend/tag'
 import * as utils from './backend/utils'
 import * as video from './backend/video'
 
@@ -31,7 +32,10 @@ const ipcMethods = {
   updateDbTagVideos: db.updateTagVideos,
   isCommandExisting: utils.isCommandExisting,
   execCommand: utils.execCommand,
-  addVideos: video.addVideos
+  addVideos: video.addVideos,
+  getAvailableVideos: video.getAvailableVideos,
+  getAvailableTags: tag.getAvailableTags,
+  getAvailableGalleries: gallery.getAvailableGalleries
 }
 
 export default ipcMethods
