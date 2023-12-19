@@ -26,13 +26,13 @@ function InputUI({
             setVideoInputData(e.target.files)
           }}
         />
-        {Array.from(videoInputData).length !== 0 && (
-          <SpinnerOr isSpinner={isUploading} msg="Generating TGPs...">
+        <SpinnerOr isSpinner={isUploading} msg="Generating TGPs...">
+          {Array.from(videoInputData).length !== 0 && (
             <Button size="sm" variant="success" onClick={handleCreateVideos}>
               Submit {Array.from(videoInputData).length} file(s)
             </Button>
-          </SpinnerOr>
-        )}
+          )}
+        </SpinnerOr>
       </Col>
       <Col xs={6} className="d-flex justify-content-end">
         <SpinnerOr isSpinner={isGeneratingTgps} msg="Generating TGPs...">

@@ -4,13 +4,17 @@ import { useParams } from 'react-router'
 import mainAdapter from '../../../mainAdapter'
 import { useAllGalleries } from '../hooks/galleries'
 import { useAllTags } from '../hooks/tags'
-import { useVideo } from '../hooks/videos'
+import {
+  useGenerateTgp,
+  useUpdateVideoGalleries,
+  useUpdateVideoTags,
+  useVideo
+} from '../hooks/videos'
 import { getImgPathAndVideoName } from '../utils'
 import CenterMessage from '../views/app/CenterMessage'
 import VideoView from '../views/videos/Video'
 
 export default function Video() {
-  const [isGeneratingTgp, setIsGeneratingTgp] = React.useState(false)
   const [selectedTags, setSelectedTags] = React.useState(new Set())
   const [selectedGalleries, setSelectedGalleries] = React.useState(new Set())
   const [activeTab, setActiveTab] = React.useState('video')
@@ -18,6 +22,9 @@ export default function Video() {
 
   const allTags = useAllTags().data || []
   const allGalleries = useAllGalleries().data || []
+
+  const updateVideoGalleries = useUpdateVideoGalleries()
+  const updateVideoTags = useUpdateVideoTags()
 
   useHotkeys('v', () => {
     if (activeTab === 'video') return
@@ -47,21 +54,14 @@ export default function Video() {
   videoPath = decodeURIComponent(videoPath)
   const video = useVideo(videoPath)
 
-  const setFilesExist = async () => {
-    setSelectedTags(new Set(video.data.tags.map((tag) => tag.title)))
-    setSelectedGalleries(new Set(video.data.galleries.map((gallery) => gallery.galleryPath)))
-  }
+  const [generateTgp, isGeneratingTgp] = useGenerateTgp()
 
   React.useEffect(() => {
-    if (video.isSuccess) setFilesExist()
+    if (video.isSuccess) {
+      setSelectedTags(new Set(video.data.tags.map((tag) => tag.title)))
+      setSelectedGalleries(new Set(video.data.galleries.map((gallery) => gallery.galleryPath)))
+    }
   }, [video.isSuccess])
-
-  const handleGenerateTgp = async () => {
-    setIsGeneratingTgp(true)
-    await mainAdapter.generateTgp(videoPath)
-    // video.isTgpAvailable = true
-    setIsGeneratingTgp(false)
-  }
 
   const { imgPath, videoName } = getImgPathAndVideoName(videoPath)
 
@@ -78,13 +78,15 @@ export default function Video() {
       tgpExists={video.data.isTgpAvailable}
       imgPath={imgPath}
       isGeneratingTgp={isGeneratingTgp}
-      handleGenerateTgp={handleGenerateTgp}
+      handleGenerateTgp={generateTgp}
       allTags={allTags}
       selectedTags={selectedTags}
       allGalleries={allGalleries}
       selectedGalleries={selectedGalleries}
       setSelectedTags={setSelectedTags}
       setSelectedGalleries={setSelectedGalleries}
+      updateVideoGalleries={updateVideoGalleries}
+      updateVideoTags={updateVideoTags}
     />
   )
 }

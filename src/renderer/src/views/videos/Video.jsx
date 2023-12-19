@@ -1,8 +1,7 @@
 import { Button, Col, Row, Tab, Tabs } from 'react-bootstrap'
-import mainAdapter from '../../../../mainAdapter'
 import CheckBoxGroups from '../../components/CheckBoxGroups'
-import SpinnerOr from '../common/SpinnerOr'
 import VideoPlayer from '../../components/VideoPlayer'
+import SpinnerOr from '../common/SpinnerOr'
 
 function Video({
   videoName,
@@ -20,7 +19,9 @@ function Video({
   allGalleries,
   selectedGalleries,
   setSelectedTags,
-  setSelectedGalleries
+  setSelectedGalleries,
+  updateVideoGalleries,
+  updateVideoTags
 }) {
   return (
     <Row>
@@ -90,8 +91,8 @@ function Video({
                   ]}
                   saveHandlers={[setSelectedTags, setSelectedGalleries]}
                   postSave={async ([tagsDiffObj, galleriesDiffObj]) => {
-                    await mainAdapter.updateDbVideoTags(videoPath, tagsDiffObj)
-                    await mainAdapter.updateDbVideoGalleries(videoPath, galleriesDiffObj)
+                    await updateVideoTags([videoPath, tagsDiffObj])
+                    await updateVideoGalleries([videoPath, galleriesDiffObj])
                   }}
                   useDiffObj={true}
                 />

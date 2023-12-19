@@ -1,4 +1,4 @@
-import { useQuery } from 'react-query'
+import { useMutation, useQuery, useQueryClient } from 'react-query'
 import mainAdapter from '../../../mainAdapter'
 
 export function useAvailableVideos() {
@@ -11,4 +11,97 @@ export function useAllVideos() {
 
 export function useVideo(videoPath) {
   return useQuery(['allVideos', videoPath], () => mainAdapter.getVideo(videoPath))
+}
+
+export function useCreateVideos() {
+  const queryClient = useQueryClient()
+  const mutation = useMutation((videoPaths) => mainAdapter.addVideos(videoPaths), {
+    onSuccess: () => {
+      queryClient.invalidateQueries(['availableVideos'])
+      queryClient.invalidateQueries(['allVideos'])
+    }
+  })
+  return [mutation.mutate, mutation.isLoading]
+}
+
+export function useGenerateTgp() {
+  const queryClient = useQueryClient()
+  const mutation = useMutation(
+    (videoPath) => mainAdapter.generateTgp(videoPath).then(() => videoPath),
+    {
+      onSuccess: (videoPath) => {
+        queryClient.invalidateQueries(['availableVideos'])
+        queryClient.invalidateQueries(['allVideos'])
+        queryClient.invalidateQueries(['allVideos', videoPath])
+      }
+    }
+  )
+  return [mutation.mutate, mutation.isLoading]
+}
+
+export function useGenerateMissingTgps() {
+  const queryClient = useQueryClient()
+  const mutation = useMutation(() => mainAdapter.generateMissingTgps(), {
+    onSuccess: () => {
+      queryClient.invalidateQueries(['availableVideos'])
+      queryClient.invalidateQueries(['allVideos'])
+    }
+  })
+  return [mutation.mutate, mutation.isLoading]
+}
+
+export function useDeleteVideo() {
+  const queryClient = useQueryClient()
+  return useMutation(
+    (videoPathToRemove) =>
+      mainAdapter.deleteDbVideo(videoPathToRemove).then(() => videoPathToRemove),
+    {
+      onSuccess: (videoPathToRemove) => {
+        queryClient.invalidateQueries(['availableVideos'])
+        queryClient.invalidateQueries(['allVideos'])
+        queryClient.invalidateQueries(['allVideos', videoPathToRemove])
+      }
+    }
+  ).mutate
+}
+
+export function useDeleteMissingVideos() {
+  const queryClient = useQueryClient()
+  const mutation = useMutation(() => mainAdapter.deleteMissingDbVideos(), {
+    onSuccess: () => {
+      queryClient.invalidateQueries(['availableVideos'])
+      queryClient.invalidateQueries(['allVideos'])
+    }
+  })
+  return [mutation.mutate, mutation.isLoading]
+}
+
+export function useUpdateVideoGalleries() {
+  const queryClient = useQueryClient()
+  return useMutation(
+    ([videoPath, galleriesDiffObj]) =>
+      mainAdapter.updateDbVideoGalleries(videoPath, galleriesDiffObj).then(() => videoPath),
+    {
+      onSuccess: (videoPath) => {
+        queryClient.invalidateQueries(['availableVideos'])
+        queryClient.invalidateQueries(['allVideos'])
+        queryClient.invalidateQueries(['allVideos', videoPath])
+      }
+    }
+  ).mutate
+}
+
+export function useUpdateVideoTags() {
+  const queryClient = useQueryClient()
+  return useMutation(
+    ([videoPath, tagsDiffObj]) =>
+      mainAdapter.updateDbVideoTags(videoPath, tagsDiffObj).then(() => videoPath),
+    {
+      onSuccess: (videoPath) => {
+        queryClient.invalidateQueries(['availableVideos'])
+        queryClient.invalidateQueries(['allVideos'])
+        queryClient.invalidateQueries(['allVideos', videoPath])
+      }
+    }
+  ).mutate
 }

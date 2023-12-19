@@ -82,9 +82,7 @@ export const deleteMissingVideos = async () => {
 
 export const generateMissingTgps = async () => {
   const existingVideos = await db.getVideos()
-  existingVideos.forEach((video) => {
-    generateTgp(video.filePath)
-  })
+  await Promise.all(existingVideos.map((video) => generateTgp(video.filePath)))
 }
 
 export const isFileExisting = (videoPath) => {
