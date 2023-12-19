@@ -1,43 +1,43 @@
 import { Op } from 'sequelize'
 import { Gallery, Tag, Video } from '../main/database/database'
 
-export const deleteVideo = async (videoPath) => {
+export async function deleteVideo(videoPath) {
   await Video.destroy({ where: { filePath: videoPath } })
 }
 
-export const deleteVideos = async (videoPaths) => {
+export async function deleteVideos(videoPaths) {
   await Video.destroy({ where: { filePath: { [Op.in]: videoPaths } } })
 }
 
-export const deleteTag = async (tagTitle) => {
+export async function deleteTag(tagTitle) {
   await Tag.destroy({ where: { title: tagTitle } })
 }
 
-export const deleteGallery = async (galleryPath) => {
+export async function deleteGallery(galleryPath) {
   await Gallery.destroy({ where: { galleryPath: galleryPath } })
 }
 
-export const deleteGalleries = async (galleryPaths) => {
+export async function deleteGalleries(galleryPaths) {
   await Gallery.destroy({ where: { galleryPath: { [Op.in]: galleryPaths } } })
 }
 
-export const getVideos = async () => {
+export async function getVideos() {
   return await Video.findAll({ raw: true })
 }
 
-export const getTags = async () => {
+export async function getTags() {
   return await Tag.findAll({ raw: true })
 }
 
-export const getGalleries = async () => {
+export async function getGalleries() {
   return await Gallery.findAll({ raw: true })
 }
 
-export const createVideos = async (videos) => {
+export async function createVideos(videos) {
   await Video.bulkCreate(videos)
 }
 
-export const createTags = async (tagTitles) => {
+export async function createTags(tagTitles) {
   const existingTags = new Set((await getTags()).map((t) => t.title))
   const validTags = tagTitles
     .toLowerCase()
@@ -48,13 +48,13 @@ export const createTags = async (tagTitles) => {
   Tag.bulkCreate(validTags)
 }
 
-export const createGallery = async (galleryPath) => {
+export async function createGallery(galleryPath) {
   const existingGalleries = new Set((await getGalleries()).map((v) => v.galleryPath))
   if (existingGalleries.has(galleryPath)) return
   await Gallery.create({ galleryPath: galleryPath })
 }
 
-export const getVideoData = async (videoPath) => {
+export async function getVideoData(videoPath) {
   const videoObj = await Video.findOne({
     where: { filePath: videoPath },
     include: [Tag, Gallery]
@@ -65,7 +65,7 @@ export const getVideoData = async (videoPath) => {
   }
 }
 
-export const getGalleryData = async (galleryPath) => {
+export async function getGalleryData(galleryPath) {
   const galleryObj = await Gallery.findOne({
     where: { galleryPath: galleryPath },
     include: [Video]
@@ -75,7 +75,7 @@ export const getGalleryData = async (galleryPath) => {
   }
 }
 
-export const getTagData = async (tagTitle) => {
+export async function getTagData(tagTitle) {
   const tagObj = await Tag.findOne({
     where: { title: tagTitle },
     include: [Video]
@@ -85,31 +85,31 @@ export const getTagData = async (tagTitle) => {
   }
 }
 
-export const updateVideoTags = async (videoPath, diffObj) => {
+export async function updateVideoTags(videoPath, diffObj) {
   const videoObj = await Video.findOne({ where: { filePath: videoPath } })
   await videoObj.addTags(diffObj['add'])
   await videoObj.removeTags(diffObj['remove'])
 }
 
-export const updateVideoGalleries = async (videoPath, diffObj) => {
+export async function updateVideoGalleries(videoPath, diffObj) {
   const videoObj = await Video.findOne({ where: { filePath: videoPath } })
   await videoObj.addGalleries(diffObj['add'])
   await videoObj.removeGalleries(diffObj['remove'])
 }
 
-export const updateGalleryVideos = async (galleryPath, diffObj) => {
+export async function updateGalleryVideos(galleryPath, diffObj) {
   const galleryObj = await Gallery.findOne({ where: { galleryPath: galleryPath } })
   await galleryObj.addVideos(diffObj['add'])
   await galleryObj.removeVideos(diffObj['remove'])
 }
 
-export const updateTagVideos = async (tagTitle, diffObj) => {
+export async function updateTagVideos(tagTitle, diffObj) {
   const tagObj = await Tag.findOne({ where: { title: tagTitle } })
   await tagObj.addVideos(diffObj['add'])
   await tagObj.removeVideos(diffObj['remove'])
 }
 
-export const getSelectedVideos = async (videoPaths) => {
+export async function getSelectedVideos(videoPaths) {
   const videoObjs = await Video.findAll({
     where: { filePath: { [Op.in]: videoPaths } },
     include: [Tag, Gallery]

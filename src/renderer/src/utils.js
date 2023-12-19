@@ -1,14 +1,7 @@
 import mainAdapter from '../../mainAdapter'
 
 export async function getExecutablesStatus() {
-  const pythonExecutable = (await mainAdapter.isCommandExisting('python'))
-    ? 'python'
-    : (await mainAdapter.isCommandExisting('python3'))
-      ? 'python3'
-      : (await mainAdapter.isCommandExisting('py'))
-        ? 'py'
-        : ''
-
+  const pythonExecutable = await mainAdapter.getPythonExecutable()
   let pipExecutable = ''
   if (pythonExecutable !== '') {
     try {

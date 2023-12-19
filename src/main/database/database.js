@@ -9,7 +9,7 @@ export let Tag = null
 export let Gallery = null
 export let Video = null
 
-export const setupDB = async (app) => {
+export async function setupDB(app) {
   sequelize = new Sequelize({
     dialect: 'sqlite',
     storage: path.join(app.getPath('home'), 'pvorg.db'),
@@ -22,7 +22,7 @@ export const setupDB = async (app) => {
   await sequelize.sync()
 }
 
-const createTables = () => {
+function createTables() {
   Tag = sequelize.define('Tag', TagModel)
   Gallery = sequelize.define('Gallery', GalleryModel)
   Video = sequelize.define('Video', VideoModel)

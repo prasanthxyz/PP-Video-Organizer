@@ -3,29 +3,25 @@ import _ from 'lodash'
 import * as path from 'path'
 import * as db from './db'
 
-export const isDirExisting = (dirPath) => {
-  return fs.existsSync(dirPath)
-}
-
-export const deleteMissingGalleries = async () => {
+export async function deleteMissingGalleries() {
   const allGalleries = (await db.getGalleries()).map((g) => g.galleryPath)
-  const missingGalleries = allGalleries.filter((g) => !isDirExisting(g))
+  const missingGalleries = allGalleries.filter((g) => !fs.existsSync(g))
   await db.deleteGalleries(missingGalleries)
 }
 
-export const getAvailableGalleries = async () => {
-  return (await db.getGalleries()).map((g) => g.galleryPath).filter(isDirExisting)
+export async function getAvailableGalleries() {
+  return (await db.getGalleries()).map((g) => g.galleryPath).filter(fs.existsSync)
 }
 
-export const getAllGalleries = async () => {
+export async function getAllGalleries() {
   return (await db.getGalleries()).map((gallery) => ({
     ...gallery,
     id: gallery.galleryPath,
-    isAvailable: isDirExisting(gallery.galleryPath)
+    isAvailable: fs.existsSync(gallery.galleryPath)
   }))
 }
 
-export const getGallery = async (galleryPath) => {
+export async function getGallery(galleryPath) {
   const galleryData = await db.getGalleryData(galleryPath)
   return {
     ...galleryData,

@@ -1,14 +1,14 @@
 import * as db from './db'
 
-export const getAvailableTags = async () => {
+export async function getAvailableTags() {
   return (await db.getTags()).map((t) => t.title)
 }
 
-export const getAllTags = async () => {
+export async function getAllTags() {
   return (await db.getTags()).map((tag) => ({ ...tag, id: tag.title }))
 }
 
-export const getTag = async (tagTitle) => {
+export async function getTag(tagTitle) {
   const tagData = await db.getTagData(tagTitle)
   return {
     ...tagData,

@@ -1,6 +1,6 @@
 import * as db from './db'
 
-export const getCombinationsData = async (videoPaths, tagsSet, galleriesSet) => {
+export async function getCombinationsData(videoPaths, tagsSet, galleriesSet) {
   const videos = await db.getSelectedVideos([...videoPaths])
   const combinationsData = []
   for (const { videoPath, videoTags, videoGalleries } of videos) {
