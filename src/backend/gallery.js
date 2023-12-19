@@ -1,17 +1,10 @@
 import * as fs from 'fs'
+import _ from 'lodash'
 import * as path from 'path'
 import * as db from './db'
 
 export const isDirExisting = (dirPath) => {
   return fs.existsSync(dirPath)
-}
-
-export const getGalleryImagePaths = (galleryPath) => {
-  const imageExtensions = ['.jpg', '.jpeg', '.png', '.gif']
-  return fs
-    .readdirSync(galleryPath)
-    .filter((file) => imageExtensions.includes(path.extname(file).toLowerCase()))
-    .map((file) => path.join(galleryPath, file))
 }
 
 export const deleteMissingGalleries = async () => {
@@ -30,4 +23,23 @@ export const getAllGalleries = async () => {
     id: gallery.galleryPath,
     isAvailable: isDirExisting(gallery.galleryPath)
   }))
+}
+
+export const getGallery = async (galleryPath) => {
+  const galleryData = await db.getGalleryData(galleryPath)
+  return {
+    ...galleryData,
+    id: galleryPath,
+    images: _.shuffle(
+      getGalleryImagePaths(galleryPath).map((i) => 'file:///' + i.replace(/\\/g, '/'))
+    )
+  }
+}
+
+function getGalleryImagePaths(galleryPath) {
+  const imageExtensions = ['.jpg', '.jpeg', '.png', '.gif']
+  return fs
+    .readdirSync(galleryPath)
+    .filter((file) => imageExtensions.includes(path.extname(file).toLowerCase()))
+    .map((file) => path.join(galleryPath, file))
 }

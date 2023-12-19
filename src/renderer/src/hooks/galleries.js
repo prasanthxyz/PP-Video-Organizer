@@ -8,3 +8,7 @@ export function useAvailableGalleries() {
 export function useAllGalleries() {
   return useQuery('allGalleries', () => mainAdapter.getAllGalleries())
 }
+
+export function useGallery(galleryPath) {
+  return useQuery(['allGalleries', galleryPath], () => mainAdapter.getGallery(galleryPath))
+}

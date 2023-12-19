@@ -1,29 +1,21 @@
-import _ from 'lodash'
 import * as React from 'react'
-import mainAdapter from '../../../mainAdapter'
+import { useGallery } from '../hooks/galleries'
 import { getImgPathAndVideoName } from '../utils'
+import CenterMessage from '../views/app/CenterMessage'
 import RPSView from '../views/home/RPS'
 
 export default function RPS({ combination, showVid, isVideoPlaying }) {
-  const [galleryImages, setGalleryImages] = React.useState([])
-
   const videoPath = combination[0]
   const galleryPath = combination[1]
+  const gallery = useGallery(galleryPath)
 
-  const loadGalleryImages = async () => {
-    const imagePaths = _.shuffle(await mainAdapter.getGalleryImagePaths(galleryPath))
-    setGalleryImages(imagePaths.map((imagePath) => 'file:///' + imagePath.replace(/\\/g, '/')))
-  }
-
-  React.useEffect(() => {
-    loadGalleryImages()
-  }, [combination])
+  if (gallery.isLoading) return <CenterMessage msg="Loading..." />
 
   return (
     <RPSView
       showVid={showVid}
       getImgPathAndVideoName={getImgPathAndVideoName}
-      galleryImages={galleryImages}
+      galleryImages={gallery.data.images}
       videoPath={videoPath}
       isVideoPlaying={isVideoPlaying}
     />

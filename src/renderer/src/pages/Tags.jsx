@@ -3,10 +3,10 @@ import { useNavigate } from 'react-router-dom'
 import mainAdapter from '../../../mainAdapter.js'
 import { Context } from '../App.jsx'
 import TagsView from '../views/tags/Tags.jsx'
+import { useAllTags } from '../hooks/tags.js'
 
 export default function Tags() {
   const [filterText, setFilterText] = React.useState('')
-  const [dbTags, setDbTags] = React.useState([])
   const [isCreating, setIsCreating] = React.useState(false)
   const [tagInput, setTagInput] = React.useState('')
 
@@ -14,26 +14,18 @@ export default function Tags() {
 
   const navigate = useNavigate()
 
-  React.useEffect(() => {
-    loadTags()
-  }, [])
-
-  const loadTags = async () => {
-    setDbTags(await mainAdapter.getDbTags())
-  }
+  const dbTags = useAllTags().data || []
 
   const handleCreateTags = async (e) => {
     setIsCreating(true)
     await mainAdapter.createDbTags(tagInput)
     setIsCreating(false)
     document.getElementById('tagInput').value = ''
-    await loadTags()
     setHasDataChanged(true)
   }
 
   const handleDeleteTag = async (tagTitleToRemove) => {
     await mainAdapter.deleteDbTag(tagTitleToRemove)
-    setDbTags(dbTags.filter((dbTag) => dbTag.title !== tagTitleToRemove))
     setHasDataChanged(true)
   }
 

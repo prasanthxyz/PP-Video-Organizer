@@ -1,10 +1,10 @@
 import { Button } from 'react-bootstrap'
 import SpinnerOr from '../common/SpinnerOr'
+import { Link } from 'react-router-dom'
 
 function VideoRow({
   video,
   fileExists,
-  getVideoLink,
   videoName,
   deleteVideo,
   tgpExists,
@@ -16,7 +16,13 @@ function VideoRow({
       <td style={{ maxWidth: '3rem' }} className="text-end">
         {video.sl}
       </td>
-      <td className="col-7">{fileExists ? getVideoLink() : videoName}</td>
+      <td className="col-7">
+        {fileExists ? (
+          <Link to={`/video/${encodeURIComponent(video.filePath)}`}>{videoName}</Link>
+        ) : (
+          videoName
+        )}
+      </td>
       <td>
         <Button size="sm" variant="danger" onClick={async () => await deleteVideo(video.filePath)}>
           Delete

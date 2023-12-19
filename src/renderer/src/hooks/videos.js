@@ -8,3 +8,7 @@ export function useAvailableVideos() {
 export function useAllVideos() {
   return useQuery('allVideos', () => mainAdapter.getAllVideos())
 }
+
+export function useVideo(videoPath) {
+  return useQuery(['allVideos', videoPath], () => mainAdapter.getVideo(videoPath))
+}

@@ -4,6 +4,7 @@ import * as fs from 'fs'
 import * as path from 'path'
 import * as db from './db'
 
+import { getImgPathAndVideoName } from '../renderer/src/utils'
 import { execCommand, isCommandExisting } from './utils'
 
 export const addVideos = async (videoPaths) => {
@@ -55,8 +56,20 @@ export const getAllVideos = async () => {
     ...video,
     id: video.filePath,
     isAvailable: isFileExisting(video.filePath),
-    isTgpAvailable: isTgpExisting(video.filePath)
+    isTgpAvailable: isTgpExisting(video.filePath),
+    tgp: getImgPathAndVideoName(video.filePath).imgPath
   }))
+}
+
+export const getVideo = async (videoPath) => {
+  const videoData = await db.getVideoData(videoPath)
+  return {
+    ...videoData,
+    id: videoPath,
+    isAvailable: isFileExisting(videoPath),
+    isTgpAvailable: isTgpExisting(videoPath),
+    tgp: getImgPathAndVideoName(videoPath).imgPath
+  }
 }
 
 export const deleteMissingVideos = async () => {

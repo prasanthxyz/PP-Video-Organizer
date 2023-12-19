@@ -2,24 +2,20 @@ import * as React from 'react'
 import mainAdapter from '../../../mainAdapter.js'
 import { Context } from '../App.jsx'
 import VideosView from '../views/videos/Videos.jsx'
+import { useAllVideos } from '../hooks/videos.js'
 
 export default function Videos() {
-  const [dbVideos, setDbVideos] = React.useState([])
   const [filterText, setFilterText] = React.useState('')
   const [isUploading, setIsUploading] = React.useState(false)
   const [isGeneratingTgps, setIsGeneratingTgps] = React.useState(false)
   const [videoInputData, setVideoInputData] = React.useState({})
   const [isDeletingVideos, setIsDeletingVideos] = React.useState(false)
 
+  const dbVideos = useAllVideos().data || []
   const { setHasDataChanged } = React.useContext(Context)
-
-  React.useEffect(() => {
-    loadVideos()
-  }, [])
 
   const handleDeleteVideo = async (videoPathToRemove) => {
     await mainAdapter.deleteDbVideo(videoPathToRemove)
-    setDbVideos(dbVideos.filter((videoPath) => videoPath.filePath !== videoPathToRemove))
     setHasDataChanged(true)
   }
 
@@ -28,31 +24,21 @@ export default function Videos() {
     const videoPaths = Array.from(videoInputData).map((video) => video.path)
     await mainAdapter.addVideos(videoPaths)
     setIsUploading(false)
-    document.getElementById('filesInput').value = ''
-    await loadVideos()
     setHasDataChanged(true)
-  }
-
-  const loadVideos = async () => {
-    setDbVideos(
-      (await mainAdapter.getDbVideos()).map((video, index) => ({ ...video, sl: index + 1 }))
-    )
   }
 
   const handleGenerateMissingTgps = async () => {
     setIsGeneratingTgps(true)
     await mainAdapter.generateMissingTgps()
-    setDbVideos([])
-    await loadVideos()
     setIsGeneratingTgps(false)
+    // setHasDataChanged(true)
   }
 
   const handleDeleteMissingVideos = async () => {
     setIsDeletingVideos(true)
     await mainAdapter.deleteMissingDbVideos()
-    setDbVideos([])
-    await loadVideos()
     setIsDeletingVideos(false)
+    setHasDataChanged(true)
   }
 
   return (

@@ -5,39 +5,21 @@ import { getImgPathAndVideoName } from '../utils'
 import VideoRowView from '../views/videos/VideoRow'
 
 export default function VideoRow({ video, deleteVideo, index }) {
-  const [tgpExists, setTgpExists] = React.useState(false)
-  const [fileExists, setFileExists] = React.useState(false)
   const [isGeneratingTgp, setIsGeneratingTgp] = React.useState(false)
-
-  const setFilesExist = async () => {
-    setTgpExists(await mainAdapter.isTgpExisting(video.filePath))
-    setFileExists(await mainAdapter.isFileExisting(video.filePath))
-  }
-
-  React.useEffect(() => {
-    setFilesExist()
-  }, [])
 
   const handleGenerateTgp = async () => {
     setIsGeneratingTgp(true)
     await mainAdapter.generateTgp(video.filePath)
-    setTgpExists(true)
     setIsGeneratingTgp(false)
   }
-
-  const { videoName } = getImgPathAndVideoName(video.filePath)
-  const getVideoLink = () => (
-    <Link to={`/video/${encodeURIComponent(video.filePath)}`}>{videoName}</Link>
-  )
 
   return (
     <VideoRowView
       video={video}
-      fileExists={fileExists}
-      getVideoLink={getVideoLink}
-      videoName={videoName}
+      fileExists={video.isAvailable}
+      videoName={getImgPathAndVideoName(video.filePath).videoName}
       deleteVideo={deleteVideo}
-      tgpExists={tgpExists}
+      tgpExists={video.isTgpAvailable}
       isGeneratingTgp={isGeneratingTgp}
       handleGenerateTgp={handleGenerateTgp}
     />

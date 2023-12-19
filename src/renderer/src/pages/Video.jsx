@@ -4,19 +4,20 @@ import { useParams } from 'react-router'
 import mainAdapter from '../../../mainAdapter'
 import { useAllGalleries } from '../hooks/galleries'
 import { useAllTags } from '../hooks/tags'
+import { useVideo } from '../hooks/videos'
 import { getImgPathAndVideoName } from '../utils'
+import CenterMessage from '../views/app/CenterMessage'
 import VideoView from '../views/videos/Video'
 
 export default function Video() {
-  const [tgpExists, setTgpExists] = React.useState(false)
   const [isGeneratingTgp, setIsGeneratingTgp] = React.useState(false)
   const [selectedTags, setSelectedTags] = React.useState(new Set())
   const [selectedGalleries, setSelectedGalleries] = React.useState(new Set())
   const [activeTab, setActiveTab] = React.useState('video')
   const [isVideoPlaying, setIsVideoPlaying] = React.useState(false)
 
-  const allTags = useAllTags().data
-  const allGalleries = useAllGalleries().data
+  const allTags = useAllTags().data || []
+  const allGalleries = useAllGalleries().data || []
 
   useHotkeys('v', () => {
     if (activeTab === 'video') return
@@ -44,26 +45,27 @@ export default function Video() {
 
   let { videoPath } = useParams()
   videoPath = decodeURIComponent(videoPath)
+  const video = useVideo(videoPath)
 
   const setFilesExist = async () => {
-    setTgpExists(await mainAdapter.isTgpExisting(videoPath))
-    const videoData = await mainAdapter.getDbVideoData(videoPath)
-    setSelectedTags(new Set(videoData['tags'].map((tag) => tag.title)))
-    setSelectedGalleries(new Set(videoData['galleries'].map((gallery) => gallery.galleryPath)))
+    setSelectedTags(new Set(video.data.tags.map((tag) => tag.title)))
+    setSelectedGalleries(new Set(video.data.galleries.map((gallery) => gallery.galleryPath)))
   }
 
   React.useEffect(() => {
-    setFilesExist()
-  }, [])
+    if (video.isSuccess) setFilesExist()
+  }, [video.isSuccess])
 
   const handleGenerateTgp = async () => {
     setIsGeneratingTgp(true)
     await mainAdapter.generateTgp(videoPath)
-    setTgpExists(true)
+    // video.isTgpAvailable = true
     setIsGeneratingTgp(false)
   }
 
   const { imgPath, videoName } = getImgPathAndVideoName(videoPath)
+
+  if (video.isLoading) return <CenterMessage msg="Loading..." />
 
   return (
     <VideoView
@@ -73,7 +75,7 @@ export default function Video() {
       setActiveTab={setActiveTab}
       isVideoPlaying={isVideoPlaying}
       videoPath={videoPath}
-      tgpExists={tgpExists}
+      tgpExists={video.data.isTgpAvailable}
       imgPath={imgPath}
       isGeneratingTgp={isGeneratingTgp}
       handleGenerateTgp={handleGenerateTgp}

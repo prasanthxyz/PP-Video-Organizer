@@ -6,21 +6,16 @@ import * as utils from './backend/utils'
 import * as video from './backend/video'
 
 const ipcMethods = {
-  getDbVideos: db.getVideos,
   generateTgp: video.generateTgp,
   isTgpExisting: video.isTgpExisting,
   generateMissingTgps: video.generateMissingTgps,
-  isFileExisting: video.isFileExisting,
   deleteDbVideo: db.deleteVideo,
   createDbTags: db.createTags,
   getDbTags: db.getTags,
   deleteDbTag: db.deleteTag,
-  getDbGalleries: db.getGalleries,
   createDbGallery: db.createGallery,
   deleteDbGallery: db.deleteGallery,
   isDirExisting: gallery.isDirExisting,
-  getGalleryImagePaths: gallery.getGalleryImagePaths,
-  getDbVideoData: db.getVideoData,
   updateDbVideoTags: db.updateVideoTags,
   updateDbVideoGalleries: db.updateVideoGalleries,
   getCombinationsData: rps.getCombinationsData,
@@ -38,7 +33,9 @@ const ipcMethods = {
   getAvailableGalleries: gallery.getAvailableGalleries,
   getAllGalleries: gallery.getAllGalleries,
   getAllTags: tag.getAllTags,
-  getAllVideos: video.getAllVideos
+  getAllVideos: video.getAllVideos,
+  getGallery: gallery.getGallery,
+  getVideo: video.getVideo
 }
 
 export default ipcMethods

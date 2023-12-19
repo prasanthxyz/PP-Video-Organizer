@@ -7,7 +7,7 @@ import TagView from '../views/tags/Tag'
 export default function Tag() {
   const [selectedVideos, setSelectedVideos] = React.useState(new Set())
 
-  const allVideos = useAllVideos().data
+  const allVideos = useAllVideos().data || []
 
   let { tagTitle } = useParams()
   tagTitle = decodeURIComponent(tagTitle)
