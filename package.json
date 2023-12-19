@@ -1,6 +1,6 @@
 {
   "name": "pvorg",
-  "version": "2.0.0",
+  "version": "3.0.0",
   "description": "A video organizer and random video selector with genre/gallery tagging and slideshows",
   "main": "./out/main/index.js",
   "author": "Prasanth P <prasanthxyz@gmail.com>",
