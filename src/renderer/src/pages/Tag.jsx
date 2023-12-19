@@ -1,37 +1,32 @@
 import * as React from 'react'
 import { useParams } from 'react-router'
-import mainAdapter from '../../../mainAdapter'
-import { Context } from '../App'
-import TagView from '../views/tags/Tag'
+import { useTag, useUpdateTagVideos } from '../hooks/tags'
+import { useAllVideos } from '../hooks/videos'
+import CenterMessage from '../views/app/CenterMessage'
+import TagView from '../views/tags/TagView'
 
 export default function Tag() {
   const [selectedVideos, setSelectedVideos] = React.useState(new Set())
-
-  const { allVideos, hasDataChanged, loadDataIfChanged } = React.useContext(Context)
-
-  React.useEffect(() => {
-    loadDataIfChanged()
-  }, [hasDataChanged])
+  const allVideos = useAllVideos()
 
   let { tagTitle } = useParams()
   tagTitle = decodeURIComponent(tagTitle)
-
-  const loadData = async () => {
-    setSelectedVideos(
-      new Set((await mainAdapter.getDbTagData(tagTitle))['videos'].map((video) => video.filePath))
-    )
-  }
+  const tag = useTag(tagTitle)
+  const updateTagVideos = useUpdateTagVideos()
 
   React.useEffect(() => {
-    loadData()
-  }, [])
+    if (!tag.isLoading) setSelectedVideos(new Set(tag.data.videos.map((video) => video.filePath)))
+  }, [tag.isLoading])
+
+  if (tag.isLoading || allVideos.isLoading) return <CenterMessage msg="Loading..." />
 
   return (
     <TagView
-      tagTitle={tagTitle}
-      allVideos={allVideos}
+      tag={tag.data}
+      allVideos={allVideos.data}
       selectedVideos={selectedVideos}
       setSelectedVideos={setSelectedVideos}
+      updateTagVideos={updateTagVideos}
     />
   )
 }

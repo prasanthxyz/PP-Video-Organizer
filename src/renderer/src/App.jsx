@@ -2,6 +2,9 @@ import _ from 'lodash'
 import * as React from 'react'
 import { HashRouter, Route, Routes } from 'react-router-dom'
 import mainAdapter from '../../mainAdapter.js'
+import { useAvailableGalleries } from './hooks/galleries.js'
+import { useAvailableTags } from './hooks/tags.js'
+import { useAvailableVideos } from './hooks/videos.js'
 import Galleries from './pages/Galleries.jsx'
 import Gallery from './pages/Gallery.jsx'
 import Home from './pages/Home.jsx'
@@ -11,120 +14,111 @@ import Tags from './pages/Tags.jsx'
 import Video from './pages/Video.jsx'
 import Videos from './pages/Videos.jsx'
 import { getExecutablesStatus } from './utils.js'
-import Loading from './views/app/Loading.jsx'
+import CenterMessage from './views/app/CenterMessage.jsx'
 import MissingExecutables from './views/app/MissingExecutables.jsx'
 
-export const Context = React.createContext(null)
+export default function App() {
+  const [isCheckingExecutables, setIsCheckingExecutables] = React.useState(true)
+  const [executablesStatus, setExecutablesStatus] = React.useState([])
 
-function App() {
-  const [isLoading, setIsLoading] = React.useState(true)
-  const [hasDataChanged, setHasDataChanged] = React.useState(true)
-  const [areExecutablesPresent, setAreExecutablesPresent] = React.useState([true, true, true, true])
-  const [allCombinations, setAllCombinations] = React.useState([])
+  const [isGeneratingCombinations, setIsGeneratingCombinations] = React.useState(false)
+  const [selection, setSelection] = React.useState({
+    tags: new Set(),
+    videos: new Set(),
+    galleries: new Set()
+  })
+  const [combinations, setCombinations] = React.useState([])
   const [combinationIndex, setCombinationIndex] = React.useState(0)
-  const [allVideos, setAllVideos] = React.useState([])
-  const [selectedVideos, setSelectedVideos] = React.useState(new Set())
-  const [allTags, setAllTags] = React.useState([])
-  const [selectedTags, setSelectedTags] = React.useState(new Set())
-  const [allGalleries, setAllGalleries] = React.useState([])
-  const [selectedGalleries, setSelectedGalleries] = React.useState(new Set())
+
+  const availableVideos = useAvailableVideos()
+  const availableTags = useAvailableTags()
+  const availableGalleries = useAvailableGalleries()
+
+  async function saveSelection(videos, tags, galleries) {
+    setSelection({
+      tags: tags,
+      videos: videos,
+      galleries: galleries
+    })
+    await generateCombinations(videos, tags, galleries)
+  }
+
+  async function generateCombinations(videos, tags, galleries) {
+    setIsGeneratingCombinations(true)
+    setCombinations(_.shuffle(await mainAdapter.getCombinationsData(videos, tags, galleries)))
+    setCombinationIndex(0)
+    setIsGeneratingCombinations(false)
+  }
+
+  async function refreshCombinations() {
+    const [videos, tags, galleries] = (
+      await Promise.all([
+        availableVideos.refetch(),
+        availableTags.refetch(),
+        availableGalleries.refetch()
+      ])
+    ).map((item) => new Set(item.data))
+
+    await saveSelection(videos, new Set(), galleries)
+  }
 
   React.useEffect(() => {
-    setData()
-  }, [])
-
-  const setData = async () => {
-    const areExecutablesPresent = await getExecutablesStatus()
-    setAreExecutablesPresent(areExecutablesPresent)
-    if (areExecutablesPresent.includes(false)) {
-      setIsLoading(false)
-      return
+    if (availableVideos.isSuccess && availableTags.isSuccess && availableGalleries.isSuccess) {
+      saveSelection(new Set(availableVideos.data), new Set(), new Set(availableGalleries.data))
     }
+  }, [availableVideos.isSuccess, availableTags.isSuccess, availableGalleries.isSuccess])
 
-    await loadDataIfChanged()
+  const checkExecutables = async () => {
+    setExecutablesStatus(await getExecutablesStatus())
+    setIsCheckingExecutables(false)
   }
 
-  const loadDataIfChanged = async () => {
-    if (!hasDataChanged) return
-
-    setIsLoading(true)
-    setAllTags((await mainAdapter.getDbTags()).map((tag) => tag.title))
-    setSelectedTags(new Set())
-
-    const allDbGalleries = (await mainAdapter.getDbGalleries()).map((g) => g.galleryPath)
-    const isGalleryExisting = await Promise.all(allDbGalleries.map(mainAdapter.isDirExisting))
-    const availableGalleries = allDbGalleries.filter((gallery, index) => isGalleryExisting[index])
-    setAllGalleries(availableGalleries)
-    setSelectedGalleries(new Set(availableGalleries))
-
-    const allDbVideos = (await mainAdapter.getDbVideos()).map((dbVideo) => dbVideo.filePath)
-    const isVideoExisting = await Promise.all(allDbVideos.map(mainAdapter.isFileExisting))
-    const availableVideos = allDbVideos.filter((videoPath, index) => isVideoExisting[index])
-    setAllVideos(availableVideos)
-    setSelectedVideos(new Set(availableVideos))
-
-    await generateCombinations(new Set(availableVideos), new Set(), new Set(availableGalleries))
-    setHasDataChanged(false)
-    setIsLoading(false)
+  if (isCheckingExecutables) {
+    checkExecutables()
+    return <CenterMessage msg="Checking Executables..." />
   }
 
-  const generateCombinations = async (videos, tags, galleries) => {
-    const allCombinations = _.shuffle(
-      await mainAdapter.getCombinationsData(videos, tags, galleries)
-    )
-    setAllCombinations(allCombinations)
-    setCombinationIndex(0)
-  }
-
-  if (isLoading) return <Loading />
-
-  if (areExecutablesPresent.includes(false)) {
+  if (executablesStatus.includes(false)) {
     const packagesToInstall = [
       ['ffmpeg', 'https://ffmpeg.org/', 'link'],
       ['python', 'https://www.python.org/', 'link'],
       ['pip', 'https://pip.pypa.io/en/stable/installation/', 'link'],
       ['vcsi', 'python -m pip install vcsi', 'code']
-    ].filter((item, index) => !areExecutablesPresent[index])
+    ].filter((item, index) => !executablesStatus[index])
 
     return <MissingExecutables packagesToInstall={packagesToInstall} />
   }
 
+  if (availableVideos.isLoading || availableTags.isLoading || availableGalleries.isLoading) {
+    return <CenterMessage msg="Loading..." />
+  }
+
   return (
-    <Context.Provider
-      value={{
-        allCombinations,
-        combinationIndex,
-        setCombinationIndex,
-        allVideos,
-        selectedVideos,
-        setSelectedVideos,
-        allTags,
-        selectedTags,
-        setSelectedTags,
-        allGalleries,
-        selectedGalleries,
-        setSelectedGalleries,
-        generateCombinations,
-        setHasDataChanged,
-        hasDataChanged,
-        loadDataIfChanged
-      }}
-    >
-      <HashRouter basename="/">
-        <Routes>
-          <Route element={<Layout />}>
-            <Route exact path="/" element={<Home />} />
-            <Route path="/video/:videoPath" element={<Video />} />
-            <Route exact path="/videos" element={<Videos />} />
-            <Route path="/gallery/:galleryPath" element={<Gallery />} />
-            <Route exact path="/galleries" element={<Galleries />} />
-            <Route path="/tag/:tagTitle" element={<Tag />} />
-            <Route exact path="/tags" element={<Tags />} />
-          </Route>
-        </Routes>
-      </HashRouter>
-    </Context.Provider>
+    <HashRouter basename="/">
+      <Routes>
+        <Route element={<Layout refreshCombinations={refreshCombinations} />}>
+          <Route
+            exact
+            path="/"
+            element={
+              <Home
+                selection={selection}
+                saveSelection={saveSelection}
+                combinations={combinations}
+                combinationIndex={combinationIndex}
+                setCombinationIndex={setCombinationIndex}
+                isGeneratingCombinations={isGeneratingCombinations}
+              />
+            }
+          />
+          <Route path="/video/:videoPath" element={<Video />} />
+          <Route exact path="/videos" element={<Videos />} />
+          <Route path="/gallery/:galleryPath" element={<Gallery />} />
+          <Route exact path="/galleries" element={<Galleries />} />
+          <Route path="/tag/:tagTitle" element={<Tag />} />
+          <Route exact path="/tags" element={<Tags />} />
+        </Route>
+      </Routes>
+    </HashRouter>
   )
 }
-
-export default App

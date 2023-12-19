@@ -1,10 +1,10 @@
 import { electronApp, is, optimizer } from '@electron-toolkit/utils'
 import { BrowserWindow, app, dialog, ipcMain, shell } from 'electron'
+import { autoUpdater } from 'electron-updater'
 import { join } from 'path'
 import icon from '../../resources/icon.png?asset'
 import ipcMethods from '../ipcMethods'
 import { setupDB } from './database/database'
-import { autoUpdater } from 'electron-updater'
 
 async function createWindow() {
   // Create the browser window.

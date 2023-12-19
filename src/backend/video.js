@@ -4,9 +4,9 @@ import * as fs from 'fs'
 import * as path from 'path'
 import * as db from './db'
 
-import { execCommand, isCommandExisting } from './utils'
+import { execCommand, getPythonExecutable } from './utils'
 
-export const addVideos = async (videoPaths) => {
+export async function addVideos(videoPaths) {
   const existingVideos = new Set((await db.getVideos()).map((v) => v.filePath))
   const newVideos = []
 
@@ -46,50 +46,54 @@ export const addVideos = async (videoPaths) => {
   await db.createVideos(newVideos)
 }
 
-export const deleteMissingVideos = async () => {
+export async function getAvailableVideos() {
+  return (await db.getVideos())
+    .map((v) => v.filePath)
+    .filter((v) => {
+      const videoData = getVideoData(v)
+      return videoData.isAvailable && videoData.isTgpAvailable
+    })
+}
+
+export async function getAllVideos() {
+  return (await db.getVideos()).map((video) => ({
+    ...video,
+    ...getVideoData(video.filePath)
+  }))
+}
+
+export async function getVideo(videoPath) {
+  const dbVideoData = await db.getVideoData(videoPath)
+  return {
+    ...dbVideoData,
+    ...getVideoData(videoPath)
+  }
+}
+
+export async function deleteMissingVideos() {
   const allVideos = (await db.getVideos()).map((v) => v.filePath)
-  const missingVideos = allVideos.filter((v) => !isFileExisting(v))
+  const missingVideos = allVideos.filter((v) => !fs.existsSync(v))
   await db.deleteVideos(missingVideos)
 }
 
-export const generateMissingTgps = async () => {
+export async function generateMissingTgps() {
   const existingVideos = await db.getVideos()
-  existingVideos.forEach((video) => {
-    generateTgp(video.filePath)
-  })
+  await Promise.all(existingVideos.map((video) => generateTgp(video.filePath)))
 }
 
-export const isFileExisting = (videoPath) => {
-  return fs.existsSync(videoPath)
-}
+export async function generateTgp(videoPath, regenerate = false) {
+  if (!fs.existsSync(videoPath)) return
 
-export const isTgpExisting = (videoPath) => {
-  const [videoName, imgDir] = getVideoData(videoPath)
-  if (!fs.existsSync(imgDir)) return false
-  const imgFileName = path.join(imgDir, videoName + '.jpg')
-  return fs.existsSync(imgFileName)
-}
-
-export const generateTgp = async (videoPath, regenerate = false) => {
-  if (!isFileExisting(videoPath)) return
-  const [videoName, imgDir] = getVideoData(videoPath)
+  const { imgDir, tgpPath, isTgpAvailable } = getVideoData(videoPath)
   if (!fs.existsSync(imgDir)) {
     fs.mkdirSync(imgDir)
   }
-
-  const imgFileName = path.join(imgDir, videoName + '.jpg')
-  if (fs.existsSync(imgFileName)) {
+  if (isTgpAvailable) {
     if (!regenerate) return
-    fs.unlinkSync(imgFileName)
+    fs.unlinkSync(tgpPath)
   }
 
-  const pythonExecutable = (await isCommandExisting('python'))
-    ? 'python'
-    : (await isCommandExisting('python3'))
-      ? 'python3'
-      : (await isCommandExisting('py'))
-        ? 'py'
-        : ''
+  const pythonExecutable = await getPythonExecutable()
   if (pythonExecutable !== '') {
     execCommand(
       `${pythonExecutable} -m vcsi.vcsi "${videoPath}" -g 4x4 --metadata-font-size 0 -w 1500 -o "${imgDir}"`,
@@ -101,13 +105,23 @@ export const generateTgp = async (videoPath, regenerate = false) => {
   }
 }
 
-const getVideoStream = async (videoPath) => {
+async function getVideoStream(videoPath) {
   const data = await ffprobe(videoPath, { path: ffprobeStatic.path })
   for (const stream of data['streams']) if (stream.codec_type === 'video') return stream
   return null
 }
 
-const getVideoData = (videoPath) => {
+function getVideoData(videoPath) {
+  const videoName = path.basename(videoPath)
   const imgDir = path.join(path.dirname(videoPath), 'img')
-  return [path.basename(videoPath), imgDir]
+  const tgpPath = path.join(imgDir, videoName + '.jpg')
+
+  return {
+    id: videoPath,
+    isAvailable: fs.existsSync(videoPath),
+    tgpPath: tgpPath,
+    isTgpAvailable: fs.existsSync(tgpPath),
+    videoName: videoName,
+    imgDir: imgDir
+  }
 }

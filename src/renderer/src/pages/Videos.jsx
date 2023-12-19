@@ -1,74 +1,46 @@
 import * as React from 'react'
-import mainAdapter from '../../../mainAdapter.js'
-import { Context } from '../App.jsx'
-import VideosView from '../views/videos/Videos.jsx'
+import {
+  useAllVideos,
+  useCreateVideos,
+  useDeleteMissingVideos,
+  useDeleteVideo,
+  useGenerateMissingTgps
+} from '../hooks/videos.js'
+import CenterMessage from '../views/app/CenterMessage.jsx'
+import VideosView from '../views/videos/VideosView.jsx'
 
 export default function Videos() {
-  const [dbVideos, setDbVideos] = React.useState([])
   const [filterText, setFilterText] = React.useState('')
-  const [isUploading, setIsUploading] = React.useState(false)
-  const [isGeneratingTgps, setIsGeneratingTgps] = React.useState(false)
   const [videoInputData, setVideoInputData] = React.useState({})
-  const [isDeletingVideos, setIsDeletingVideos] = React.useState(false)
 
-  const { setHasDataChanged } = React.useContext(Context)
+  const dbVideos = useAllVideos()
 
-  React.useEffect(() => {
-    loadVideos()
-  }, [])
-
-  const handleDeleteVideo = async (videoPathToRemove) => {
-    await mainAdapter.deleteDbVideo(videoPathToRemove)
-    setDbVideos(dbVideos.filter((videoPath) => videoPath.filePath !== videoPathToRemove))
-    setHasDataChanged(true)
-  }
+  const [createVideos, isUploading] = useCreateVideos()
+  const [generateMissingTgps, isGeneratingTgps] = useGenerateMissingTgps()
+  const [deleteMissingVideos, isDeletingVideos] = useDeleteMissingVideos()
+  const deleteVideo = useDeleteVideo()
 
   const handleCreateVideos = async (e) => {
-    setIsUploading(true)
-    const videoPaths = Array.from(videoInputData).map((video) => video.path)
-    await mainAdapter.addVideos(videoPaths)
-    setIsUploading(false)
-    document.getElementById('filesInput').value = ''
-    await loadVideos()
-    setHasDataChanged(true)
+    await createVideos(Array.from(videoInputData).map((video) => video.path))
+    setVideoInputData({})
   }
 
-  const loadVideos = async () => {
-    setDbVideos(
-      (await mainAdapter.getDbVideos()).map((video, index) => ({ ...video, sl: index + 1 }))
-    )
-  }
-
-  const handleGenerateMissingTgps = async () => {
-    setIsGeneratingTgps(true)
-    await mainAdapter.generateMissingTgps()
-    setDbVideos([])
-    await loadVideos()
-    setIsGeneratingTgps(false)
-  }
-
-  const handleDeleteMissingVideos = async () => {
-    setIsDeletingVideos(true)
-    await mainAdapter.deleteMissingDbVideos()
-    setDbVideos([])
-    await loadVideos()
-    setIsDeletingVideos(false)
-  }
+  if (dbVideos.isLoading) return <CenterMessage msg="Loading..." />
 
   return (
     <VideosView
-      setFilterText={setFilterText}
-      dbVideos={dbVideos}
-      handleDeleteVideo={handleDeleteVideo}
       filterText={filterText}
-      setVideoInputData={setVideoInputData}
+      setFilterText={setFilterText}
+      dbVideos={dbVideos.data}
+      handleDeleteVideo={deleteVideo}
       videoInputData={videoInputData}
+      setVideoInputData={setVideoInputData}
       isUploading={isUploading}
       handleCreateVideos={handleCreateVideos}
       isGeneratingTgps={isGeneratingTgps}
-      handleGenerateMissingTgps={handleGenerateMissingTgps}
+      handleGenerateMissingTgps={generateMissingTgps}
       isDeletingVideos={isDeletingVideos}
-      handleDeleteMissingVideos={handleDeleteMissingVideos}
+      handleDeleteMissingVideos={deleteMissingVideos}
     />
   )
 }

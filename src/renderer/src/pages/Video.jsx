@@ -1,24 +1,26 @@
 import * as React from 'react'
 import { useHotkeys } from 'react-hotkeys-hook'
 import { useParams } from 'react-router'
-import mainAdapter from '../../../mainAdapter'
-import { Context } from '../App'
-import { getImgPathAndVideoName } from '../utils'
-import VideoView from '../views/videos/Video'
+import { useAllGalleries } from '../hooks/galleries'
+import { useAllTags } from '../hooks/tags'
+import { useGenerateTgp, useUpdateVideoRelations, useVideo } from '../hooks/videos'
+import CenterMessage from '../views/app/CenterMessage'
+import VideoView from '../views/videos/VideoView'
 
 export default function Video() {
-  const [tgpExists, setTgpExists] = React.useState(false)
-  const [isGeneratingTgp, setIsGeneratingTgp] = React.useState(false)
   const [selectedTags, setSelectedTags] = React.useState(new Set())
   const [selectedGalleries, setSelectedGalleries] = React.useState(new Set())
   const [activeTab, setActiveTab] = React.useState('video')
   const [isVideoPlaying, setIsVideoPlaying] = React.useState(false)
 
-  const { allTags, allGalleries, hasDataChanged, loadDataIfChanged } = React.useContext(Context)
+  let { videoPath } = useParams()
+  videoPath = decodeURIComponent(videoPath)
+  const video = useVideo(videoPath)
+  const allTags = useAllTags()
+  const allGalleries = useAllGalleries()
 
-  React.useEffect(() => {
-    loadDataIfChanged()
-  }, [hasDataChanged])
+  const updateVideoRelations = useUpdateVideoRelations()
+  const [generateTgp, isGeneratingTgp] = useGenerateTgp()
 
   useHotkeys('v', () => {
     if (activeTab === 'video') return
@@ -44,47 +46,29 @@ export default function Video() {
     }
   })
 
-  let { videoPath } = useParams()
-  videoPath = decodeURIComponent(videoPath)
-
-  const setFilesExist = async () => {
-    setTgpExists(await mainAdapter.isTgpExisting(videoPath))
-    const videoData = await mainAdapter.getDbVideoData(videoPath)
-    setSelectedTags(new Set(videoData['tags'].map((tag) => tag.title)))
-    setSelectedGalleries(new Set(videoData['galleries'].map((gallery) => gallery.galleryPath)))
-  }
-
   React.useEffect(() => {
-    setFilesExist()
-  }, [])
+    if (video.isSuccess) {
+      setSelectedTags(new Set(video.data.tags.map((tag) => tag.title)))
+      setSelectedGalleries(new Set(video.data.galleries.map((gallery) => gallery.galleryPath)))
+    }
+  }, [video.isSuccess])
 
-  const handleGenerateTgp = async () => {
-    setIsGeneratingTgp(true)
-    await mainAdapter.generateTgp(videoPath)
-    setTgpExists(true)
-    setIsGeneratingTgp(false)
-  }
-
-  const { imgPath, videoName } = getImgPathAndVideoName(videoPath)
+  if (video.isLoading || allGalleries.isLoading || allTags.isLoading)
+    return <CenterMessage msg="Loading..." />
 
   return (
     <VideoView
-      videoName={videoName}
+      video={video.data}
       activeTab={activeTab}
-      setIsVideoPlaying={setIsVideoPlaying}
       setActiveTab={setActiveTab}
       isVideoPlaying={isVideoPlaying}
-      videoPath={videoPath}
-      tgpExists={tgpExists}
-      imgPath={imgPath}
+      setIsVideoPlaying={setIsVideoPlaying}
       isGeneratingTgp={isGeneratingTgp}
-      handleGenerateTgp={handleGenerateTgp}
-      allTags={allTags}
-      selectedTags={selectedTags}
-      allGalleries={allGalleries}
-      selectedGalleries={selectedGalleries}
-      setSelectedTags={setSelectedTags}
-      setSelectedGalleries={setSelectedGalleries}
+      handleGenerateTgp={generateTgp}
+      allItems={{ tags: allTags.data, galleries: allGalleries.data }}
+      selectedItems={{ tags: selectedTags, galleries: selectedGalleries }}
+      setSelectedItems={{ tags: setSelectedTags, galleries: setSelectedGalleries }}
+      updateVideoRelations={updateVideoRelations}
     />
   )
 }

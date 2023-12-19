@@ -1,8 +1,7 @@
 import React from 'react'
 import { useHotkeys } from 'react-hotkeys-hook'
 import { useLocation, useNavigate } from 'react-router-dom'
-import { Context } from '../App.jsx'
-import LayoutView from '../views/layout/Layout'
+import LayoutView from '../views/layout/LayoutView'
 
 const PAGES = [
   { text: 'Random', shortcut: 'Shift+R', location: '/', prefix: '/' },
@@ -18,11 +17,10 @@ const getActiveNav = (location) => {
   return 'Random'
 }
 
-export default function Layout() {
+export default function Layout({ refreshCombinations }) {
   const location = useLocation().pathname
   const [isDarkMode, setIsDarkMode] = React.useState(false)
   const [activeNav, setActiveNav] = React.useState(getActiveNav(location))
-  const { setHasDataChanged } = React.useContext(Context)
 
   React.useEffect(() => {
     setActiveNav(getActiveNav(location))
@@ -52,7 +50,7 @@ export default function Layout() {
       activeNav={activeNav}
       toggleDarkMode={toggleDarkMode}
       navigate={navigate}
-      setHasDataChanged={setHasDataChanged}
+      refreshCombinations={refreshCombinations}
     />
   )
 }

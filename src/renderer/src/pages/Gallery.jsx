@@ -1,46 +1,33 @@
 import * as React from 'react'
 import { useParams } from 'react-router'
-import mainAdapter from '../../../mainAdapter'
-import { Context } from '../App'
-import GalleryView from '../views/galleries/Gallery'
+import { useGallery, useUpdateGalleryVideos } from '../hooks/galleries'
+import { useAllVideos } from '../hooks/videos'
+import CenterMessage from '../views/app/CenterMessage'
+import GalleryView from '../views/galleries/GalleryView'
 
 export default function Gallery() {
-  const [galleryImages, setGalleryImages] = React.useState([])
   const [selectedVideos, setSelectedVideos] = React.useState(new Set())
-
-  const { allVideos, hasDataChanged, loadDataIfChanged } = React.useContext(Context)
-
-  React.useEffect(() => {
-    loadDataIfChanged()
-  }, [hasDataChanged])
+  const allVideos = useAllVideos()
 
   let { galleryPath } = useParams()
   galleryPath = decodeURIComponent(galleryPath)
-
-  const loadData = async () => {
-    setGalleryImages(
-      (await mainAdapter.getGalleryImagePaths(galleryPath)).map(
-        (imagePath) => 'file:///' + imagePath.replace(/\\/g, '/')
-      )
-    )
-    setSelectedVideos(
-      new Set(
-        (await mainAdapter.getDbGalleryData(galleryPath))['videos'].map((video) => video.filePath)
-      )
-    )
-  }
+  const gallery = useGallery(galleryPath)
+  const updateGalleryVideos = useUpdateGalleryVideos()
 
   React.useEffect(() => {
-    loadData()
-  }, [])
+    if (!gallery.isLoading)
+      setSelectedVideos(new Set(gallery.data.videos.map((video) => video.filePath)))
+  }, [gallery.isLoading])
+
+  if (gallery.isLoading || allVideos.isLoading) return <CenterMessage msg="Loading..." />
 
   return (
     <GalleryView
-      galleryPath={galleryPath}
-      galleryImages={galleryImages}
-      allVideos={allVideos}
+      gallery={gallery.data}
+      allVideos={allVideos.data}
       selectedVideos={selectedVideos}
       setSelectedVideos={setSelectedVideos}
+      updateGalleryVideos={updateGalleryVideos}
     />
   )
 }
