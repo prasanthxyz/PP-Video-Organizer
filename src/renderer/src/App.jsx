@@ -17,14 +17,11 @@ import { getExecutablesStatus } from './utils.js'
 import CenterMessage from './views/app/CenterMessage.jsx'
 import MissingExecutables from './views/app/MissingExecutables.jsx'
 
-export const Context = React.createContext(null)
-
-function App() {
-  const [isGeneratingCombinations, setIsGeneratingCombinations] = React.useState(false)
+export default function App() {
   const [isCheckingExecutables, setIsCheckingExecutables] = React.useState(true)
-  const [executablesStatus, setExecutablesStatus] = React.useState([true, true, true, true])
+  const [executablesStatus, setExecutablesStatus] = React.useState([])
 
-  const [hasDataChanged, setHasDataChanged] = React.useState(false)
+  const [isGeneratingCombinations, setIsGeneratingCombinations] = React.useState(false)
   const [selection, setSelection] = React.useState({
     tags: new Set(),
     videos: new Set(),
@@ -37,13 +34,6 @@ function App() {
   const availableTags = useAvailableTags()
   const availableGalleries = useAvailableGalleries()
 
-  async function generateCombinations(videos, tags, galleries) {
-    setIsGeneratingCombinations(true)
-    setCombinations(_.shuffle(await mainAdapter.getCombinationsData(videos, tags, galleries)))
-    setCombinationIndex(0)
-    setIsGeneratingCombinations(false)
-  }
-
   async function saveSelection(videos, tags, galleries) {
     setSelection({
       tags: tags,
@@ -53,7 +43,14 @@ function App() {
     await generateCombinations(videos, tags, galleries)
   }
 
-  async function generateCombinationsOnDataChange() {
+  async function generateCombinations(videos, tags, galleries) {
+    setIsGeneratingCombinations(true)
+    setCombinations(_.shuffle(await mainAdapter.getCombinationsData(videos, tags, galleries)))
+    setCombinationIndex(0)
+    setIsGeneratingCombinations(false)
+  }
+
+  async function refreshCombinations() {
     const [videos, tags, galleries] = (
       await Promise.all([
         availableVideos.refetch(),
@@ -63,14 +60,7 @@ function App() {
     ).map((item) => new Set(item.data))
 
     await saveSelection(videos, new Set(), galleries)
-    setHasDataChanged(false)
   }
-
-  React.useEffect(() => {
-    if (hasDataChanged) {
-      generateCombinationsOnDataChange()
-    }
-  }, [hasDataChanged])
 
   React.useEffect(() => {
     if (availableVideos.isSuccess && availableTags.isSuccess && availableGalleries.isSuccess) {
@@ -104,33 +94,31 @@ function App() {
   }
 
   return (
-    <Context.Provider
-      value={{
-        selection,
-        saveSelection,
-        combinations,
-        combinationIndex,
-        setCombinationIndex,
-        hasDataChanged,
-        setHasDataChanged,
-        isGeneratingCombinations
-      }}
-    >
-      <HashRouter basename="/">
-        <Routes>
-          <Route element={<Layout />}>
-            <Route exact path="/" element={<Home />} />
-            <Route path="/video/:videoPath" element={<Video />} />
-            <Route exact path="/videos" element={<Videos />} />
-            <Route path="/gallery/:galleryPath" element={<Gallery />} />
-            <Route exact path="/galleries" element={<Galleries />} />
-            <Route path="/tag/:tagTitle" element={<Tag />} />
-            <Route exact path="/tags" element={<Tags />} />
-          </Route>
-        </Routes>
-      </HashRouter>
-    </Context.Provider>
+    <HashRouter basename="/">
+      <Routes>
+        <Route element={<Layout refreshCombinations={refreshCombinations} />}>
+          <Route
+            exact
+            path="/"
+            element={
+              <Home
+                selection={selection}
+                saveSelection={saveSelection}
+                combinations={combinations}
+                combinationIndex={combinationIndex}
+                setCombinationIndex={setCombinationIndex}
+                isGeneratingCombinations={isGeneratingCombinations}
+              />
+            }
+          />
+          <Route path="/video/:videoPath" element={<Video />} />
+          <Route exact path="/videos" element={<Videos />} />
+          <Route path="/gallery/:galleryPath" element={<Gallery />} />
+          <Route exact path="/galleries" element={<Galleries />} />
+          <Route path="/tag/:tagTitle" element={<Tag />} />
+          <Route exact path="/tags" element={<Tags />} />
+        </Route>
+      </Routes>
+    </HashRouter>
   )
 }
-
-export default App

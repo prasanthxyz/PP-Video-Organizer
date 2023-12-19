@@ -12,6 +12,7 @@ export async function getTag(tagTitle) {
   const tagData = await db.getTagData(tagTitle)
   return {
     ...tagData,
-    id: tagTitle
+    id: tagTitle,
+    title: tagTitle
   }
 }

@@ -1,13 +1,19 @@
 import * as React from 'react'
 import { useHotkeys } from 'react-hotkeys-hook'
-import { Context } from '../App'
 import { useAvailableGalleries } from '../hooks/galleries'
 import { useAvailableTags } from '../hooks/tags'
 import { useAvailableVideos } from '../hooks/videos'
 import CenterMessage from '../views/app/CenterMessage'
-import HomeView from '../views/home/Home'
+import HomeView from '../views/home/HomeView'
 
-export default function Home() {
+export default function Home({
+  selection,
+  saveSelection,
+  combinations,
+  combinationIndex,
+  setCombinationIndex,
+  isGeneratingCombinations
+}) {
   const [activeTab, setActiveTab] = React.useState('watch')
   const [showVid, setShowVid] = React.useState(false)
   const [isVideoPlaying, setIsVideoPlaying] = React.useState(false)
@@ -15,17 +21,6 @@ export default function Home() {
   const availableVideos = useAvailableVideos().data || []
   const availableTags = useAvailableTags().data || []
   const availableGalleries = useAvailableGalleries().data || []
-
-  const {
-    selection,
-    saveSelection,
-    combinations,
-    combinationIndex,
-    setCombinationIndex,
-    hasDataChanged,
-    setHasDataChanged,
-    isGeneratingCombinations
-  } = React.useContext(Context)
 
   useHotkeys('c', () => {
     setIsVideoPlaying(false)
@@ -60,32 +55,26 @@ export default function Home() {
   useHotkeys('n', handleNext)
   useHotkeys('b', handleBack)
 
-  const videoPath = combinations.length > 0 ? combinations[combinationIndex][0] : ''
-  const galleryPath = combinations.length > 0 ? combinations[combinationIndex][1] : ''
-
-  if (isGeneratingCombinations) {
-    return <CenterMessage msg="Generating combinations..." />
-  }
+  if (isGeneratingCombinations) return <CenterMessage msg="Generating combinations..." />
 
   return (
     <HomeView
       activeTab={activeTab}
-      setIsVideoPlaying={setIsVideoPlaying}
       setActiveTab={setActiveTab}
-      availableVideos={availableVideos}
-      availableTags={availableTags}
-      availableGalleries={availableGalleries}
+      availableItems={{
+        videos: availableVideos,
+        tags: availableTags,
+        galleries: availableGalleries
+      }}
       selection={selection}
       saveSelection={saveSelection}
-      combinations={combinations}
-      combinationIndex={combinationIndex}
+      combination={combinations.length === 0 ? null : combinations[combinationIndex]}
       showVid={showVid}
       setShowVid={setShowVid}
-      videoPath={videoPath}
-      galleryPath={galleryPath}
       handleBack={handleBack}
       handleNext={handleNext}
       isVideoPlaying={isVideoPlaying}
+      setIsVideoPlaying={setIsVideoPlaying}
     />
   )
 }

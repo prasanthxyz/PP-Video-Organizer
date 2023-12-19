@@ -25,19 +25,3 @@ export async function getExecutablesStatus() {
     vcsiExists
   ]
 }
-
-export function getNameAndPathComponents(path) {
-  const pathComponents = path.replace(/\\/g, '/').split('/')
-  const name = pathComponents[pathComponents.length - 1]
-  return [name, pathComponents]
-}
-
-export function getImgPathAndVideoName(videoPath) {
-  const [videoName, videoPathComponents] = getNameAndPathComponents(videoPath)
-  const imgPath = [
-    ...videoPathComponents.slice(0, videoPathComponents.length - 1),
-    'img',
-    videoName + '.jpg'
-  ].join('/')
-  return { imgPath, videoName }
-}

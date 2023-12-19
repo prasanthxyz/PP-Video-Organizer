@@ -1,5 +1,4 @@
 import * as React from 'react'
-import { Context } from '../App.jsx'
 import {
   useAllVideos,
   useCreateVideos,
@@ -7,13 +6,12 @@ import {
   useDeleteVideo,
   useGenerateMissingTgps
 } from '../hooks/videos.js'
-import VideosView from '../views/videos/Videos.jsx'
+import CenterMessage from '../views/app/CenterMessage.jsx'
+import VideosView from '../views/videos/VideosView.jsx'
 
 export default function Videos() {
   const [filterText, setFilterText] = React.useState('')
   const [videoInputData, setVideoInputData] = React.useState({})
-
-  const { setHasDataChanged } = React.useContext(Context)
 
   const dbVideos = useAllVideos()
 
@@ -24,18 +22,19 @@ export default function Videos() {
 
   const handleCreateVideos = async (e) => {
     await createVideos(Array.from(videoInputData).map((video) => video.path))
-    setHasDataChanged(true)
     setVideoInputData({})
   }
 
+  if (dbVideos.isLoading) return <CenterMessage msg="Loading..." />
+
   return (
     <VideosView
-      setFilterText={setFilterText}
-      dbVideos={dbVideos.data || []}
-      handleDeleteVideo={deleteVideo}
       filterText={filterText}
-      setVideoInputData={setVideoInputData}
+      setFilterText={setFilterText}
+      dbVideos={dbVideos.data}
+      handleDeleteVideo={deleteVideo}
       videoInputData={videoInputData}
+      setVideoInputData={setVideoInputData}
       isUploading={isUploading}
       handleCreateVideos={handleCreateVideos}
       isGeneratingTgps={isGeneratingTgps}

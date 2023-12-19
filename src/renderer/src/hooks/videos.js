@@ -76,26 +76,15 @@ export function useDeleteMissingVideos() {
   return [mutation.mutate, mutation.isLoading]
 }
 
-export function useUpdateVideoGalleries() {
+export function useUpdateVideoRelations() {
   const queryClient = useQueryClient()
   return useMutation(
-    ([videoPath, galleriesDiffObj]) =>
-      mainAdapter.updateDbVideoGalleries(videoPath, galleriesDiffObj).then(() => videoPath),
-    {
-      onSuccess: (videoPath) => {
-        queryClient.invalidateQueries(['availableVideos'])
-        queryClient.invalidateQueries(['allVideos'])
-        queryClient.invalidateQueries(['allVideos', videoPath])
-      }
-    }
-  ).mutate
-}
-
-export function useUpdateVideoTags() {
-  const queryClient = useQueryClient()
-  return useMutation(
-    ([videoPath, tagsDiffObj]) =>
-      mainAdapter.updateDbVideoTags(videoPath, tagsDiffObj).then(() => videoPath),
+    ([videoPath, tagsDiffObj, galleriesDiffObj]) => {
+      return Promise.all([
+        mainAdapter.updateDbVideoTags(videoPath, tagsDiffObj),
+        mainAdapter.updateDbVideoGalleries(videoPath, galleriesDiffObj)
+      ]).then(() => videoPath)
+    },
     {
       onSuccess: (videoPath) => {
         queryClient.invalidateQueries(['availableVideos'])

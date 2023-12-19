@@ -17,6 +17,7 @@ export async function getAllGalleries() {
   return (await db.getGalleries()).map((gallery) => ({
     ...gallery,
     id: gallery.galleryPath,
+    galleryName: path.basename(gallery.galleryPath),
     isAvailable: fs.existsSync(gallery.galleryPath)
   }))
 }
@@ -26,6 +27,9 @@ export async function getGallery(galleryPath) {
   return {
     ...galleryData,
     id: galleryPath,
+    galleryPath: galleryPath,
+    galleryName: path.basename(galleryPath),
+    isAvailable: fs.existsSync(galleryPath),
     images: _.shuffle(
       getGalleryImagePaths(galleryPath).map((i) => 'file:///' + i.replace(/\\/g, '/'))
     )

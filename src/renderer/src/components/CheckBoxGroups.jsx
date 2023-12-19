@@ -1,5 +1,4 @@
 import * as React from 'react'
-import { getNameAndPathComponents } from '../utils'
 import CheckBoxGroupsView from '../views/common/CheckBoxGroups'
 
 export default function CheckBoxGroups({ lists, saveHandlers, useDiffObj = false, postSave }) {
@@ -54,7 +53,6 @@ export default function CheckBoxGroups({ lists, saveHandlers, useDiffObj = false
       handleSelectAll={handleSelectAll}
       filterTexts={filterTexts}
       setFilterTexts={setFilterTexts}
-      getNameAndPathComponents={getNameAndPathComponents}
       handleChange={handleChange}
       prevSelectedItems={prevSelectedItems}
       handleSave={handleSave}

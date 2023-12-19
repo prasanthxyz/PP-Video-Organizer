@@ -3,15 +3,9 @@ import { useHotkeys } from 'react-hotkeys-hook'
 import { useParams } from 'react-router'
 import { useAllGalleries } from '../hooks/galleries'
 import { useAllTags } from '../hooks/tags'
-import {
-  useGenerateTgp,
-  useUpdateVideoGalleries,
-  useUpdateVideoTags,
-  useVideo
-} from '../hooks/videos'
-import { getImgPathAndVideoName } from '../utils'
+import { useGenerateTgp, useUpdateVideoRelations, useVideo } from '../hooks/videos'
 import CenterMessage from '../views/app/CenterMessage'
-import VideoView from '../views/videos/Video'
+import VideoView from '../views/videos/VideoView'
 
 export default function Video() {
   const [selectedTags, setSelectedTags] = React.useState(new Set())
@@ -19,11 +13,14 @@ export default function Video() {
   const [activeTab, setActiveTab] = React.useState('video')
   const [isVideoPlaying, setIsVideoPlaying] = React.useState(false)
 
-  const allTags = useAllTags().data || []
-  const allGalleries = useAllGalleries().data || []
+  let { videoPath } = useParams()
+  videoPath = decodeURIComponent(videoPath)
+  const video = useVideo(videoPath)
+  const allTags = useAllTags()
+  const allGalleries = useAllGalleries()
 
-  const updateVideoGalleries = useUpdateVideoGalleries()
-  const updateVideoTags = useUpdateVideoTags()
+  const updateVideoRelations = useUpdateVideoRelations()
+  const [generateTgp, isGeneratingTgp] = useGenerateTgp()
 
   useHotkeys('v', () => {
     if (activeTab === 'video') return
@@ -49,12 +46,6 @@ export default function Video() {
     }
   })
 
-  let { videoPath } = useParams()
-  videoPath = decodeURIComponent(videoPath)
-  const video = useVideo(videoPath)
-
-  const [generateTgp, isGeneratingTgp] = useGenerateTgp()
-
   React.useEffect(() => {
     if (video.isSuccess) {
       setSelectedTags(new Set(video.data.tags.map((tag) => tag.title)))
@@ -62,30 +53,22 @@ export default function Video() {
     }
   }, [video.isSuccess])
 
-  const { imgPath, videoName } = getImgPathAndVideoName(videoPath)
-
-  if (video.isLoading) return <CenterMessage msg="Loading..." />
+  if (video.isLoading || allGalleries.isLoading || allTags.isLoading)
+    return <CenterMessage msg="Loading..." />
 
   return (
     <VideoView
-      videoName={videoName}
+      video={video.data}
       activeTab={activeTab}
-      setIsVideoPlaying={setIsVideoPlaying}
       setActiveTab={setActiveTab}
       isVideoPlaying={isVideoPlaying}
-      videoPath={videoPath}
-      tgpExists={video.data.isTgpAvailable}
-      imgPath={imgPath}
+      setIsVideoPlaying={setIsVideoPlaying}
       isGeneratingTgp={isGeneratingTgp}
       handleGenerateTgp={generateTgp}
-      allTags={allTags}
-      selectedTags={selectedTags}
-      allGalleries={allGalleries}
-      selectedGalleries={selectedGalleries}
-      setSelectedTags={setSelectedTags}
-      setSelectedGalleries={setSelectedGalleries}
-      updateVideoGalleries={updateVideoGalleries}
-      updateVideoTags={updateVideoTags}
+      allItems={{ tags: allTags.data, galleries: allGalleries.data }}
+      selectedItems={{ tags: selectedTags, galleries: selectedGalleries }}
+      setSelectedItems={{ tags: setSelectedTags, galleries: setSelectedGalleries }}
+      updateVideoRelations={updateVideoRelations}
     />
   )
 }

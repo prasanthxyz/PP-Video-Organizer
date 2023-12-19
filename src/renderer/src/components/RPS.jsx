@@ -1,23 +1,23 @@
 import * as React from 'react'
 import { useGallery } from '../hooks/galleries'
-import { getImgPathAndVideoName } from '../utils'
+import { useVideo } from '../hooks/videos'
 import CenterMessage from '../views/app/CenterMessage'
-import RPSView from '../views/home/RPS'
+import RPSView from '../views/home/RPSView'
 
 export default function RPS({ combination, showVid, isVideoPlaying }) {
-  const videoPath = combination[0]
-  const galleryPath = combination[1]
+  const [videoPath, galleryPath] = combination
   const gallery = useGallery(galleryPath)
+  const video = useVideo(videoPath)
 
-  if (gallery.isLoading) return <CenterMessage msg="Loading..." />
+  if (gallery.isLoading || video.isLoading) return <CenterMessage msg="Loading..." />
 
   return (
     <RPSView
       showVid={showVid}
-      getImgPathAndVideoName={getImgPathAndVideoName}
-      galleryImages={gallery.data.images}
       videoPath={videoPath}
       isVideoPlaying={isVideoPlaying}
+      gallery={gallery}
+      video={video}
     />
   )
 }
