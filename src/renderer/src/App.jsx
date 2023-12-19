@@ -20,6 +20,7 @@ import MissingExecutables from './views/app/MissingExecutables.jsx'
 export const Context = React.createContext(null)
 
 function App() {
+  const [isGeneratingCombinations, setIsGeneratingCombinations] = React.useState(false)
   const [isCheckingExecutables, setIsCheckingExecutables] = React.useState(true)
   const [executablesStatus, setExecutablesStatus] = React.useState([true, true, true, true])
 
@@ -37,8 +38,10 @@ function App() {
   const availableGalleries = useAvailableGalleries()
 
   async function generateCombinations(videos, tags, galleries) {
+    setIsGeneratingCombinations(true)
     setCombinations(_.shuffle(await mainAdapter.getCombinationsData(videos, tags, galleries)))
     setCombinationIndex(0)
+    setIsGeneratingCombinations(false)
   }
 
   async function saveSelection(videos, tags, galleries) {
@@ -51,16 +54,28 @@ function App() {
   }
 
   async function generateCombinationsOnDataChange() {
-    const tags = new Set()
-    const galleries = new Set(availableGalleries.data)
-    const videos = new Set(availableVideos.data)
-    await saveSelection(videos, tags, galleries)
+    const [videos, tags, galleries] = (
+      await Promise.all([
+        availableVideos.refetch(),
+        availableTags.refetch(),
+        availableGalleries.refetch()
+      ])
+    ).map((item) => new Set(item.data))
+
+    await saveSelection(videos, new Set(), galleries)
     setHasDataChanged(false)
   }
 
   React.useEffect(() => {
-    if (availableVideos.isSuccess && availableTags.isSuccess && availableGalleries.isSuccess)
+    if (hasDataChanged) {
       generateCombinationsOnDataChange()
+    }
+  }, [hasDataChanged])
+
+  React.useEffect(() => {
+    if (availableVideos.isSuccess && availableTags.isSuccess && availableGalleries.isSuccess) {
+      saveSelection(new Set(availableVideos.data), new Set(), new Set(availableGalleries.data))
+    }
   }, [availableVideos.isSuccess, availableTags.isSuccess, availableGalleries.isSuccess])
 
   const checkExecutables = async () => {
@@ -98,7 +113,7 @@ function App() {
         setCombinationIndex,
         hasDataChanged,
         setHasDataChanged,
-        generateCombinationsOnDataChange
+        isGeneratingCombinations
       }}
     >
       <HashRouter basename="/">

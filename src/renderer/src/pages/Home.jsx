@@ -24,7 +24,7 @@ export default function Home() {
     setCombinationIndex,
     hasDataChanged,
     setHasDataChanged,
-    generateCombinationsOnDataChange
+    isGeneratingCombinations
   } = React.useContext(Context)
 
   useHotkeys('c', () => {
@@ -63,8 +63,7 @@ export default function Home() {
   const videoPath = combinations.length > 0 ? combinations[combinationIndex][0] : ''
   const galleryPath = combinations.length > 0 ? combinations[combinationIndex][1] : ''
 
-  if (hasDataChanged) {
-    generateCombinationsOnDataChange()
+  if (isGeneratingCombinations) {
     return <CenterMessage msg="Generating combinations..." />
   }
 
