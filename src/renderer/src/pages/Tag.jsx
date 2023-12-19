@@ -1,6 +1,6 @@
 import * as React from 'react'
 import { useParams } from 'react-router'
-import mainAdapter from '../../../mainAdapter'
+import { useTag, useUpdateTagVideos } from '../hooks/tags'
 import { useAllVideos } from '../hooks/videos'
 import TagView from '../views/tags/Tag'
 
@@ -11,16 +11,12 @@ export default function Tag() {
 
   let { tagTitle } = useParams()
   tagTitle = decodeURIComponent(tagTitle)
-
-  const loadData = async () => {
-    setSelectedVideos(
-      new Set((await mainAdapter.getDbTagData(tagTitle))['videos'].map((video) => video.filePath))
-    )
-  }
+  const tag = useTag(tagTitle)
+  const updateTagVideos = useUpdateTagVideos()
 
   React.useEffect(() => {
-    loadData()
-  }, [])
+    if (!tag.isLoading) setSelectedVideos(new Set(tag.data.videos.map((video) => video.filePath)))
+  }, [tag.isLoading])
 
   return (
     <TagView
@@ -28,6 +24,7 @@ export default function Tag() {
       allVideos={allVideos}
       selectedVideos={selectedVideos}
       setSelectedVideos={setSelectedVideos}
+      updateTagVideos={updateTagVideos}
     />
   )
 }

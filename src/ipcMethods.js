@@ -35,7 +35,8 @@ const ipcMethods = {
   getAllTags: tag.getAllTags,
   getAllVideos: video.getAllVideos,
   getGallery: gallery.getGallery,
-  getVideo: video.getVideo
+  getVideo: video.getVideo,
+  getTag: tag.getTag
 }
 
 export default ipcMethods

@@ -7,3 +7,11 @@ export const getAvailableTags = async () => {
 export const getAllTags = async () => {
   return (await db.getTags()).map((tag) => ({ ...tag, id: tag.title }))
 }
+
+export const getTag = async (tagTitle) => {
+  const tagData = await db.getTagData(tagTitle)
+  return {
+    ...tagData,
+    id: tagTitle
+  }
+}

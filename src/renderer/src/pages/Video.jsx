@@ -1,7 +1,6 @@
 import * as React from 'react'
 import { useHotkeys } from 'react-hotkeys-hook'
 import { useParams } from 'react-router'
-import mainAdapter from '../../../mainAdapter'
 import { useAllGalleries } from '../hooks/galleries'
 import { useAllTags } from '../hooks/tags'
 import {

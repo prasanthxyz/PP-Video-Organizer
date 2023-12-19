@@ -1,8 +1,7 @@
 import { Col, Row } from 'react-bootstrap'
-import mainAdapter from '../../../../mainAdapter'
 import CheckBoxGroups from '../../components/CheckBoxGroups'
 
-function Tag({ tagTitle, allVideos, selectedVideos, setSelectedVideos }) {
+function Tag({ tagTitle, allVideos, selectedVideos, setSelectedVideos, updateTagVideos }) {
   return (
     <>
       <Row>
@@ -22,7 +21,7 @@ function Tag({ tagTitle, allVideos, selectedVideos, setSelectedVideos }) {
             ]}
             saveHandlers={[setSelectedVideos]}
             postSave={async ([videosDiffObj]) => {
-              await mainAdapter.updateDbTagVideos(tagTitle, videosDiffObj)
+              await updateTagVideos([tagTitle, videosDiffObj])
             }}
             useDiffObj={true}
           />
