@@ -1,5 +1,7 @@
+import _ from 'lodash'
 import * as React from 'react'
 import { HashRouter, Route, Routes } from 'react-router-dom'
+import mainAdapter from '../../mainAdapter.js'
 import { useAvailableGalleries } from './hooks/galleries.js'
 import { useAvailableTags } from './hooks/tags.js'
 import { useAvailableVideos } from './hooks/videos.js'
@@ -21,19 +23,37 @@ function App() {
   const [isCheckingExecutables, setIsCheckingExecutables] = React.useState(true)
   const [executablesStatus, setExecutablesStatus] = React.useState([true, true, true, true])
 
+  const [hasDataChanged, setHasDataChanged] = React.useState(false)
   const [selectedVideos, setSelectedVideos] = React.useState(new Set())
   const [selectedTags, setSelectedTags] = React.useState(new Set())
   const [selectedGalleries, setSelectedGalleries] = React.useState(new Set())
+  const [combinations, setCombinations] = React.useState([])
+  const [combinationIndex, setCombinationIndex] = React.useState(0)
 
   const availableVideos = useAvailableVideos()
   const availableTags = useAvailableTags()
   const availableGalleries = useAvailableGalleries()
 
   React.useEffect(() => {
+    const generateCombinations = async () => {
+      setCombinations(
+        _.shuffle(
+          await mainAdapter.getCombinationsData(selectedVideos, selectedTags, selectedGalleries)
+        )
+      )
+      setCombinationIndex(0)
+      setHasDataChanged(false)
+    }
+
+    if (hasDataChanged) generateCombinations()
+  }, [hasDataChanged])
+
+  React.useEffect(() => {
     const loadInitialSelection = async () => {
       setSelectedTags(new Set())
       setSelectedGalleries(new Set(availableGalleries.data))
       setSelectedVideos(new Set(availableVideos.data))
+      setHasDataChanged(true)
     }
 
     if (availableVideos.isSuccess && availableTags.isSuccess && availableGalleries.isSuccess)
@@ -65,6 +85,8 @@ function App() {
     return <CenterMessage msg="Loading..." />
   }
 
+  if (hasDataChanged) return <CenterMessage msg="Generating combinations..." />
+
   return (
     <Context.Provider
       value={{
@@ -73,7 +95,11 @@ function App() {
         selectedTags,
         setSelectedTags,
         selectedGalleries,
-        setSelectedGalleries
+        setSelectedGalleries,
+        combinations,
+        combinationIndex,
+        setCombinationIndex,
+        setHasDataChanged
       }}
     >
       <HashRouter basename="/">

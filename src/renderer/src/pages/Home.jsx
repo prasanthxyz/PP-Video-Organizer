@@ -1,11 +1,9 @@
 import * as React from 'react'
 import { useHotkeys } from 'react-hotkeys-hook'
 import { Context } from '../App'
-import useCombinations from '../hooks/combinations'
 import { useAvailableGalleries } from '../hooks/galleries'
 import { useAvailableTags } from '../hooks/tags'
 import { useAvailableVideos } from '../hooks/videos'
-import CenterMessage from '../views/app/CenterMessage'
 import HomeView from '../views/home/Home'
 
 export default function Home() {
@@ -17,9 +15,18 @@ export default function Home() {
   const availableTags = useAvailableTags().data
   const availableGalleries = useAvailableGalleries().data
 
-  const gs = React.useContext(Context)
-  const [isGeneratingCombinations, combinations, combinationIndex, setCombinationIndex] =
-    useCombinations(gs.selectedVideos, gs.selectedTags, gs.selectedGalleries)
+  const {
+    selectedVideos,
+    setSelectedVideos,
+    selectedTags,
+    setSelectedTags,
+    selectedGalleries,
+    setSelectedGalleries,
+    combinations,
+    combinationIndex,
+    setCombinationIndex,
+    setHasDataChanged
+  } = React.useContext(Context)
 
   useHotkeys('c', () => {
     setIsVideoPlaying(false)
@@ -57,8 +64,6 @@ export default function Home() {
   const videoPath = combinations.length > 0 ? combinations[combinationIndex][0] : ''
   const galleryPath = combinations.length > 0 ? combinations[combinationIndex][1] : ''
 
-  if (isGeneratingCombinations) return <CenterMessage msg="Generating combinations..." />
-
   return (
     <HomeView
       activeTab={activeTab}
@@ -67,9 +72,16 @@ export default function Home() {
       availableVideos={availableVideos}
       availableTags={availableTags}
       availableGalleries={availableGalleries}
+      selectedVideos={selectedVideos}
+      setSelectedVideos={setSelectedVideos}
+      selectedTags={selectedTags}
+      setSelectedTags={setSelectedTags}
+      selectedGalleries={selectedGalleries}
+      setSelectedGalleries={setSelectedGalleries}
       combinations={combinations}
       combinationIndex={combinationIndex}
-      gs={gs}
+      setCombinationIndex={setCombinationIndex}
+      setHasDataChanged={setHasDataChanged}
       showVid={showVid}
       setShowVid={setShowVid}
       videoPath={videoPath}
