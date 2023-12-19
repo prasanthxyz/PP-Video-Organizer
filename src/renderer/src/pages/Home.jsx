@@ -4,6 +4,7 @@ import { Context } from '../App'
 import { useAvailableGalleries } from '../hooks/galleries'
 import { useAvailableTags } from '../hooks/tags'
 import { useAvailableVideos } from '../hooks/videos'
+import CenterMessage from '../views/app/CenterMessage'
 import HomeView from '../views/home/Home'
 
 export default function Home() {
@@ -11,21 +12,19 @@ export default function Home() {
   const [showVid, setShowVid] = React.useState(false)
   const [isVideoPlaying, setIsVideoPlaying] = React.useState(false)
 
-  const availableVideos = useAvailableVideos().data
-  const availableTags = useAvailableTags().data
-  const availableGalleries = useAvailableGalleries().data
+  const availableVideos = useAvailableVideos().data || []
+  const availableTags = useAvailableTags().data || []
+  const availableGalleries = useAvailableGalleries().data || []
 
   const {
-    selectedVideos,
-    setSelectedVideos,
-    selectedTags,
-    setSelectedTags,
-    selectedGalleries,
-    setSelectedGalleries,
+    selection,
+    saveSelection,
     combinations,
     combinationIndex,
     setCombinationIndex,
-    setHasDataChanged
+    hasDataChanged,
+    setHasDataChanged,
+    generateCombinationsOnDataChange
   } = React.useContext(Context)
 
   useHotkeys('c', () => {
@@ -64,6 +63,11 @@ export default function Home() {
   const videoPath = combinations.length > 0 ? combinations[combinationIndex][0] : ''
   const galleryPath = combinations.length > 0 ? combinations[combinationIndex][1] : ''
 
+  if (hasDataChanged) {
+    generateCombinationsOnDataChange()
+    return <CenterMessage msg="Generating combinations..." />
+  }
+
   return (
     <HomeView
       activeTab={activeTab}
@@ -72,16 +76,10 @@ export default function Home() {
       availableVideos={availableVideos}
       availableTags={availableTags}
       availableGalleries={availableGalleries}
-      selectedVideos={selectedVideos}
-      setSelectedVideos={setSelectedVideos}
-      selectedTags={selectedTags}
-      setSelectedTags={setSelectedTags}
-      selectedGalleries={selectedGalleries}
-      setSelectedGalleries={setSelectedGalleries}
+      selection={selection}
+      saveSelection={saveSelection}
       combinations={combinations}
       combinationIndex={combinationIndex}
-      setCombinationIndex={setCombinationIndex}
-      setHasDataChanged={setHasDataChanged}
       showVid={showVid}
       setShowVid={setShowVid}
       videoPath={videoPath}

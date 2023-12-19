@@ -48,7 +48,9 @@ export const addVideos = async (videoPaths) => {
 }
 
 export const getAvailableVideos = async () => {
-  return (await db.getVideos()).map((v) => v.filePath).filter(isFileExisting)
+  return (await db.getVideos())
+    .map((v) => v.filePath)
+    .filter((v) => isFileExisting(v) && isTgpExisting(v))
 }
 
 export const getAllVideos = async () => {

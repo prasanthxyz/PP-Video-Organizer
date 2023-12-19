@@ -24,9 +24,11 @@ function App() {
   const [executablesStatus, setExecutablesStatus] = React.useState([true, true, true, true])
 
   const [hasDataChanged, setHasDataChanged] = React.useState(false)
-  const [selectedVideos, setSelectedVideos] = React.useState(new Set())
-  const [selectedTags, setSelectedTags] = React.useState(new Set())
-  const [selectedGalleries, setSelectedGalleries] = React.useState(new Set())
+  const [selection, setSelection] = React.useState({
+    tags: new Set(),
+    videos: new Set(),
+    galleries: new Set()
+  })
   const [combinations, setCombinations] = React.useState([])
   const [combinationIndex, setCombinationIndex] = React.useState(0)
 
@@ -34,30 +36,31 @@ function App() {
   const availableTags = useAvailableTags()
   const availableGalleries = useAvailableGalleries()
 
+  async function generateCombinations(videos, tags, galleries) {
+    setCombinations(_.shuffle(await mainAdapter.getCombinationsData(videos, tags, galleries)))
+    setCombinationIndex(0)
+  }
+
+  async function saveSelection(videos, tags, galleries) {
+    setSelection({
+      tags: tags,
+      videos: videos,
+      galleries: galleries
+    })
+    await generateCombinations(videos, tags, galleries)
+  }
+
+  async function generateCombinationsOnDataChange() {
+    const tags = new Set()
+    const galleries = new Set(availableGalleries.data)
+    const videos = new Set(availableVideos.data)
+    await saveSelection(videos, tags, galleries)
+    setHasDataChanged(false)
+  }
+
   React.useEffect(() => {
-    const generateCombinations = async () => {
-      setCombinations(
-        _.shuffle(
-          await mainAdapter.getCombinationsData(selectedVideos, selectedTags, selectedGalleries)
-        )
-      )
-      setCombinationIndex(0)
-      setHasDataChanged(false)
-    }
-
-    if (hasDataChanged) generateCombinations()
-  }, [hasDataChanged])
-
-  React.useEffect(() => {
-    const loadInitialSelection = async () => {
-      setSelectedTags(new Set())
-      setSelectedGalleries(new Set(availableGalleries.data))
-      setSelectedVideos(new Set(availableVideos.data))
-      setHasDataChanged(true)
-    }
-
     if (availableVideos.isSuccess && availableTags.isSuccess && availableGalleries.isSuccess)
-      loadInitialSelection()
+      generateCombinationsOnDataChange()
   }, [availableVideos.isSuccess, availableTags.isSuccess, availableGalleries.isSuccess])
 
   const checkExecutables = async () => {
@@ -85,21 +88,17 @@ function App() {
     return <CenterMessage msg="Loading..." />
   }
 
-  if (hasDataChanged) return <CenterMessage msg="Generating combinations..." />
-
   return (
     <Context.Provider
       value={{
-        selectedVideos,
-        setSelectedVideos,
-        selectedTags,
-        setSelectedTags,
-        selectedGalleries,
-        setSelectedGalleries,
+        selection,
+        saveSelection,
         combinations,
         combinationIndex,
         setCombinationIndex,
-        setHasDataChanged
+        hasDataChanged,
+        setHasDataChanged,
+        generateCombinationsOnDataChange
       }}
     >
       <HashRouter basename="/">

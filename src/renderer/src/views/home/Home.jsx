@@ -8,18 +8,13 @@ function Home({
   activeTab,
   setIsVideoPlaying,
   setActiveTab,
-  selectedVideos,
-  setSelectedVideos,
-  selectedTags,
-  setSelectedTags,
-  selectedGalleries,
-  setSelectedGalleries,
-  combinations,
-  combinationIndex,
-  setHasDataChanged,
   availableVideos,
   availableTags,
   availableGalleries,
+  selection,
+  saveSelection,
+  combinations,
+  combinationIndex,
   showVid,
   setShowVid,
   videoPath,
@@ -64,23 +59,23 @@ function Home({
             {
               heading: 'Galleries',
               allItems: availableGalleries,
-              selectedItems: selectedGalleries
+              selectedItems: selection.galleries
             },
             {
               heading: 'Tags',
               allItems: availableTags,
-              selectedItems: selectedTags
+              selectedItems: selection.tags
             },
             {
               heading: 'Videos',
               allItems: availableVideos,
-              selectedItems: selectedVideos
+              selectedItems: selection.videos
             }
           ]}
-          saveHandlers={[setSelectedGalleries, setSelectedTags, setSelectedVideos]}
-          postSave={async ([selectedGalleries, selectedTags, selectedVideos]) => {
+          saveHandlers={[() => {}, () => {}, () => {}]}
+          postSave={async ([galleries, tags, videos]) => {
             setShowVid(false)
-            setHasDataChanged(true)
+            await saveSelection(videos, tags, galleries)
           }}
         />
       </Tab>
