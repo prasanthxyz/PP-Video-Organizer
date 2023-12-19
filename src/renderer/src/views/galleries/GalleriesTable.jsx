@@ -21,10 +21,9 @@ export default function GalleriesTable({ dbGalleries, handleDeleteGallery, filte
               <GalleryRowView
                 key={dbGallery.galleryPath}
                 index={index}
-                galleryExists={dbGallery.isAvailable}
+                dbGallery={dbGallery}
                 galleryName={getNameAndPathComponents(dbGallery.galleryPath)[0]}
                 deleteGallery={handleDeleteGallery}
-                galleryPath={dbGallery.galleryPath}
               />
             ))
             .filter((galleryRow) => galleryRow.key.toLowerCase().includes(filterText))}

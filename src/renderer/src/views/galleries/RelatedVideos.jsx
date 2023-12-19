@@ -1,11 +1,11 @@
-import mainAdapter from '../../../../mainAdapter'
 import CheckBoxGroups from '../../components/CheckBoxGroups'
 
 export default function RelatedVideos({
   allVideos,
   selectedVideos,
   setSelectedVideos,
-  galleryPath
+  galleryPath,
+  updateGalleryVideos
 }) {
   return (
     <CheckBoxGroups
@@ -18,7 +18,7 @@ export default function RelatedVideos({
       ]}
       saveHandlers={[setSelectedVideos]}
       postSave={async ([videosDiffObj]) => {
-        await mainAdapter.updateDbGalleryVideos(galleryPath, videosDiffObj)
+        await updateGalleryVideos([galleryPath, videosDiffObj])
       }}
       useDiffObj={true}
     />

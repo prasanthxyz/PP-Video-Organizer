@@ -1,6 +1,6 @@
 import * as React from 'react'
 import { useParams } from 'react-router'
-import { useGallery } from '../hooks/galleries'
+import { useGallery, useUpdateGalleryVideos } from '../hooks/galleries'
 import { useAllVideos } from '../hooks/videos'
 import CenterMessage from '../views/app/CenterMessage'
 import GalleryView from '../views/galleries/Gallery'
@@ -12,6 +12,8 @@ export default function Gallery() {
   let { galleryPath } = useParams()
   galleryPath = decodeURIComponent(galleryPath)
   const gallery = useGallery(galleryPath)
+
+  const updateGalleryVideos = useUpdateGalleryVideos()
 
   React.useEffect(() => {
     if (!gallery.isLoading)
@@ -27,6 +29,7 @@ export default function Gallery() {
       allVideos={allVideos}
       selectedVideos={selectedVideos}
       setSelectedVideos={setSelectedVideos}
+      updateGalleryVideos={updateGalleryVideos}
     />
   )
 }

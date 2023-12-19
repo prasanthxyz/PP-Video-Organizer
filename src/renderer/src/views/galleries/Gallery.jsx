@@ -8,7 +8,8 @@ export default function Gallery({
   galleryImages,
   allVideos,
   selectedVideos,
-  setSelectedVideos
+  setSelectedVideos,
+  updateGalleryVideos
 }) {
   return (
     <>
@@ -27,6 +28,7 @@ export default function Gallery({
             selectedVideos={selectedVideos}
             setSelectedVideos={setSelectedVideos}
             galleryPath={galleryPath}
+            updateGalleryVideos={updateGalleryVideos}
           />
         </Col>
       </Row>
