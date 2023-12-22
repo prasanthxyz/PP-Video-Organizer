@@ -1,5 +1,4 @@
 import _ from 'lodash'
-import { Button, Col, Form, Row } from 'react-bootstrap'
 
 function getLabel(path) {
   const pathComponents = path.replace(/\\/g, '/').split('/')
@@ -16,64 +15,65 @@ const CheckBoxGroups = ({
   prevSelectedItems,
   handleSave
 }) => (
-  <Row className="mt-2">
+  <div id="checkboxgroups" className="d-flex">
     {lists.map((list, listIndex) => (
-      <Col key={list.heading} className="w-50">
-        <Row>
-          <Col>
-            <div className="fs-3 mb-1">{list.heading}</div>
-          </Col>
-          <Col className="d-flex align-items-center">
-            <Form.Check
-              label="Select All"
-              checked={selectedItems[listIndex].size === list.allItems.length}
-              ref={(input) => {
-                if (input) {
-                  input.indeterminate =
-                    selectedItems[listIndex].size !== 0 &&
-                    selectedItems[listIndex].size !== list.allItems.length
-                }
-              }}
-              onChange={(e) => handleSelectAll(listIndex, e.target.checked)}
-            />
-          </Col>
-        </Row>
-        <Row>
-          <Col>
-            <Form.Control
-              type="text"
-              placeholder="Filter"
-              className="mt-1 mb-2"
-              value={filterTexts[listIndex]}
-              onChange={(e) => {
-                const newFilterTexts = [...filterTexts]
-                newFilterTexts[listIndex] = e.target.value.toLowerCase()
-                setFilterTexts(newFilterTexts)
-              }}
-            />
-          </Col>
-        </Row>
-        {list.allItems
-          .map((item, itemIndex) => {
-            return (
-              <div key={item}>
-                <Form.Check
-                  id={item}
+      <div key={list.heading} className="checkboxgroup">
+        <div className="checkboxgroup-header">
+          <p className="checkboxgroup-heading">{list.heading}</p>
+          <input
+            id={`checkbox${listIndex}`}
+            type="checkbox"
+            label="Select All"
+            checked={
+              selectedItems[listIndex].size > 0 &&
+              selectedItems[listIndex].size === list.allItems.length
+            }
+            ref={(input) => {
+              if (input) {
+                input.indeterminate =
+                  selectedItems[listIndex].size !== 0 &&
+                  selectedItems[listIndex].size !== list.allItems.length
+              }
+            }}
+            onChange={(e) => handleSelectAll(listIndex, e.target.checked)}
+          />
+          <label htmlFor={`checkbox${listIndex}`}>Select All</label>
+        </div>
+        <div className="checkboxgroup-filter">
+          <input
+            type="text"
+            placeholder="Filter"
+            className="mt-1 mb-2"
+            value={filterTexts[listIndex]}
+            onChange={(e) => {
+              const newFilterTexts = [...filterTexts]
+              newFilterTexts[listIndex] = e.target.value.toLowerCase()
+              setFilterTexts(newFilterTexts)
+            }}
+          />
+        </div>
+        <div className="checkboxgroup-items">
+          {list.allItems
+            .map((item, itemIndex) => (
+              <div key={`${listIndex}-${item}`} value={item}>
+                <input
+                  id={`${listIndex}-${item}`}
+                  type="checkbox"
                   value={item}
-                  label={getLabel(item)}
                   onChange={(e) => handleChange(listIndex, itemIndex, e.target)}
                   checked={selectedItems[listIndex].has(item)}
                 />
+                <label htmlFor={`${listIndex}-${item}`}>{getLabel(item)}</label>
               </div>
-            )
-          })
-          .filter((item) => item.key.toLowerCase().includes(filterTexts[listIndex]))}
-      </Col>
+            ))
+            .filter((item) => item.props.value.toLowerCase().includes(filterTexts[listIndex]))}
+        </div>
+      </div>
     ))}
-    <Col className="mt-1" key="SAVE">
-      {!_.isEqual(prevSelectedItems, selectedItems) && <Button onClick={handleSave}>Save</Button>}
-    </Col>
-  </Row>
+    <div className="checkboxgroups-save-button">
+      {!_.isEqual(prevSelectedItems, selectedItems) && <button onClick={handleSave}>Save</button>}
+    </div>
+  </div>
 )
 
 export default CheckBoxGroups

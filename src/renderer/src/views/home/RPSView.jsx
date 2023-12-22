@@ -1,20 +1,19 @@
-import { Col, Row } from 'react-bootstrap'
+import ImageSlideShow from '../../components/ImageSlideShow'
 import VideoPlayer from '../../components/VideoPlayer'
-import ImageSlideShow from '../common/ImageSlideShow'
 
 const RPSView = ({ showVid, videoPath, isVideoPlaying, gallery, video }) => (
-  <Row>
-    <Col xs={9}>
+  <div id="homecontent">
+    <div className="width75">
       {showVid ? (
         <VideoPlayer autoplay={isVideoPlaying} controls={true} sources={`file:///${videoPath}`} />
       ) : (
-        <img width="100%" src={`file:///${video.data.tgpPath}`} />
+        <img src={`file:///${video.data.tgpPath}`} />
       )}
-    </Col>
-    <Col xs={3}>
+    </div>
+    <div className="width25">
       {gallery.data.images.length > 0 && <ImageSlideShow galleryImages={gallery.data.images} />}
-    </Col>
-  </Row>
+    </div>
+  </div>
 )
 
 export default RPSView

@@ -1,31 +1,26 @@
 import * as React from 'react'
-import { Button, Col } from 'react-bootstrap'
 import { Link } from 'react-router-dom'
 
 const ControlBarView = ({ showVid, setShowVid, video, gallery, handleBack, handleNext }) => (
-  <>
-    <Col xs={9} className="d-flex justify-content-between">
-      <Button size="sm" variant="success" onClick={() => setShowVid(!showVid)}>
-        {showVid ? 'Show TGP' : 'Show Video'}
-      </Button>
+  <div id="controlbar" className="d-flex">
+    <div className="width75 d-flex space-between">
+      <button onClick={() => setShowVid(!showVid)}>{showVid ? 'Show TGP' : 'Show Video'}</button>
       <Link to={`/video/${encodeURIComponent(video.data.id)}`} className="fs-6">
         {video.data.videoName}
       </Link>
-    </Col>
-    <Col xs={3} className="d-flex justify-content-between">
+    </div>
+    <div className="width25 d-flex space-between">
+      <div>
+        <button className="me-2" onClick={handleBack}>
+          Back
+        </button>
+        <button onClick={handleNext}>Next</button>
+      </div>
       <Link to={`/gallery/${encodeURIComponent(gallery.data.id)}`} className="fs-6">
         {gallery.data.galleryName}
       </Link>
-      <div>
-        <Button className="me-2" size="sm" onClick={handleBack}>
-          Back
-        </Button>
-        <Button size="sm" onClick={handleNext}>
-          Next
-        </Button>
-      </div>
-    </Col>
-  </>
+    </div>
+  </div>
 )
 
 export default ControlBarView

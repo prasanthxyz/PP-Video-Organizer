@@ -41,6 +41,11 @@ export default function Home({
     }
   })
 
+  const handleTabClick = (e) => {
+    setIsVideoPlaying(false)
+    setActiveTab(e.target.dataset.tabId)
+  }
+
   const navigateCombinations = (next = true) => {
     if (activeTab !== 'watch') setActiveTab('watch')
     if (combinations.length === 0) return
@@ -75,6 +80,7 @@ export default function Home({
       handleNext={handleNext}
       isVideoPlaying={isVideoPlaying}
       setIsVideoPlaying={setIsVideoPlaying}
+      handleTabClick={handleTabClick}
     />
   )
 }

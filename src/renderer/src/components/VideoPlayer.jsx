@@ -59,7 +59,7 @@ export default function VideoPlayer(props) {
   }, [playerRef])
 
   return (
-    <div data-vjs-player>
+    <div data-vjs-player id="videoplayer">
       <div ref={videoRef} />
     </div>
   )

@@ -1,4 +1,3 @@
-import { Button, Col } from 'react-bootstrap'
 import SpinnerOr from '../common/SpinnerOr'
 
 const InputUI = ({
@@ -11,11 +10,11 @@ const InputUI = ({
   isDeletingVideos,
   handleDeleteMissingVideos
 }) => (
-  <>
-    <Col xs={6} className="d-flex">
-      <label className="btn btn-primary btn-sm" htmlFor="filesInput">
-        Add new Video(s)
-      </label>
+  <div className="videos-inputui d-flex">
+    <div className="d-flex">
+      <button disabled={Array.from(videoInputData).length !== 0}>
+        <label htmlFor="filesInput">Add new Video(s)</label>
+      </button>
       <input
         id="filesInput"
         type="file"
@@ -27,25 +26,21 @@ const InputUI = ({
       />
       <SpinnerOr isSpinner={isUploading} msg="Generating TGPs...">
         {Array.from(videoInputData).length !== 0 && (
-          <Button size="sm" variant="success" onClick={handleCreateVideos}>
+          <button onClick={handleCreateVideos}>
             Submit {Array.from(videoInputData).length} file(s)
-          </Button>
+          </button>
         )}
       </SpinnerOr>
-    </Col>
-    <Col xs={6} className="d-flex justify-content-end">
+    </div>
+    <div className="d-flex">
       <SpinnerOr isSpinner={isGeneratingTgps} msg="Generating TGPs...">
-        <Button className="me-3" size="sm" onClick={handleGenerateMissingTgps}>
-          Generate Missing TGPs
-        </Button>
+        <button onClick={handleGenerateMissingTgps}>Generate Missing TGPs</button>
       </SpinnerOr>
       <SpinnerOr isSpinner={isDeletingVideos} msg="Deleting...">
-        <Button size="sm" variant="danger" onClick={handleDeleteMissingVideos}>
-          Delete Missing Videos
-        </Button>
+        <button onClick={handleDeleteMissingVideos}>Delete Missing Videos</button>
       </SpinnerOr>
-    </Col>
-  </>
+    </div>
+  </div>
 )
 
 export default InputUI

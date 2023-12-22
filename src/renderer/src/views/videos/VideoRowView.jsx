@@ -1,10 +1,9 @@
-import { Button } from 'react-bootstrap'
 import { Link } from 'react-router-dom'
 import SpinnerOr from '../common/SpinnerOr'
 
 const VideoRowView = ({ video, deleteVideo, isGeneratingTgp, handleGenerateTgp }) => (
   <tr>
-    <td className="col-7">
+    <td>
       {video.isAvailable ? (
         <Link to={`/video/${encodeURIComponent(video.filePath)}`}>{video.videoName}</Link>
       ) : (
@@ -12,9 +11,7 @@ const VideoRowView = ({ video, deleteVideo, isGeneratingTgp, handleGenerateTgp }
       )}
     </td>
     <td>
-      <Button size="sm" variant="danger" onClick={async () => await deleteVideo(video.filePath)}>
-        Delete
-      </Button>
+      <button onClick={async () => await deleteVideo(video.filePath)}>Delete</button>
     </td>
     <td className="text-danger fw-bold">
       {!video.isAvailable ? (
@@ -24,9 +21,7 @@ const VideoRowView = ({ video, deleteVideo, isGeneratingTgp, handleGenerateTgp }
           isSpinner={isGeneratingTgp}
           msg={<span className="text-success">Generating TGP...</span>}
         >
-          <Button size="sm" variant="success" onClick={handleGenerateTgp}>
-            Generate TGP
-          </Button>
+          <button onClick={handleGenerateTgp}>Generate TGP</button>
         </SpinnerOr>
       ) : (
         ''

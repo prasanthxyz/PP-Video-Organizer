@@ -1,5 +1,4 @@
 import * as React from 'react'
-import { Button, Col, Row } from 'react-bootstrap'
 import SpinnerOr from '../common/SpinnerOr.jsx'
 
 const Operations = ({
@@ -10,44 +9,22 @@ const Operations = ({
   isDeletingGalleries,
   handleDeleteMissingGalleries
 }) => (
-  <>
-    <Col xs={12} sm={6}>
-      <Row>
-        <Col>
-          <SpinnerOr isSpinner={isCreating} msg="Creating...">
-            <Button className="me-2" size="sm" onClick={async () => await getGalleryPathInput()}>
-              Add new Gallery
-            </Button>
-            {galleryInput && (
-              <Button
-                variant="success"
-                className="ms-2"
-                size="sm"
-                onClick={async () => await handleCreateGallery(galleryInput)}
-              >
-                Submit
-              </Button>
-            )}
-          </SpinnerOr>
-        </Col>
-        <Col>
-          <SpinnerOr isSpinner={isDeletingGalleries} msg="Deleting...">
-            <Button
-              className="ms-auto"
-              variant="danger"
-              size="sm"
-              onClick={handleDeleteMissingGalleries}
-            >
-              Delete Missing Galleries
-            </Button>
-          </SpinnerOr>
-        </Col>
-      </Row>
-      <Row>
-        <div>{galleryInput}</div>
-      </Row>
-    </Col>
-  </>
+  <div className="gallery-operations-container d-flex space-between">
+    <div>
+      <SpinnerOr isSpinner={isCreating} msg="Creating...">
+        <button onClick={async () => await getGalleryPathInput()}>Add new Gallery</button>
+        {galleryInput && (
+          <button onClick={async () => await handleCreateGallery(galleryInput)}>Submit</button>
+        )}
+        <p className="gallery-input-content">{galleryInput}</p>
+      </SpinnerOr>
+    </div>
+    <div>
+      <SpinnerOr isSpinner={isDeletingGalleries} msg="Deleting...">
+        <button onClick={handleDeleteMissingGalleries}>Delete Missing Galleries</button>
+      </SpinnerOr>
+    </div>
+  </div>
 )
 
 export default Operations

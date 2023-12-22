@@ -53,6 +53,11 @@ export default function Video() {
     }
   }, [video.isSuccess])
 
+  const handleTabClick = (e) => {
+    setIsVideoPlaying(false)
+    setActiveTab(e.target.dataset.tabId)
+  }
+
   if (video.isLoading || allGalleries.isLoading || allTags.isLoading)
     return <CenterMessage msg="Loading..." />
 
@@ -60,15 +65,14 @@ export default function Video() {
     <VideoView
       video={video.data}
       activeTab={activeTab}
-      setActiveTab={setActiveTab}
       isVideoPlaying={isVideoPlaying}
-      setIsVideoPlaying={setIsVideoPlaying}
       isGeneratingTgp={isGeneratingTgp}
       handleGenerateTgp={generateTgp}
       allItems={{ tags: allTags.data, galleries: allGalleries.data }}
       selectedItems={{ tags: selectedTags, galleries: selectedGalleries }}
       setSelectedItems={{ tags: setSelectedTags, galleries: setSelectedGalleries }}
       updateVideoRelations={updateVideoRelations}
+      handleTabClick={handleTabClick}
     />
   )
 }
