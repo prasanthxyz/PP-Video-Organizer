@@ -1,10 +1,9 @@
 import * as React from 'react'
-import { Spinner } from 'react-bootstrap'
 
 const SpinnerOr = (props) =>
   props.isSpinner ? (
     <div className="d-flex align-items-center">
-      <Spinner className="me-2" />
+      <div className="spinner"></div>
       <span className="me-2">{props.msg}</span>
     </div>
   ) : (

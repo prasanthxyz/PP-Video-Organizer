@@ -1,3 +1,3 @@
 export default function CenterMessage({ msg }) {
-  return <div className="fluid-container center-flex">{msg}</div>
+  return <div className="center-message fluid-container center-flex">{msg}</div>
 }

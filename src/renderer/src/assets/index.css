@@ -13,6 +13,10 @@ body {
   width: calc(100vw - 1rem);
 }
 
+.center-message {
+  height: 70vh;
+}
+
 .center-flex {
   display: flex;
   justify-content: center;
@@ -55,6 +59,29 @@ code {
 
 .space-between {
   justify-content: space-between;
+}
+
+.spinner {
+  border: 4px solid lightgrey;
+  border-top: 4px solid dodgerblue;
+  border-radius: 50%;
+  width: 1.5rem;
+  height: 1.5rem;
+  animation: spin 2s linear infinite;
+  margin-right: 0.5rem;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.filter-form-container {
+  margin-bottom: 1rem;
 }
 /* COMMON END */
 
@@ -117,6 +144,9 @@ code {
 #content {
   grid-area: content;
   margin-top: 2rem;
+  width: calc(100vw - 2rem);
+  margin-left: auto;
+  margin-right: auto;
 }
 /* LAYOUT END */
 
@@ -162,7 +192,7 @@ code {
 }
 /* HOME END */
 
-/* IMAGE SLIDER START */
+/* IMAGE SLIDER BEGIN */
 .slider {
   position: relative;
   height: 100%;
@@ -232,3 +262,51 @@ code {
   font-size: 1.5rem;
 }
 /* CHECKBOXGROUPS END */
+
+/* VIDEO BEGIN */
+.video-page-heading,
+.video-page-heading h4 {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+.video-page-player-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.video-page-player {
+  display: flex;
+  width: 90%;
+  justify-content: center;
+}
+
+.video-page-tgp-container {
+  display: flex;
+  justify-content: center;
+}
+
+.video-page-tgp-container img {
+  width: 90%;
+}
+
+.videos-inputui {
+  display: flex;
+  justify-content: space-between;
+}
+
+.videos-inputui button {
+  margin-right: 1rem;
+}
+
+.videos-table {
+  margin-top: 1rem;
+}
+
+.videos-table th,
+td {
+  padding: 0.3rem;
+  text-align: center;
+}
+/* VIDEO END */

@@ -1,4 +1,3 @@
-import { Row } from 'react-bootstrap'
 import FilterForm from '../common/FilterForm'
 import InputUI from './InputUI'
 import VideosTable from './VideosTable'
@@ -18,30 +17,26 @@ const VideosView = ({
   handleDeleteMissingVideos
 }) => (
   <div>
-    <Row className="mt-3">
-      <FilterForm setFilterText={setFilterText} />
-    </Row>
-    <Row className="mt-3">
-      <InputUI
-        videoInputData={videoInputData}
-        setVideoInputData={setVideoInputData}
-        isUploading={isUploading}
-        handleCreateVideos={handleCreateVideos}
-        isGeneratingTgps={isGeneratingTgps}
-        handleGenerateMissingTgps={handleGenerateMissingTgps}
-        isDeletingVideos={isDeletingVideos}
-        handleDeleteMissingVideos={handleDeleteMissingVideos}
+    <FilterForm setFilterText={setFilterText} />
+    <InputUI
+      videoInputData={videoInputData}
+      setVideoInputData={setVideoInputData}
+      isUploading={isUploading}
+      handleCreateVideos={handleCreateVideos}
+      isGeneratingTgps={isGeneratingTgps}
+      handleGenerateMissingTgps={handleGenerateMissingTgps}
+      isDeletingVideos={isDeletingVideos}
+      handleDeleteMissingVideos={handleDeleteMissingVideos}
+    />
+    {dbVideos.length > 0 ? (
+      <VideosTable
+        dbVideos={dbVideos}
+        handleDeleteVideo={handleDeleteVideo}
+        filterText={filterText}
       />
-    </Row>
-    <Row>
-      {dbVideos.length > 0 && (
-        <VideosTable
-          dbVideos={dbVideos}
-          handleDeleteVideo={handleDeleteVideo}
-          filterText={filterText}
-        />
-      )}
-    </Row>
+    ) : (
+      <p>No videos available.</p>
+    )}
   </div>
 )
 
