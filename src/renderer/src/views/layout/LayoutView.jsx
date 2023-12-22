@@ -1,7 +1,5 @@
-import { Button, Container, Nav, Navbar } from 'react-bootstrap'
-import { ArrowLeft, ArrowRepeat, ToggleOff, ToggleOn } from 'react-bootstrap-icons'
+import { FiArrowLeft, FiMoon, FiRefreshCw, FiSun } from 'react-icons/fi'
 import { Outlet } from 'react-router-dom'
-import darkIcon from '../../assets/darkicon.png'
 import lightIcon from '../../assets/lighticon.png'
 
 const LayoutView = ({
@@ -12,49 +10,39 @@ const LayoutView = ({
   navigate,
   refreshCombinations
 }) => (
-  <>
-    <Navbar className="bg-body-secondary px-3">
-      <Navbar.Brand>
-        <img
-          src={isDarkMode ? darkIcon : lightIcon}
-          width="30"
-          height="30"
-          className="d-inline-block align-top"
-          alt="PVORG"
-        />
-        &nbsp;&nbsp;PVORG
-      </Navbar.Brand>
-      <Nav className="justify-content-end flex-grow-1 pe-3">
+  <div id="layout" className="fluid-container">
+    <div id="header">
+      <div id="logo">
+        <img src={lightIcon} width="30" height="30" alt="PVORG" />
+        <p>PVORG</p>
+      </div>
+      <div id="navlinks">
         {PAGES.map((page) => (
-          <Nav.Link
+          <a
             key={page.text}
-            className="me-2"
-            active={activeNav === page.text}
+            className={activeNav === page.text ? 'navlink active' : 'navlink'}
             href={`#${page.location}`}
           >
             {page.text}
-          </Nav.Link>
+          </a>
         ))}
-      </Nav>
-      <Button size="sm" variant="warning" className="d-flex me-2" onClick={refreshCombinations}>
-        <ArrowRepeat />
-      </Button>
-      <Button size="sm" className="d-flex me-2" onClick={() => navigate(-1)}>
-        <ArrowLeft />
-      </Button>
-      <Button
-        size="sm"
-        variant={isDarkMode ? 'light' : 'dark'}
-        className="d-flex"
-        onClick={toggleDarkMode}
-      >
-        {isDarkMode ? <ToggleOn /> : <ToggleOff />}
-      </Button>
-    </Navbar>
-    <Container fluid>
+      </div>
+      <div id="navoperations">
+        <button onClick={refreshCombinations}>
+          <FiRefreshCw />
+        </button>
+        <button onClick={() => navigate(-1)}>
+          <FiArrowLeft />
+        </button>
+        <button onClick={toggleDarkMode} disabled>
+          {isDarkMode ? <FiSun /> : <FiMoon />}
+        </button>
+      </div>
+    </div>
+    <div id="content">
       <Outlet />
-    </Container>
-  </>
+    </div>
+  </div>
 )
 
 export default LayoutView

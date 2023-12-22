@@ -1,7 +1,7 @@
 import * as React from 'react'
 import { Col, Row } from 'react-bootstrap'
 import CheckBoxGroups from '../../components/CheckBoxGroups.jsx'
-import ImageSlideShow from '../common/ImageSlideShow.jsx'
+import ImageSlideShow from '../../components/ImageSlideShow.jsx'
 
 const GalleryView = ({
   gallery,

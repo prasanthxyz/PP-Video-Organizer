@@ -1,1 +1,234 @@
-.nav-link.active { font-weight: bold;}
+/* COMMON BEGIN */
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-size: 1.2rem;
+}
+
+.fluid-container {
+  height: calc(100vh - 1rem);
+  width: calc(100vw - 1rem);
+}
+
+.center-flex {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.flex-col {
+  flex-direction: column;
+}
+
+.font-larger {
+  font-size: larger;
+}
+
+code {
+  color: red;
+}
+
+.tabsheader {
+  display: flex;
+  border-bottom: 1px solid lightgray;
+  height: 2.5rem;
+  margin-bottom: 0.4rem;
+}
+
+.tabheader {
+  padding: 0 10px;
+  font-size: 1.4rem;
+  cursor: pointer;
+}
+
+.tabheader.active {
+  border-bottom: 3px solid dodgerblue;
+  font-weight: bold;
+}
+
+.d-flex {
+  display: flex;
+}
+
+.space-between {
+  justify-content: space-between;
+}
+/* COMMON END */
+
+/* MISSING EXECUTABLES BEGIN */
+#missing-executables table {
+  border-collapse: collapse;
+}
+
+#missing-executables tr {
+  border-bottom: 1px solid lightgrey;
+}
+
+#missing-executables td {
+  padding: 0.8rem;
+}
+/* MISSING EXECUTABLES END */
+
+/* LAYOUT BEGIN */
+#layout {
+  display: grid;
+  grid-template-rows: 3rem auto;
+  grid-template-areas:
+    'header'
+    'content';
+}
+
+#header {
+  grid-area: header;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 0 2rem;
+}
+
+#logo {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+#logo img {
+  margin-right: 0.7rem;
+}
+
+#navlinks a {
+  padding: 0.5rem;
+}
+
+.navlink.active {
+  font-weight: bold;
+}
+
+#navoperations button {
+  margin: 0 0.5rem;
+  height: 1.5rem;
+  display: inline-flex;
+  align-items: center;
+}
+
+#content {
+  grid-area: content;
+  margin-top: 2rem;
+}
+/* LAYOUT END */
+
+/* HOME BEGIN */
+#controlbar {
+  margin-bottom: 5px;
+}
+
+#controlbar .width75 {
+  flex: 3;
+  padding-right: 0.2rem;
+}
+
+#controlbar .width25 {
+  padding-left: 0.2rem;
+  flex: 1;
+}
+
+#controlbar .me-2 {
+  margin-right: 0.6rem;
+}
+
+#homecontent {
+  width: 100%;
+  display: flex;
+}
+
+#homecontent .width75 {
+  flex: 3;
+  padding-right: 0.2rem;
+  display: flex;
+}
+
+#homecontent .width25 {
+  flex: 1;
+  padding-left: 0.2rem;
+  display: flex;
+}
+
+#homecontent img {
+  object-fit: contain;
+  width: 100%;
+}
+/* HOME END */
+
+/* IMAGE SLIDER START */
+.slider {
+  position: relative;
+  height: 100%;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.image {
+  width: 100%;
+  height: 100%;
+}
+
+.slide {
+  opacity: 0;
+}
+
+.slide.active {
+  opacity: 1;
+}
+/* IMAGE SLIDER END */
+
+/* VIDEO PLAYER BEGIN */
+#videoplayer {
+  width: 100%;
+  height: 100%;
+}
+/* VIDEO PLAYER END */
+
+/* CHECKBOXGROUPS BEGIN */
+.checkboxgroup {
+  flex-grow: 1;
+  flex-basis: 0;
+}
+
+.checkboxgroup-header,
+.checkboxgroup-items {
+  margin-left: 0.5rem;
+  margin-right: 0.5rem;
+}
+
+.checkboxgroup-heading {
+  font-size: 1.5rem;
+  font-weight: lighter;
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+#checkboxgroups input[type='checkbox'] {
+  margin-right: 0.5rem;
+}
+
+.checkboxgroup-filter {
+  margin: 0.5rem;
+}
+
+.checkboxgroups-save-button {
+  flex-grow: 1;
+  flex-basis: 0;
+  display: flex;
+  align-items: start;
+}
+.checkboxgroups-save-button button {
+  margin: 0.5rem;
+  margin-top: 2rem;
+  font-size: 1.5rem;
+}
+/* CHECKBOXGROUPS END */
