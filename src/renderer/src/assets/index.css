@@ -305,8 +305,44 @@ code {
 }
 
 .videos-table th,
-td {
+.videos-table td {
   padding: 0.3rem;
   text-align: center;
 }
 /* VIDEO END */
+
+/* GALLERY BEGIN */
+.gallery-input-content {
+  margin: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.gallery-operations-container button {
+  margin-right: 0.5rem;
+}
+
+.galleries-table th,
+.galleries-table td {
+  padding: 0.3rem;
+  text-align: center;
+}
+
+.galleries-table th {
+  font-weight: normal;
+}
+
+.gallery-page-heading,
+.gallery-page-heading h4 {
+  margin-top: 0;
+  margin-bottom: 0.5rem;
+}
+
+.gallery-page-content {
+  display: flex;
+}
+
+.gallery-page-content > div {
+  flex-grow: 1;
+  flex-basis: 0;
+}
+/* GALLERY END */

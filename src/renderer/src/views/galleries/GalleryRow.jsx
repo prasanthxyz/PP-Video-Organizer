@@ -1,5 +1,4 @@
-import { Button } from 'react-bootstrap'
-import { Check2, X } from 'react-bootstrap-icons'
+import { FiCheck, FiX } from 'react-icons/fi'
 import { Link } from 'react-router-dom'
 
 const GalleryRow = ({ dbGallery, deleteGallery }) => (
@@ -13,15 +12,9 @@ const GalleryRow = ({ dbGallery, deleteGallery }) => (
         dbGallery.galleryName
       )}
     </td>
-    <td>{dbGallery.isAvailable ? <Check2 /> : <X />}</td>
+    <td>{dbGallery.isAvailable ? <FiCheck /> : <FiX />}</td>
     <td>
-      <Button
-        variant="danger"
-        size="sm"
-        onClick={async () => await deleteGallery(dbGallery.galleryPath)}
-      >
-        Delete
-      </Button>
+      <button onClick={async () => await deleteGallery(dbGallery.galleryPath)}>Delete</button>
     </td>
   </tr>
 )
