@@ -346,3 +346,46 @@ code {
   flex-basis: 0;
 }
 /* GALLERY END */
+
+/* TAG BEGIN */
+.tag-badge {
+  border: 1px solid black;
+  border-radius: 5px;
+  padding: 5px;
+  padding-left: 15px;
+  padding-right: 15px;
+  margin-right: 1rem;
+  margin-bottom: 1rem;
+  color: white;
+  background-color: black;
+  display: flex;
+  align-items: center;
+}
+
+.tag-badge p {
+  cursor: pointer;
+  margin: 0;
+  margin-right: 1rem;
+  margin-top: 0;
+  margin-bottom: 0.2rem;
+}
+
+.tag-badge-container {
+  flex-wrap: wrap;
+}
+
+.add-tags-form input {
+  margin-right: 1rem;
+}
+
+.mb-4 {
+  margin-bottom: 0.4rem;
+}
+
+.tag-page-heading,
+.tag-page-heading h4 {
+  margin-top: 0;
+  margin-bottom: 0.5rem;
+}
+
+/* TAG END */
