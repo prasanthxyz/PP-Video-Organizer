@@ -1,11 +1,11 @@
-const ImageSlideShowView = ({ galleryImages, index }) => (
-  <div className="container-slider">
-    {galleryImages.map((url, imgIndex) => (
-      <div className={imgIndex === index ? 'slide active' : 'slide'} key={imgIndex}>
-        {imgIndex === index && <img src={url} className="image" />}
-      </div>
+import { Carousel } from 'antd'
+
+const ImageSlideShowView = ({ galleryImages }) => (
+  <Carousel autoplay>
+    {galleryImages.map((img) => (
+      <img key={img} src={img} width="100%" />
     ))}
-  </div>
+  </Carousel>
 )
 
 export default ImageSlideShowView

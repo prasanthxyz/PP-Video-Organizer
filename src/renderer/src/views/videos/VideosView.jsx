@@ -16,7 +16,7 @@ const VideosView = ({
   isDeletingVideos,
   handleDeleteMissingVideos
 }) => (
-  <div>
+  <>
     <FilterForm setFilterText={setFilterText} />
     <InputUI
       videoInputData={videoInputData}
@@ -28,16 +28,12 @@ const VideosView = ({
       isDeletingVideos={isDeletingVideos}
       handleDeleteMissingVideos={handleDeleteMissingVideos}
     />
-    {dbVideos.length > 0 ? (
-      <VideosTable
-        dbVideos={dbVideos}
-        handleDeleteVideo={handleDeleteVideo}
-        filterText={filterText}
-      />
-    ) : (
-      <p>No videos available.</p>
-    )}
-  </div>
+    <VideosTable
+      dbVideos={dbVideos}
+      handleDeleteVideo={handleDeleteVideo}
+      filterText={filterText}
+    />
+  </>
 )
 
 export default VideosView

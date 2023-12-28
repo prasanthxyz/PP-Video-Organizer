@@ -1,3 +1,4 @@
+import { Button, Flex, Space } from 'antd'
 import * as React from 'react'
 import SpinnerOr from '../common/SpinnerOr.jsx'
 
@@ -9,22 +10,30 @@ const Operations = ({
   isDeletingGalleries,
   handleDeleteMissingGalleries
 }) => (
-  <div className="gallery-operations-container d-flex space-between">
+  <Flex justify="space-around" align="center">
     <div>
       <SpinnerOr isSpinner={isCreating} msg="Creating...">
-        <button onClick={async () => await getGalleryPathInput()}>Add new Gallery</button>
-        {galleryInput && (
-          <button onClick={async () => await handleCreateGallery(galleryInput)}>Submit</button>
-        )}
-        <p className="gallery-input-content">{galleryInput}</p>
+        <Space>
+          <Button size="small" onClick={async () => await getGalleryPathInput()}>
+            Add new Gallery
+          </Button>
+          {galleryInput && (
+            <Button size="small" onClick={async () => await handleCreateGallery(galleryInput)}>
+              Submit
+            </Button>
+          )}
+        </Space>
+        <p>{galleryInput}</p>
       </SpinnerOr>
     </div>
     <div>
       <SpinnerOr isSpinner={isDeletingGalleries} msg="Deleting...">
-        <button onClick={handleDeleteMissingGalleries}>Delete Missing Galleries</button>
+        <Button size="small" onClick={handleDeleteMissingGalleries}>
+          Delete Missing Galleries
+        </Button>
       </SpinnerOr>
     </div>
-  </div>
+  </Flex>
 )
 
 export default Operations

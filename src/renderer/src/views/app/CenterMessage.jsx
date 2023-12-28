@@ -1,3 +1,9 @@
+import { Flex, Typography } from 'antd'
+
 export default function CenterMessage({ msg }) {
-  return <div className="center-message fluid-container center-flex">{msg}</div>
+  return (
+    <Flex justify="center" align="center" style={{ width: '100%', height: '80vh' }}>
+      <Typography.Title level={4}>{msg}</Typography.Title>
+    </Flex>
+  )
 }

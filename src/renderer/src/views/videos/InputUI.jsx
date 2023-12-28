@@ -1,3 +1,4 @@
+import { Button, Flex, Input, Space } from 'antd'
 import SpinnerOr from '../common/SpinnerOr'
 
 const InputUI = ({
@@ -10,12 +11,12 @@ const InputUI = ({
   isDeletingVideos,
   handleDeleteMissingVideos
 }) => (
-  <div className="videos-inputui d-flex">
-    <div className="d-flex">
-      <button disabled={Array.from(videoInputData).length !== 0}>
+  <Flex justify="space-between">
+    <Space>
+      <Button size="small">
         <label htmlFor="filesInput">Add new Video(s)</label>
-      </button>
-      <input
+      </Button>
+      <Input
         id="filesInput"
         type="file"
         style={{ visibility: 'hidden', width: '20px' }}
@@ -26,21 +27,25 @@ const InputUI = ({
       />
       <SpinnerOr isSpinner={isUploading} msg="Generating TGPs...">
         {Array.from(videoInputData).length !== 0 && (
-          <button onClick={handleCreateVideos}>
+          <Button size="small" onClick={handleCreateVideos}>
             Submit {Array.from(videoInputData).length} file(s)
-          </button>
+          </Button>
         )}
       </SpinnerOr>
-    </div>
-    <div className="d-flex">
+    </Space>
+    <Space>
       <SpinnerOr isSpinner={isGeneratingTgps} msg="Generating TGPs...">
-        <button onClick={handleGenerateMissingTgps}>Generate Missing TGPs</button>
+        <Button size="small" onClick={handleGenerateMissingTgps}>
+          Generate Missing TGPs
+        </Button>
       </SpinnerOr>
       <SpinnerOr isSpinner={isDeletingVideos} msg="Deleting...">
-        <button onClick={handleDeleteMissingVideos}>Delete Missing Videos</button>
+        <Button size="small" onClick={handleDeleteMissingVideos}>
+          Delete Missing Videos
+        </Button>
       </SpinnerOr>
-    </div>
-  </div>
+    </Space>
+  </Flex>
 )
 
 export default InputUI

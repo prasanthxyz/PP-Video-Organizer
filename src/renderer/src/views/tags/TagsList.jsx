@@ -1,26 +1,37 @@
-import { FiX } from 'react-icons/fi'
+import { CloseOutlined } from '@ant-design/icons'
+import { Space, Tag } from 'antd'
 
 const TagsList = ({ dbTags, filterText, navigate, handleDeleteTag }) => (
-  <div className="d-flex tag-badge-container">
-    {dbTags
-      .filter((dbTag) => dbTag.title.toLowerCase().includes(filterText))
-      .map((dbTag) => (
-        <div className="tag-badge" key={dbTag.title}>
-          <p
-            className="mx-2"
-            role="button"
-            onClick={() => navigate(`/tag/${encodeURIComponent(dbTag.title)}`)}
+  <>
+    <Space size="middle" wrap>
+      {dbTags
+        .filter((dbTag) => dbTag.title.toLowerCase().includes(filterText))
+        .map((dbTag) => (
+          <Tag
+            key={dbTag.title}
+            closable
+            onClose={async () => await handleDeleteTag(dbTag.title)}
+            color="#777"
+            style={{
+              height: '2.5rem',
+              fontSize: '1.5rem',
+              display: 'flex',
+              alignItems: 'center'
+            }}
+            closeIcon={
+              <CloseOutlined style={{ fontSize: '1rem', color: 'orange', marginTop: '0.3rem' }} />
+            }
           >
-            {dbTag.title}
-          </p>
-          <FiX
-            color="orange"
-            cursor={'pointer'}
-            onClick={async () => await handleDeleteTag(dbTag.title)}
-          />
-        </div>
-      ))}
-  </div>
+            <a
+              style={{ height: '1.5rem', marginRight: '0.3rem' }}
+              href={`#/tag/${encodeURIComponent(dbTag.title)}`}
+            >
+              {dbTag.title}
+            </a>
+          </Tag>
+        ))}
+    </Space>
+  </>
 )
 
 export default TagsList

@@ -25,13 +25,11 @@ const GalleriesView = ({
       isDeletingGalleries={isDeletingGalleries}
       handleDeleteMissingGalleries={handleDeleteMissingGalleries}
     />
-    {dbGalleries.length > 0 && (
-      <GalleriesTable
-        dbGalleries={dbGalleries}
-        handleDeleteGallery={handleDeleteGallery}
-        filterText={filterText}
-      />
-    )}
+    <GalleriesTable
+      dbGalleries={dbGalleries}
+      handleDeleteGallery={handleDeleteGallery}
+      filterText={filterText}
+    />
   </>
 )
 

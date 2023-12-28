@@ -41,9 +41,9 @@ export default function Home({
     }
   })
 
-  const handleTabClick = (e) => {
+  const handleTabClick = (newTab) => {
     setIsVideoPlaying(false)
-    setActiveTab(e.target.dataset.tabId)
+    setActiveTab(newTab)
   }
 
   const navigateCombinations = (next = true) => {

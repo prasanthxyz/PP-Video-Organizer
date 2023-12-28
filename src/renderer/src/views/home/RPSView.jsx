@@ -1,19 +1,20 @@
-import ImageSlideShow from '../../components/ImageSlideShow'
+import { Col, Image, Row } from 'antd'
 import VideoPlayer from '../../components/VideoPlayer'
+import ImageSlideShowView from '../common/ImageSlideShowView'
 
 const RPSView = ({ showVid, videoPath, isVideoPlaying, gallery, video }) => (
-  <div id="homecontent">
-    <div className="width75">
+  <Row gutter={5}>
+    <Col xs={18}>
       {showVid ? (
         <VideoPlayer autoplay={isVideoPlaying} controls={true} sources={`file:///${videoPath}`} />
       ) : (
-        <img src={`file:///${video.data.tgpPath}`} />
+        <Image src={`file:///${video.data.tgpPath}`} width="100%" />
       )}
-    </div>
-    <div className="width25">
-      {gallery.data.images.length > 0 && <ImageSlideShow galleryImages={gallery.data.images} />}
-    </div>
-  </div>
+    </Col>
+    <Col xs={6}>
+      {gallery.data.images.length > 0 && <ImageSlideShowView galleryImages={gallery.data.images} />}
+    </Col>
+  </Row>
 )
 
 export default RPSView

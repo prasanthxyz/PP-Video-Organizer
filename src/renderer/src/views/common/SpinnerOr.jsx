@@ -1,11 +1,12 @@
+import { Spin } from 'antd'
 import * as React from 'react'
 
 const SpinnerOr = (props) =>
   props.isSpinner ? (
-    <div className="d-flex align-items-center">
-      <div className="spinner"></div>
-      <span className="me-2">{props.msg}</span>
-    </div>
+    <>
+      <Spin style={{ marginRight: '0.8rem' }} />
+      {props.msg}
+    </>
   ) : (
     props.children
   )

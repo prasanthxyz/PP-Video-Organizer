@@ -1,24 +1,24 @@
+import { Button, Input, Space } from 'antd'
+import Typography from 'antd/es/typography/Typography'
 import SpinnerOr from '../common/SpinnerOr'
 
 const AddTagForm = ({ setTagInput, isCreating, handleCreateTags }) => (
   <>
-    <p className="mb-4">Enter new tags (space separated)</p>
-    <div className="d-flex add-tags-form">
-      <div>
-        <input
-          type="text"
-          id="tagInput"
-          onChange={(e) => {
-            setTagInput(e.target.value)
-          }}
-        />
-      </div>
-      <div>
-        <SpinnerOr isSpinner={isCreating} msg="Creating...">
-          <button onClick={handleCreateTags}>Submit</button>
-        </SpinnerOr>
-      </div>
-    </div>
+    <Typography.Title level={4} style={{ marginTop: '2rem' }}>
+      Enter new tags (space separated)
+    </Typography.Title>
+    <Space>
+      <Input
+        id="tagInput"
+        onChange={(e) => {
+          setTagInput(e.target.value)
+        }}
+        style={{ width: '15rem' }}
+      />
+      <SpinnerOr isSpinner={isCreating} msg="Creating...">
+        <Button onClick={handleCreateTags}>Submit</Button>
+      </SpinnerOr>
+    </Space>
   </>
 )
 

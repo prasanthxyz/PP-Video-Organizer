@@ -1,5 +1,5 @@
 import * as React from 'react'
-import CheckBoxGroupsView from '../views/common/CheckBoxGroups'
+import CheckBoxGroupsView from '../views/common/CheckBoxGroupsView'
 
 export default function CheckBoxGroups({ lists, saveHandlers, useDiffObj = false, postSave }) {
   const [prevSelectedItems, setPrevSelectedItems] = React.useState([])

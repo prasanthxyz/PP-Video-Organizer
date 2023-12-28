@@ -53,9 +53,9 @@ export default function Video() {
     }
   }, [video.isSuccess])
 
-  const handleTabClick = (e) => {
+  const handleTabClick = (newTabId) => {
     setIsVideoPlaying(false)
-    setActiveTab(e.target.dataset.tabId)
+    setActiveTab(newTabId)
   }
 
   if (video.isLoading || allGalleries.isLoading || allTags.isLoading)

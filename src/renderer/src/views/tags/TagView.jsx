@@ -1,10 +1,11 @@
+import { Typography } from 'antd'
 import CheckBoxGroups from '../../components/CheckBoxGroups'
 
 const TagView = ({ tag, allVideos, selectedVideos, setSelectedVideos, updateTagVideos }) => (
   <>
-    <div className="center-flex tag-page-heading">
-      <h4>{tag.title}</h4>
-    </div>
+    <Typography.Title level={2} style={{ textAlign: 'center' }}>
+      {tag.title}
+    </Typography.Title>
     <CheckBoxGroups
       lists={[
         {

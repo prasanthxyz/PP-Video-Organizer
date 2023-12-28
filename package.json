@@ -1,6 +1,6 @@
 {
   "name": "pvorg",
-  "version": "3.0.1",
+  "version": "3.0.2",
   "description": "A video organizer and random video selector with genre/gallery tagging and slideshows",
   "main": "./out/main/index.js",
   "author": "Prasanth P <prasanthxyz@gmail.com>",
@@ -81,10 +81,12 @@
     ]
   },
   "dependencies": {
+    "@ant-design/icons": "^5.2.6",
     "@electron-toolkit/preload": "^2.0.0",
     "@electron-toolkit/utils": "^2.0.0",
     "@emotion/react": "^11.11.1",
     "@emotion/styled": "^11.11.0",
+    "antd": "^5.12.5",
     "command-exists": "^1.2.9",
     "electron-updater": "^6.1.7",
     "ffprobe": "^1.1.2",
@@ -92,7 +94,6 @@
     "framer-motion": "^10.16.5",
     "pg-hstore": "^2.3.4",
     "react-hotkeys-hook": "^4.4.1",
-    "react-icons": "^4.12.0",
     "react-query": "^3.39.3",
     "react-router-dom": "^6.19.0",
     "sequelize": "^6.35.0",
