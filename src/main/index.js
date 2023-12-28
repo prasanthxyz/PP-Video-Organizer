@@ -6,6 +6,10 @@ import icon from '../../resources/icon.png?asset'
 import ipcMethods from '../ipcMethods'
 import { setupDB } from './database/database'
 
+if (process.platform !== 'win32') {
+  process.env.PATH = '/opt/homebrew/bin:/opt/homebrew/sbin:' + process.env.PATH
+}
+
 async function createWindow() {
   // Create the browser window.
   const mainWindow = new BrowserWindow({
