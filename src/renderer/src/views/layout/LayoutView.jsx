@@ -32,7 +32,7 @@ const LayoutView = ({
       >
         <Space>
           <Image src={isDarkMode ? darkIcon : lightIcon} width={30} height={30} preview={false} />
-          <Title style={{ margin: 0 }} level={4}>
+          <Title style={{ margin: 0, textWrap: 'nowrap' }} level={4}>
             PVORG
           </Title>
         </Space>
