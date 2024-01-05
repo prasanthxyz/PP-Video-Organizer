@@ -1,5 +1,6 @@
 import _ from 'lodash'
 import * as React from 'react'
+import { useQueryClient } from 'react-query'
 import { HashRouter, Route, Routes } from 'react-router-dom'
 import mainAdapter from '../../mainAdapter.js'
 import { useAvailableGalleries } from './hooks/galleries.js'
@@ -30,6 +31,7 @@ export default function App() {
   const [combinations, setCombinations] = React.useState([])
   const [combinationIndex, setCombinationIndex] = React.useState(0)
 
+  const queryClient = useQueryClient()
   const availableVideos = useAvailableVideos()
   const availableTags = useAvailableTags()
   const availableGalleries = useAvailableGalleries()
@@ -51,6 +53,12 @@ export default function App() {
   }
 
   async function refreshCombinations() {
+    queryClient.invalidateQueries(['availableVideos'])
+    queryClient.invalidateQueries(['allVideos'])
+    queryClient.invalidateQueries(['availableGalleries'])
+    queryClient.invalidateQueries(['allGalleries'])
+    queryClient.invalidateQueries(['availableTags'])
+    queryClient.invalidateQueries(['allTags'])
     const [videos, tags, galleries] = (
       await Promise.all([
         availableVideos.refetch(),

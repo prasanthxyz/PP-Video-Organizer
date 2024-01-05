@@ -2,15 +2,21 @@ import { useMutation, useQuery, useQueryClient } from 'react-query'
 import mainAdapter from '../../../mainAdapter'
 
 export function useAvailableTags() {
-  return useQuery('availableTags', () => mainAdapter.getAvailableTags())
+  return useQuery('availableTags', () => mainAdapter.getAvailableTags(), {
+    staleTime: Infinity
+  })
 }
 
 export function useAllTags() {
-  return useQuery('allTags', () => mainAdapter.getAllTags())
+  return useQuery('allTags', () => mainAdapter.getAllTags(), {
+    staleTime: Infinity
+  })
 }
 
 export function useTag(tagTitle) {
-  return useQuery(['allTags', tagTitle], () => mainAdapter.getTag(tagTitle))
+  return useQuery(['allTags', tagTitle], () => mainAdapter.getTag(tagTitle), {
+    staleTime: Infinity
+  })
 }
 
 export function useCreateTags() {

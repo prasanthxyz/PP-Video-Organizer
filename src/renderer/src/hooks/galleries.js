@@ -2,15 +2,21 @@ import { useMutation, useQuery, useQueryClient } from 'react-query'
 import mainAdapter from '../../../mainAdapter'
 
 export function useAvailableGalleries() {
-  return useQuery('availableGalleries', () => mainAdapter.getAvailableGalleries())
+  return useQuery('availableGalleries', () => mainAdapter.getAvailableGalleries(), {
+    staleTime: Infinity
+  })
 }
 
 export function useAllGalleries() {
-  return useQuery('allGalleries', () => mainAdapter.getAllGalleries())
+  return useQuery('allGalleries', () => mainAdapter.getAllGalleries(), {
+    staleTime: Infinity
+  })
 }
 
 export function useGallery(galleryPath) {
-  return useQuery(['allGalleries', galleryPath], () => mainAdapter.getGallery(galleryPath))
+  return useQuery(['allGalleries', galleryPath], () => mainAdapter.getGallery(galleryPath), {
+    staleTime: Infinity
+  })
 }
 
 export function useCreateGallery() {

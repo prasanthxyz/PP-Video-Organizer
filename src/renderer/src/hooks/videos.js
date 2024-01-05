@@ -2,15 +2,21 @@ import { useMutation, useQuery, useQueryClient } from 'react-query'
 import mainAdapter from '../../../mainAdapter'
 
 export function useAvailableVideos() {
-  return useQuery('availableVideos', () => mainAdapter.getAvailableVideos())
+  return useQuery('availableVideos', () => mainAdapter.getAvailableVideos(), {
+    staleTime: Infinity
+  })
 }
 
 export function useAllVideos() {
-  return useQuery('allVideos', () => mainAdapter.getAllVideos())
+  return useQuery('allVideos', () => mainAdapter.getAllVideos(), {
+    staleTime: Infinity
+  })
 }
 
 export function useVideo(videoPath) {
-  return useQuery(['allVideos', videoPath], () => mainAdapter.getVideo(videoPath))
+  return useQuery(['allVideos', videoPath], () => mainAdapter.getVideo(videoPath), {
+    staleTime: Infinity
+  })
 }
 
 export function useCreateVideos() {

@@ -8,7 +8,7 @@ const RPSView = ({ showVid, videoPath, isVideoPlaying, gallery, video }) => (
       {showVid ? (
         <VideoPlayer autoplay={isVideoPlaying} controls={true} sources={`file:///${videoPath}`} />
       ) : (
-        <Image src={`file:///${video.data.tgpPath}`} width="100%" />
+        <Image src={`file:///${video.data.tgpPath}`} loading="lazy" width="100%" />
       )}
     </Col>
     <Col xs={6}>
