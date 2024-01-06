@@ -1,14 +1,13 @@
-import { Flex, Input } from 'antd'
 import * as React from 'react'
+import { Input } from 'rsuite'
 
 const FilterForm = ({ setFilterText }) => (
-  <Flex justify="center" style={{ marginTop: '0.5rem', marginBottom: '0.5rem' }}>
-    <Input
-      style={{ width: '20rem' }}
-      placeholder="Filter"
-      onChange={(e) => setFilterText(e.target.value.toLowerCase())}
-    />
-  </Flex>
+  <Input
+    size="sm"
+    style={{ width: '20rem', alignSelf: 'center' }}
+    placeholder="Filter"
+    onChange={(value) => setFilterText(value.toLowerCase())}
+  />
 )
 
 export default FilterForm

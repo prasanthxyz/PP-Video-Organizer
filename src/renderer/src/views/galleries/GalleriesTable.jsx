@@ -1,15 +1,16 @@
-import { CheckOutlined, CloseOutlined } from '@ant-design/icons'
-import { Button, Table } from 'antd'
 import * as React from 'react'
+import { FaCheck, FaTimes, FaTrash } from 'react-icons/fa'
 import { Link } from 'react-router-dom'
+import { Table } from 'rsuite'
+
+const { Column, HeaderCell, Cell } = Table
 
 const GalleriesTable = ({ dbGalleries, handleDeleteGallery, filterText }) => (
   <Table
-    dataSource={dbGalleries
+    autoHeight
+    data={dbGalleries
       .filter((gallery) => gallery.galleryName.toLowerCase().includes(filterText))
       .map((gallery) => ({
-        key: gallery.galleryPath,
-        dataIndex: gallery.galleryName,
         gallery: gallery.isAvailable ? (
           <Link to={`/gallery/${encodeURIComponent(gallery.galleryPath)}`}>
             {gallery.galleryName}
@@ -17,27 +18,28 @@ const GalleriesTable = ({ dbGalleries, handleDeleteGallery, filterText }) => (
         ) : (
           gallery.galleryName
         ),
-        isAvailable: gallery.isAvailable ? <CheckOutlined /> : <CloseOutlined />,
+        isAvailable: gallery.isAvailable ? <FaCheck /> : <FaTimes />,
         delete: (
-          <Button
-            size="sm"
-            danger
+          <FaTrash
+            color="red"
             onClick={async () => await handleDeleteGallery(gallery.galleryPath)}
-          >
-            Delete
-          </Button>
+          />
         )
       }))}
-    columns={[
-      {
-        title: 'Gallery',
-        dataIndex: 'gallery',
-        sorter: (a, b) => a.dataIndex.localeCompare(b.dataIndex)
-      },
-      { title: 'Available?', dataIndex: 'isAvailable', width: 10 },
-      { title: 'Delete', dataIndex: 'delete' }
-    ]}
-  />
+  >
+    <Column>
+      <HeaderCell>Gallery</HeaderCell>
+      <Cell dataKey="gallery" />
+    </Column>
+    <Column>
+      <HeaderCell>Available?</HeaderCell>
+      <Cell dataKey="isAvailable" />
+    </Column>
+    <Column>
+      <HeaderCell>Delete</HeaderCell>
+      <Cell dataKey="delete" />
+    </Column>
+  </Table>
 )
 
 export default GalleriesTable

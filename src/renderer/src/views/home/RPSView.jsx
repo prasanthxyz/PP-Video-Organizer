@@ -1,4 +1,4 @@
-import { Col, Image, Row } from 'antd'
+import { Col, Row } from 'rsuite'
 import VideoPlayer from '../../components/VideoPlayer'
 import ImageSlideShowView from '../common/ImageSlideShowView'
 
@@ -8,7 +8,7 @@ const RPSView = ({ showVid, videoPath, isVideoPlaying, gallery, video }) => (
       {showVid ? (
         <VideoPlayer autoplay={isVideoPlaying} controls={true} sources={`file:///${videoPath}`} />
       ) : (
-        <Image src={`file:///${video.data.tgpPath}`} loading="lazy" width="100%" />
+        <img src={`file:///${video.data.tgpPath}`} loading="lazy" width="100%" />
       )}
     </Col>
     <Col xs={6}>

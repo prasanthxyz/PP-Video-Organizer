@@ -1,5 +1,5 @@
-import { Button, Flex, Space } from 'antd'
 import * as React from 'react'
+import { Button, Stack } from 'rsuite'
 import SpinnerOr from '../common/SpinnerOr.jsx'
 
 const Operations = ({
@@ -10,30 +10,31 @@ const Operations = ({
   isDeletingGalleries,
   handleDeleteMissingGalleries
 }) => (
-  <Flex justify="space-around" align="center">
-    <div>
-      <SpinnerOr isSpinner={isCreating} msg="Creating...">
-        <Space>
-          <Button size="small" onClick={async () => await getGalleryPathInput()}>
-            Add new Gallery
-          </Button>
-          {galleryInput && (
-            <Button size="small" onClick={async () => await handleCreateGallery(galleryInput)}>
-              Submit
-            </Button>
-          )}
-        </Space>
-        <p>{galleryInput}</p>
-      </SpinnerOr>
-    </div>
-    <div>
-      <SpinnerOr isSpinner={isDeletingGalleries} msg="Deleting...">
-        <Button size="small" onClick={handleDeleteMissingGalleries}>
-          Delete Missing Galleries
+  <Stack justifyContent="space-around" alignItems="center">
+    <SpinnerOr isSpinner={isCreating} msg="Creating...">
+      <Stack spacing={10}>
+        <Button appearance="primary" size="xs" onClick={async () => await getGalleryPathInput()}>
+          Add new Gallery
         </Button>
-      </SpinnerOr>
-    </div>
-  </Flex>
+        {!galleryInput && (
+          <Button
+            size="xs"
+            appearance="primary"
+            color="green"
+            onClick={async () => await handleCreateGallery(galleryInput)}
+          >
+            Submit
+          </Button>
+        )}
+      </Stack>
+      <p>{galleryInput}</p>
+    </SpinnerOr>
+    <SpinnerOr isSpinner={isDeletingGalleries} msg="Deleting...">
+      <Button appearance="ghost" color="red" size="xs" onClick={handleDeleteMissingGalleries}>
+        Delete Missing Galleries
+      </Button>
+    </SpinnerOr>
+  </Stack>
 )
 
 export default Operations

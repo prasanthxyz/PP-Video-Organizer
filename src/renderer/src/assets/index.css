@@ -6,6 +6,16 @@ body {
   margin: 0;
 }
 
-.ant-tabs-nav {
-  margin-bottom: 0.4rem !important;
+.tabs-nav {
+  height: 1.2rem;
+  margin-bottom: 0.4rem;
+}
+
+.tab-header {
+  height: 1.2rem;
+  padding-top: 0.2rem;
+}
+
+.rs-carousel-label {
+  display: none;
 }

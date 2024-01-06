@@ -1,9 +1,9 @@
-import { Flex, Typography } from 'antd'
+import { Stack } from 'rsuite'
 
 export default function CenterMessage({ msg }) {
   return (
-    <Flex justify="center" align="center" style={{ width: '100%', height: '80vh' }}>
-      <Typography.Title level={4}>{msg}</Typography.Title>
-    </Flex>
+    <Stack justifyContent="center" alignItems="center" style={{ width: '100%', height: '80vh' }}>
+      <h4>{msg}</h4>
+    </Stack>
   )
 }

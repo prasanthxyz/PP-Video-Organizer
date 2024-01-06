@@ -1,12 +1,8 @@
-import { ArrowLeftOutlined, BulbFilled, BulbOutlined, SyncOutlined } from '@ant-design/icons'
-import { Button, ConfigProvider, Image, Layout, Menu, Space, Typography, theme } from 'antd'
-import { Link, Outlet } from 'react-router-dom'
+import { FaAdjust, FaArrowLeft, FaSync } from 'react-icons/fa'
+import { Outlet } from 'react-router-dom'
+import { Container, Content, CustomProvider, Header, Nav, Navbar, Stack } from 'rsuite'
 import darkIcon from '../../assets/darkicon.png'
 import lightIcon from '../../assets/lighticon.png'
-
-const { defaultAlgorithm, darkAlgorithm } = theme
-const { Header, Content } = Layout
-const { Title } = Typography
 
 const LayoutView = ({
   isDarkMode,
@@ -16,50 +12,43 @@ const LayoutView = ({
   navigate,
   refreshCombinations
 }) => (
-  <ConfigProvider
-    theme={{
-      algorithm: isDarkMode ? darkAlgorithm : defaultAlgorithm
-    }}
-  >
-    <Layout style={{ minHeight: '100vh', minWidth: '100vw', padding: '0.4rem' }}>
-      <Header
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          backgroundColor: 'inherit'
-        }}
-      >
-        <Space>
-          <Image src={isDarkMode ? darkIcon : lightIcon} width={30} height={30} preview={false} />
-          <Title style={{ margin: 0, textWrap: 'nowrap' }} level={4}>
-            PVORG
-          </Title>
-        </Space>
-        <Menu
-          mode="horizontal"
-          selectedKeys={[activeNav]}
-          items={PAGES.map((page) => ({
-            label: <Link to={page.location}>{page.text}</Link>,
-            key: page.text
-          }))}
-          style={{ backgroundColor: 'inherit' }}
-        />
-        <Space>
-          <Button onClick={refreshCombinations}>
-            <SyncOutlined />
-          </Button>
-          <Button onClick={() => navigate(-1)}>
-            <ArrowLeftOutlined />
-          </Button>
-          <Button onClick={toggleDarkMode}>{isDarkMode ? <BulbOutlined /> : <BulbFilled />}</Button>
-        </Space>
-      </Header>
-      <Content>
+  <CustomProvider theme={isDarkMode ? 'dark' : 'light'}>
+    <Header>
+      <Navbar appearance="default">
+        <Nav>
+          <Nav.Item>
+            <Stack spacing={10}>
+              <img src={isDarkMode ? darkIcon : lightIcon} width={30} height={30} />
+              <h4 style={{ margin: 0, textWrap: 'nowrap' }}>PVORG</h4>
+            </Stack>
+          </Nav.Item>
+        </Nav>
+        <Nav activeKey={activeNav}>
+          {PAGES.map((page) => (
+            <Nav.Item key={page.text} eventKey={page.text} onSelect={() => navigate(page.location)}>
+              {page.text}
+            </Nav.Item>
+          ))}
+        </Nav>
+        <Nav pullRight>
+          <Nav.Item onClick={refreshCombinations}>
+            <FaSync />
+          </Nav.Item>
+          <Nav.Item onClick={() => navigate(-1)}>
+            <FaArrowLeft />
+          </Nav.Item>
+          <Nav.Item onClick={toggleDarkMode}>
+            <FaAdjust />
+          </Nav.Item>
+        </Nav>
+      </Navbar>
+    </Header>
+    <Content>
+      <Container style={{ padding: '0.4rem' }}>
         <Outlet />
-      </Content>
-    </Layout>
-  </ConfigProvider>
+      </Container>
+    </Content>
+  </CustomProvider>
 )
 
 export default LayoutView

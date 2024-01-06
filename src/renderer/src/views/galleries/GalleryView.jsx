@@ -1,5 +1,5 @@
-import { Col, Row, Typography } from 'antd'
 import * as React from 'react'
+import { Stack } from 'rsuite'
 import CheckBoxGroups from '../../components/CheckBoxGroups.jsx'
 import ImageSlideShowView from '../common/ImageSlideShowView.jsx'
 
@@ -11,18 +11,16 @@ const GalleryView = ({
   updateGalleryVideos
 }) => (
   <>
-    <Typography.Title level={4} style={{ textAlign: 'center' }}>
-      {gallery.galleryPath}
-    </Typography.Title>
-    <Row gutter={10}>
-      <Col xs={12}>
+    <h5 style={{ textAlign: 'center' }}>{gallery.galleryPath}</h5>
+    <Stack alignItems="flex-start" wrap={false}>
+      <Stack.Item flex="3 1 0px" style={{ width: 0 }}>
         {gallery.images.length > 0 ? (
           <ImageSlideShowView galleryImages={gallery.images} />
         ) : (
           <div>No images found!</div>
         )}
-      </Col>
-      <Col xs={12}>
+      </Stack.Item>
+      <Stack.Item flex="5 1 0px" style={{ width: 0 }}>
         <CheckBoxGroups
           lists={[
             {
@@ -37,8 +35,8 @@ const GalleryView = ({
           }}
           useDiffObj={true}
         />
-      </Col>
-    </Row>
+      </Stack.Item>
+    </Stack>
   </>
 )
 

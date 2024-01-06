@@ -1,26 +1,16 @@
-import { CloseOutlined } from '@ant-design/icons'
-import { Space, Tag } from 'antd'
+import { Stack, Tag } from 'rsuite'
 
 const TagsList = ({ dbTags, filterText, navigate, handleDeleteTag }) => (
-  <>
-    <Space size="middle" wrap>
-      {dbTags
+  <Stack spacing={10} wrap style={{ margin: '1.5rem', marginBottom: '2rem' }}>
+    {dbTags.length > 0 ? (
+      dbTags
         .filter((dbTag) => dbTag.title.toLowerCase().includes(filterText))
         .map((dbTag) => (
           <Tag
             key={dbTag.title}
             closable
             onClose={async () => await handleDeleteTag(dbTag.title)}
-            color="#777"
-            style={{
-              height: '2.5rem',
-              fontSize: '1.5rem',
-              display: 'flex',
-              alignItems: 'center'
-            }}
-            closeIcon={
-              <CloseOutlined style={{ fontSize: '1rem', color: 'orange', marginTop: '0.3rem' }} />
-            }
+            size="lg"
           >
             <a
               style={{ height: '1.5rem', marginRight: '0.3rem' }}
@@ -29,9 +19,11 @@ const TagsList = ({ dbTags, filterText, navigate, handleDeleteTag }) => (
               {dbTag.title}
             </a>
           </Tag>
-        ))}
-    </Space>
-  </>
+        ))
+    ) : (
+      <p>No tags found!</p>
+    )}
+  </Stack>
 )
 
 export default TagsList

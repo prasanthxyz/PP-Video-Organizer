@@ -7,7 +7,9 @@ import {
   useDeleteMissingGalleries
 } from '../hooks/galleries.js'
 import CenterMessage from '../views/app/CenterMessage.jsx'
-import GalleriesView from '../views/galleries/GalleriesView.jsx'
+import FilterForm from '../views/common/FilterForm.jsx'
+import GalleriesTable from '../views/galleries/GalleriesTable.jsx'
+import Operations from '../views/galleries/Operations.jsx'
 
 export default function Galleries() {
   const [filterText, setFilterText] = React.useState('')
@@ -30,17 +32,21 @@ export default function Galleries() {
   if (dbGalleries.isLoading) return <CenterMessage msg="Loading..." />
 
   return (
-    <GalleriesView
-      filterText={filterText}
-      setFilterText={setFilterText}
-      dbGalleries={dbGalleries.data}
-      galleryInput={galleryInput}
-      getGalleryPathInput={getGalleryPathInput}
-      isCreating={isCreating}
-      handleCreateGallery={handleCreateGallery}
-      isDeletingGalleries={isDeletingGalleries}
-      handleDeleteMissingGalleries={deleteMissingGalleries}
-      handleDeleteGallery={deleteGallery}
-    />
+    <>
+      <FilterForm setFilterText={setFilterText} />
+      <Operations
+        isCreating={isCreating}
+        galleryInput={galleryInput}
+        getGalleryPathInput={getGalleryPathInput}
+        handleCreateGallery={handleCreateGallery}
+        isDeletingGalleries={isDeletingGalleries}
+        handleDeleteMissingGalleries={deleteMissingGalleries}
+      />
+      <GalleriesTable
+        dbGalleries={dbGalleries.data}
+        handleDeleteGallery={deleteGallery}
+        filterText={filterText}
+      />
+    </>
   )
 }

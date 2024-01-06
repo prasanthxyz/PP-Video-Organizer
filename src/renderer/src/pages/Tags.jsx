@@ -2,7 +2,9 @@ import * as React from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAllTags, useCreateTags, useDeleteTag } from '../hooks/tags.js'
 import CenterMessage from '../views/app/CenterMessage.jsx'
-import TagsView from '../views/tags/TagsView.jsx'
+import FilterForm from '../views/common/FilterForm.jsx'
+import AddTagForm from '../views/tags/AddTagForm.jsx'
+import TagsList from '../views/tags/TagsList.jsx'
 
 export default function Tags() {
   const [filterText, setFilterText] = React.useState('')
@@ -22,15 +24,19 @@ export default function Tags() {
   if (dbTags.isLoading) return <CenterMessage msg="Loading..." />
 
   return (
-    <TagsView
-      filterText={filterText}
-      setFilterText={setFilterText}
-      dbTags={dbTags.data}
-      navigate={navigate}
-      handleDeleteTag={deleteTag}
-      setTagInput={setTagInput}
-      isCreating={isCreating}
-      handleCreateTags={handleCreateTags}
-    />
+    <>
+      <FilterForm setFilterText={setFilterText} />
+      <TagsList
+        dbTags={dbTags.data}
+        filterText={filterText}
+        navigate={navigate}
+        handleDeleteTag={deleteTag}
+      />
+      <AddTagForm
+        setTagInput={setTagInput}
+        isCreating={isCreating}
+        handleCreateTags={handleCreateTags}
+      />
+    </>
   )
 }

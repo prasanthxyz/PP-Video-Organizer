@@ -7,7 +7,9 @@ import {
   useGenerateMissingTgps
 } from '../hooks/videos.js'
 import CenterMessage from '../views/app/CenterMessage.jsx'
-import VideosView from '../views/videos/VideosView.jsx'
+import FilterForm from '../views/common/FilterForm.jsx'
+import InputUI from '../views/videos/InputUI.jsx'
+import VideosTable from '../views/videos/VideosTable.jsx'
 
 export default function Videos() {
   const [filterText, setFilterText] = React.useState('')
@@ -28,19 +30,23 @@ export default function Videos() {
   if (dbVideos.isLoading) return <CenterMessage msg="Loading..." />
 
   return (
-    <VideosView
-      filterText={filterText}
-      setFilterText={setFilterText}
-      dbVideos={dbVideos.data}
-      handleDeleteVideo={deleteVideo}
-      videoInputData={videoInputData}
-      setVideoInputData={setVideoInputData}
-      isUploading={isUploading}
-      handleCreateVideos={handleCreateVideos}
-      isGeneratingTgps={isGeneratingTgps}
-      handleGenerateMissingTgps={generateMissingTgps}
-      isDeletingVideos={isDeletingVideos}
-      handleDeleteMissingVideos={deleteMissingVideos}
-    />
+    <>
+      <FilterForm setFilterText={setFilterText} />
+      <InputUI
+        videoInputData={videoInputData}
+        setVideoInputData={setVideoInputData}
+        isUploading={isUploading}
+        handleCreateVideos={handleCreateVideos}
+        isGeneratingTgps={isGeneratingTgps}
+        handleGenerateMissingTgps={generateMissingTgps}
+        isDeletingVideos={isDeletingVideos}
+        handleDeleteMissingVideos={deleteMissingVideos}
+      />
+      <VideosTable
+        dbVideos={dbVideos.data}
+        handleDeleteVideo={deleteVideo}
+        filterText={filterText}
+      />
+    </>
   )
 }

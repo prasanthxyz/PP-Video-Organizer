@@ -1,14 +1,7 @@
-import { Spin } from 'antd'
 import * as React from 'react'
+import { Loader } from 'rsuite'
 
 const SpinnerOr = (props) =>
-  props.isSpinner ? (
-    <>
-      <Spin style={{ marginRight: '0.8rem' }} />
-      {props.msg}
-    </>
-  ) : (
-    props.children
-  )
+  props.isSpinner ? <Loader content={props.msg} size="sm" /> : props.children
 
 export default SpinnerOr

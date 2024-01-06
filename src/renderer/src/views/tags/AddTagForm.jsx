@@ -1,25 +1,24 @@
-import { Button, Input, Space } from 'antd'
-import Typography from 'antd/es/typography/Typography'
+import { Button, Input, Stack } from 'rsuite'
 import SpinnerOr from '../common/SpinnerOr'
 
 const AddTagForm = ({ setTagInput, isCreating, handleCreateTags }) => (
-  <>
-    <Typography.Title level={4} style={{ marginTop: '2rem' }}>
-      Enter new tags (space separated)
-    </Typography.Title>
-    <Space>
+  <div style={{ marginLeft: '1.5rem' }}>
+    <h5 style={{ marginBottom: '0.2rem' }}>Enter new tags (space separated)</h5>
+    <Stack spacing={10}>
       <Input
         id="tagInput"
-        onChange={(e) => {
-          setTagInput(e.target.value)
+        onChange={(value) => {
+          setTagInput(value)
         }}
         style={{ width: '15rem' }}
       />
       <SpinnerOr isSpinner={isCreating} msg="Creating...">
-        <Button onClick={handleCreateTags}>Submit</Button>
+        <Button appearance="primary" onClick={handleCreateTags}>
+          Submit
+        </Button>
       </SpinnerOr>
-    </Space>
-  </>
+    </Stack>
+  </div>
 )
 
 export default AddTagForm
