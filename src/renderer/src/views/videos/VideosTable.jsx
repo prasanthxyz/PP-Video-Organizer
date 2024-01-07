@@ -54,7 +54,7 @@ const VideosTable = ({ dbVideos, handleDeleteVideo, filterText }) => {
           delete: (
             <FaTrash color="red" onClick={async () => await handleDeleteVideo(video.filePath)} />
           ),
-          error: !video.isAvailable ? 'File missing!' : !video.isTgpAvailable ? 'TGP missing!' : '',
+          error: !video.isAvailable ? 'No File!' : !video.isTgpAvailable ? 'No TGP!' : '',
           quality: Math.round(video.quality * 100) / 100,
           width: video.width,
           height: video.height,
@@ -71,7 +71,7 @@ const VideosTable = ({ dbVideos, handleDeleteVideo, filterText }) => {
         <HeaderCell>Delete</HeaderCell>
         <Cell dataKey="delete" />
       </Column>
-      <Column>
+      <Column width={75}>
         <HeaderCell>Error</HeaderCell>
         <Cell dataKey="error" />
       </Column>

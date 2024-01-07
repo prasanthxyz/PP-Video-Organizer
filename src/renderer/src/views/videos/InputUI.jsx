@@ -19,7 +19,7 @@ const InputUI = ({
       <input
         id="filesInput"
         type="file"
-        style={{ visibility: 'hidden', width: '20px' }}
+        style={{ visibility: 'hidden', width: '0.3rem' }}
         multiple="multiple"
         onChange={(e) => {
           setVideoInputData(e.target.files)
@@ -33,7 +33,7 @@ const InputUI = ({
         )}
       </SpinnerOr>
     </Stack>
-    <Stack spacing={20}>
+    <Stack spacing={5}>
       <SpinnerOr isSpinner={isGeneratingTgps} msg="Generating TGPs...">
         <Button size="xs" appearance="ghost" onClick={handleGenerateMissingTgps}>
           Generate Missing TGPs

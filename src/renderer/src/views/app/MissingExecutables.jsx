@@ -15,7 +15,7 @@ export default function MissingExecutables({ packagesToInstall }) {
         Please ensure these are installed and available in PATH
       </h5>
       <Table
-        style={{ width: '50vh' }}
+        style={{ width: '32rem', marginLeft: '10rem' }}
         autoHeight
         data={packagesToInstall.map(([name, instr, type]) => ({
           name: name,

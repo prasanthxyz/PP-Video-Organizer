@@ -25,17 +25,17 @@ export default function Tags() {
 
   return (
     <>
+      <AddTagForm
+        setTagInput={setTagInput}
+        isCreating={isCreating}
+        handleCreateTags={handleCreateTags}
+      />
       <FilterForm setFilterText={setFilterText} />
       <TagsList
         dbTags={dbTags.data}
         filterText={filterText}
         navigate={navigate}
         handleDeleteTag={deleteTag}
-      />
-      <AddTagForm
-        setTagInput={setTagInput}
-        isCreating={isCreating}
-        handleCreateTags={handleCreateTags}
       />
     </>
   )

@@ -1,20 +1,20 @@
 import * as React from 'react'
 import { Link } from 'react-router-dom'
-import { Button, Stack } from 'rsuite'
+import { Button, Col, Row, Stack } from 'rsuite'
 
 const ControlBarView = ({ showVid, setShowVid, video, gallery, handleBack, handleNext }) => (
-  <Stack spacing={10} style={{ marginBottom: 2 }}>
-    <Stack.Item flex={3}>
+  <Row gutter={3} style={{ marginBottom: '0.2rem' }}>
+    <Col xs={18}>
       <Stack justifyContent="space-between">
+        <Link to={`/video/${encodeURIComponent(video.data.id)}`}>{video.data.videoName}</Link>
         <Button size="xs" appearance="primary" onClick={() => setShowVid(!showVid)}>
           {showVid ? 'Show TGP' : 'Show Video'}
         </Button>
-        <Link to={`/video/${encodeURIComponent(video.data.id)}`}>{video.data.videoName}</Link>
       </Stack>
-    </Stack.Item>
-    <Stack.Item flex={1} justify="space-between" align="center">
+    </Col>
+    <Col xs={6}>
       <Stack justifyContent="space-between">
-        <Stack spacing={10}>
+        <Stack spacing={3}>
           <Button size="xs" appearance="ghost" color="green" onClick={handleBack}>
             Back
           </Button>
@@ -26,8 +26,8 @@ const ControlBarView = ({ showVid, setShowVid, video, gallery, handleBack, handl
           {gallery.data.galleryName}
         </Link>
       </Stack>
-    </Stack.Item>
-  </Stack>
+    </Col>
+  </Row>
 )
 
 export default ControlBarView

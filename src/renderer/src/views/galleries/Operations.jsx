@@ -10,13 +10,13 @@ const Operations = ({
   isDeletingGalleries,
   handleDeleteMissingGalleries
 }) => (
-  <Stack justifyContent="space-around" alignItems="center">
+  <Stack spacing={20} alignItems="center" style={{ marginBottom: '0.3rem' }}>
     <SpinnerOr isSpinner={isCreating} msg="Creating...">
-      <Stack spacing={10}>
+      <Stack spacing={5}>
         <Button appearance="primary" size="xs" onClick={async () => await getGalleryPathInput()}>
           Add new Gallery
         </Button>
-        {!galleryInput && (
+        {galleryInput && (
           <Button
             size="xs"
             appearance="primary"
@@ -26,8 +26,8 @@ const Operations = ({
             Submit
           </Button>
         )}
+        <p>{galleryInput}</p>
       </Stack>
-      <p>{galleryInput}</p>
     </SpinnerOr>
     <SpinnerOr isSpinner={isDeletingGalleries} msg="Deleting...">
       <Button appearance="ghost" color="red" size="xs" onClick={handleDeleteMissingGalleries}>

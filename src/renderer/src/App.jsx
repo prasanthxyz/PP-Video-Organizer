@@ -19,6 +19,8 @@ import CenterMessage from './views/app/CenterMessage.jsx'
 import MissingExecutables from './views/app/MissingExecutables.jsx'
 
 export default function App() {
+  const [isBigScreen, setIsBigScreen] = React.useState(checkIsBigScreen)
+
   const [isCheckingExecutables, setIsCheckingExecutables] = React.useState(true)
   const [executablesStatus, setExecutablesStatus] = React.useState([])
 
@@ -71,6 +73,15 @@ export default function App() {
   }
 
   React.useEffect(() => {
+    if (typeof window === 'undefined') return
+    function autoResize() {
+      setIsBigScreen(checkIsBigScreen())
+    }
+    window.addEventListener('resize', autoResize)
+    return () => window.removeEventListener('resize', autoResize)
+  }, [])
+
+  React.useEffect(() => {
     if (availableVideos.isSuccess && availableTags.isSuccess && availableGalleries.isSuccess) {
       saveSelection(new Set(availableVideos.data), new Set(), new Set(availableGalleries.data))
     }
@@ -79,6 +90,20 @@ export default function App() {
   const checkExecutables = async () => {
     setExecutablesStatus(await getExecutablesStatus())
     setIsCheckingExecutables(false)
+  }
+
+  if (!isBigScreen) {
+    return (
+      <CenterMessage
+        msg={
+          <div>
+            This app is optimized for bigger screen sizes
+            <br />
+            Please use a bigger screen and/or maximize the window
+          </div>
+        }
+      />
+    )
   }
 
   if (isCheckingExecutables) {
@@ -129,4 +154,8 @@ export default function App() {
       </Routes>
     </HashRouter>
   )
+}
+
+function checkIsBigScreen() {
+  return typeof window === 'undefined' || window.innerWidth >= 768
 }

@@ -8,7 +8,7 @@ body {
 
 .tabs-nav {
   height: 1.2rem;
-  margin-bottom: 0.4rem;
+  margin-bottom: 0.1rem;
 }
 
 .tab-header {
@@ -16,6 +16,15 @@ body {
   padding-top: 0.2rem;
 }
 
+.rs-carousel {
+  height: auto;
+  background-color: inherit;
+}
+
 .rs-carousel-label {
   display: none;
+}
+
+button {
+  border-radius: 0 !important;
 }

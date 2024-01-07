@@ -44,7 +44,7 @@ const LayoutView = ({
       </Navbar>
     </Header>
     <Content>
-      <Container style={{ padding: '0.4rem' }}>
+      <Container style={{ padding: '0.2rem' }}>
         <Outlet />
       </Container>
     </Content>

@@ -42,7 +42,7 @@ const CheckBoxGroupsView = ({
             <Input
               placeholder="Filter"
               style={{ width: '10rem', marginTop: '4px', marginBottom: '4px' }}
-              size="sm"
+              size="xs"
               value={filterTexts[listIndex]}
               onChange={(value) => {
                 const newFilterTexts = [...filterTexts]
@@ -61,7 +61,7 @@ const CheckBoxGroupsView = ({
                   }
                   checked={selectedItems[listIndex].has(item)}
                 >
-                  {getLabel(item)}
+                  <div style={{ wordBreak: 'break-all' }}>{getLabel(item)}</div>
                 </Checkbox>
               </Stack.Item>
             ))

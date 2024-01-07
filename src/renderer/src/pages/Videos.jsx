@@ -31,7 +31,6 @@ export default function Videos() {
 
   return (
     <>
-      <FilterForm setFilterText={setFilterText} />
       <InputUI
         videoInputData={videoInputData}
         setVideoInputData={setVideoInputData}
@@ -42,6 +41,7 @@ export default function Videos() {
         isDeletingVideos={isDeletingVideos}
         handleDeleteMissingVideos={deleteMissingVideos}
       />
+      <FilterForm setFilterText={setFilterText} />
       <VideosTable
         dbVideos={dbVideos.data}
         handleDeleteVideo={deleteVideo}

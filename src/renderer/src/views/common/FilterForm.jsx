@@ -3,8 +3,8 @@ import { Input } from 'rsuite'
 
 const FilterForm = ({ setFilterText }) => (
   <Input
-    size="sm"
-    style={{ width: '20rem', alignSelf: 'center' }}
+    size="xs"
+    style={{ width: '20rem', marginBottom: '0.3rem', marginTop: '0.3rem' }}
     placeholder="Filter"
     onChange={(value) => setFilterText(value.toLowerCase())}
   />

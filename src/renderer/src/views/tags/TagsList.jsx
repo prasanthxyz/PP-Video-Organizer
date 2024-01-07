@@ -1,7 +1,7 @@
 import { Stack, Tag } from 'rsuite'
 
 const TagsList = ({ dbTags, filterText, navigate, handleDeleteTag }) => (
-  <Stack spacing={10} wrap style={{ margin: '1.5rem', marginBottom: '2rem' }}>
+  <Stack spacing={10} wrap style={{ marginBottom: '2rem', marginTop: '0.2rem' }}>
     {dbTags.length > 0 ? (
       dbTags
         .filter((dbTag) => dbTag.title.toLowerCase().includes(filterText))

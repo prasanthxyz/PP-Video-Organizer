@@ -33,7 +33,6 @@ export default function Galleries() {
 
   return (
     <>
-      <FilterForm setFilterText={setFilterText} />
       <Operations
         isCreating={isCreating}
         galleryInput={galleryInput}
@@ -42,6 +41,7 @@ export default function Galleries() {
         isDeletingGalleries={isDeletingGalleries}
         handleDeleteMissingGalleries={deleteMissingGalleries}
       />
+      <FilterForm setFilterText={setFilterText} />
       <GalleriesTable
         dbGalleries={dbGalleries.data}
         handleDeleteGallery={deleteGallery}
