@@ -1,0 +1,17 @@
+{
+  "name": "pvorg",
+  "version": "4.0.0",
+  "description": "A video organizer and random video selector with genre/gallery tagging and slideshows",
+  "license": "MIT",
+  "author": "Prasanth P <prasanthxyz@gmail.com>",
+  "main": "./dist/main/main.js",
+  "scripts": {
+    "rebuild": "node -r ts-node/register ../../.erb/scripts/electron-rebuild.js",
+    "postinstall": "npm run rebuild && npm run link-modules",
+    "link-modules": "node -r ts-node/register ../../.erb/scripts/link-modules.ts"
+  },
+  "dependencies": {
+    "sequelize": "^6.37.1",
+    "sqlite3": "5.1.6"
+  }
+}
