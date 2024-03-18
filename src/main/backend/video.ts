@@ -4,9 +4,9 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as db from './db';
 
-import { execCommand, getPythonExecutable } from './utils';
-import { IVideoModel } from '../database/VideoModel';
 import { IVideo, IVideoFull, IVideoWithRelated } from '../../renderer/types';
+import { IVideoModel } from '../database/VideoModel';
+import { execCommand, getPythonExecutable } from './utils';
 
 async function getVideoStream(
   videoPath: string,
@@ -22,13 +22,13 @@ export async function addVideos(videoPaths: string[]): Promise<void> {
   const existingVideos = new Set(
     (await db.getVideos()).map((v: IVideoModel) => v.filePath),
   );
-  const newVideos: Partial<IVideoModel>[] = [];
+  const newVideos: IVideoModel[] = [];
 
-  videoPaths.forEach(async (videoPath) => {
-    if (existingVideos.has(videoPath)) return;
+  for (const videoPath of videoPaths) {
+    if (existingVideos.has(videoPath)) continue;
     try {
       const videoInfo = await getVideoStream(videoPath);
-      if (!videoInfo) return;
+      if (!videoInfo) continue;
       if (
         [
           videoInfo.width,
@@ -36,21 +36,21 @@ export async function addVideos(videoPaths: string[]): Promise<void> {
           videoInfo.duration,
           videoInfo.duration_ts,
         ].some((value) => Number.isNaN(Number(value))) ||
-        videoInfo.duration_ts === undefined ||
+        !videoInfo.duration_ts ||
         videoInfo.duration_ts < 1000
       )
-        return;
+        continue;
 
       const video = {
         filePath: videoPath,
         width: videoInfo.width || 0,
         height: videoInfo.height || 0,
-        bitRate: parseFloat(String(videoInfo.bit_rate || '0')),
-        duration: parseFloat(String(videoInfo.duration || '0')) / 60,
+        bitRate: parseFloat(String(videoInfo.bit_rate || 0)),
+        duration: parseFloat(String(videoInfo.duration || 0)) / 60,
         frameRate: 0,
         quality: 0,
       };
-      const [num, den] = videoInfo.avg_frame_rate.split('/').map(parseFloat);
+      const [num, den] = videoInfo['avg_frame_rate'].split('/').map(parseFloat);
       video.frameRate = num / den;
       // QUALITY METRIC
       // normalize width*height to 640 x 480, framerate to 30, and get corresponding bit-rate
@@ -60,8 +60,10 @@ export async function addVideos(videoPaths: string[]): Promise<void> {
 
       await generateTgp(videoPath);
       newVideos.push(video);
-    } catch (e) {}
-  });
+    } catch (e) {
+      continue;
+    }
+  }
 
   await db.createVideos(newVideos);
 }

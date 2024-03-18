@@ -7,18 +7,18 @@ export async function getCombinationsData(
 ): Promise<[string, string][]> {
   const videos = await db.getSelectedVideos([...videoPaths]);
   const combinationsData: [string, string][] = [];
-  videos.forEach(({ videoPath, videoTags, videoGalleries }) => {
-    const commonGalleries = videoGalleries.filter((gallery: string) =>
+  for (const { videoPath, videoTags, videoGalleries } of videos) {
+    const commonGalleries = videoGalleries.filter((gallery) =>
       galleriesSet.has(gallery),
     );
-    if (commonGalleries.length === 0) return;
+    if (commonGalleries.length === 0) continue;
 
-    const commonTags = videoTags.filter((tag: string) => tagsSet.has(tag));
-    if (commonTags.length !== tagsSet.size) return;
+    const commonTags = videoTags.filter((tag) => tagsSet.has(tag));
+    if (commonTags.length !== tagsSet.size) continue;
 
-    commonGalleries.forEach((gallery: string) => {
+    for (const gallery of commonGalleries) {
       combinationsData.push([videoPath, gallery]);
-    });
-  });
+    }
+  }
   return combinationsData;
 }

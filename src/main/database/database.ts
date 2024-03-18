@@ -1,34 +1,40 @@
+import * as fs from 'fs';
 import * as path from 'path';
-import { ModelStatic, Sequelize } from 'sequelize';
-import GalleryModel, { IGalleryModel } from './GalleryModel';
-import TagModel, { ITagModel } from './TagModel';
-import VideoModel, { IVideoModel } from './VideoModel';
+import { parse, stringify } from 'yaml';
+import { IVideoModel } from './VideoModel';
 
-let sequelize: Sequelize | null = null;
-export let Tag: ModelStatic<ITagModel> | null = null;
-export let Gallery: ModelStatic<IGalleryModel> | null = null;
-export let Video: ModelStatic<IVideoModel> | null = null;
-
-function createTables(): void {
-  if (!sequelize) return;
-  Tag = sequelize.define<ITagModel>('Tag', TagModel);
-  Gallery = sequelize.define<IGalleryModel>('Gallery', GalleryModel);
-  Video = sequelize.define<IVideoModel>('Video', VideoModel);
-  Video.belongsToMany(Gallery, { through: 'VideoGallery' });
-  Gallery.belongsToMany(Video, { through: 'VideoGallery' });
-  Video.belongsToMany(Tag, { through: 'VideoTag' });
-  Tag.belongsToMany(Video, { through: 'VideoTag' });
+export interface IData {
+  galleries: string[];
+  tags: string[];
+  videoGalleries: [string, string][];
+  videoTags: [string, string][];
+  videos: IVideoModel[];
 }
 
+export let data: IData;
+let configFile: string;
+
 export async function setupDB(app: Electron.App): Promise<void> {
-  sequelize = new Sequelize({
-    dialect: 'sqlite',
-    storage: path.join(app.getPath('home'), 'pvorg.db'),
-    logging: false,
-  });
+  configFile = path.join(app.getPath('home'), 'pvorg.yml');
+  if (!fs.existsSync(configFile)) {
+    data = {
+      galleries: [],
+      tags: [],
+      videoGalleries: [],
+      videoTags: [],
+      videos: [],
+    };
+    storeData();
+  } else {
+    loadData();
+  }
+}
 
-  createTables();
+export function loadData() {
+  const file = fs.readFileSync(configFile, 'utf8');
+  data = parse(file);
+}
 
-  console.log('Syncing DB...');
-  await sequelize.sync();
+export function storeData() {
+  fs.writeFileSync(configFile, stringify(data));
 }

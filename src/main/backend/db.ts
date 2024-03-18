@@ -1,53 +1,72 @@
-import { Op } from 'sequelize';
-import { Gallery, Tag, Video } from '../database/database';
-import { IVideoModel } from '../database/VideoModel';
+import { IDiffObj } from '../../renderer/types';
 import { IGalleryModel } from '../database/GalleryModel';
 import { ITagModel } from '../database/TagModel';
-import { IDiffObj } from '../../renderer/types';
+import { IVideoModel } from '../database/VideoModel';
+import { data, storeData } from '../database/database';
 
 export async function deleteVideo(videoPath: string): Promise<void> {
-  if (Video) await Video.destroy({ where: { filePath: videoPath } });
+  data.videos = data.videos.filter((video) => video.filePath !== videoPath);
+  data.videoGalleries = data.videoGalleries.filter(
+    ([vp, _gp]) => vp !== videoPath,
+  );
+  data.videoTags = data.videoTags.filter(([vp, _tt]) => vp !== videoPath);
+  storeData();
 }
 
 export async function deleteVideos(videoPaths: string[]): Promise<void> {
-  if (Video)
-    await Video.destroy({ where: { filePath: { [Op.in]: videoPaths } } });
+  const videoPathsSet = new Set(videoPaths);
+  data.videos = data.videos.filter(
+    (video) => !videoPathsSet.has(video.filePath),
+  );
+  data.videoGalleries = data.videoGalleries.filter(
+    ([vp, _gp]) => !videoPathsSet.has(vp),
+  );
+  data.videoTags = data.videoTags.filter(([vp, _tt]) => !videoPathsSet.has(vp));
+  storeData();
 }
 
 export async function deleteTag(tagTitle: string): Promise<void> {
-  if (Tag) await Tag.destroy({ where: { title: tagTitle } });
+  data.tags = data.tags.filter((tag) => tag !== tagTitle);
+  data.videoTags = data.videoTags.filter(([_vp, tt]) => tt !== tagTitle);
+  storeData();
 }
 
 export async function deleteGallery(galleryPath: string): Promise<void> {
-  if (Gallery) await Gallery.destroy({ where: { galleryPath } });
+  data.galleries = data.galleries.filter((gp) => gp !== galleryPath);
+  data.videoGalleries = data.videoGalleries.filter(
+    ([_vp, gp]) => gp !== galleryPath,
+  );
+  storeData();
 }
 
 export async function deleteGalleries(galleryPaths: string[]): Promise<void> {
-  if (Gallery)
-    await Gallery.destroy({
-      where: { galleryPath: { [Op.in]: galleryPaths } },
-    });
+  const galleryPathsSet = new Set(galleryPaths);
+  data.galleries = data.galleries.filter((gp) => !galleryPathsSet.has(gp));
+  data.videoGalleries = data.videoGalleries.filter(
+    ([_vp, gp]) => !galleryPathsSet.has(gp),
+  );
+  storeData();
 }
 
 export async function getVideos(): Promise<IVideoModel[]> {
-  if (Video) return Video.findAll({ raw: true });
-  return [];
+  return data.videos;
 }
 
 export async function getTags(): Promise<ITagModel[]> {
-  if (Tag) return Tag.findAll({ raw: true });
-  return [];
+  return data.tags.map((tt) => ({
+    title: tt,
+  }));
 }
 
 export async function getGalleries(): Promise<IGalleryModel[]> {
-  if (Gallery) return Gallery.findAll({ raw: true });
-  return [];
+  return data.galleries.map((gp) => ({
+    galleryPath: gp,
+  }));
 }
 
-export async function createVideos(
-  videos: Partial<IVideoModel>[],
-): Promise<void> {
-  if (Video) await Video.bulkCreate(videos as IVideoModel[]);
+export async function createVideos(videos: IVideoModel[]): Promise<void> {
+  data.videos.push(...videos);
+  storeData();
 }
 
 export async function createTags(tagTitles: string): Promise<void> {
@@ -58,9 +77,9 @@ export async function createTags(tagTitles: string): Promise<void> {
     .toLowerCase()
     .split(' ')
     .map((tagTitle) => tagTitle.trim())
-    .filter((tagTitle) => tagTitle !== '' && !existingTags.has(tagTitle))
-    .map((tagTitle) => ({ title: tagTitle }));
-  if (Tag) Tag.bulkCreate(validTags);
+    .filter((tagTitle) => tagTitle !== '' && !existingTags.has(tagTitle));
+  data.tags.push(...validTags);
+  storeData();
 }
 
 export async function createGallery(galleryPath: string): Promise<void> {
@@ -68,49 +87,47 @@ export async function createGallery(galleryPath: string): Promise<void> {
     (await getGalleries()).map((g: IGalleryModel) => g.galleryPath),
   );
   if (existingGalleries.has(galleryPath)) return;
-  if (Gallery) await Gallery.create({ galleryPath });
+  data.galleries.push(galleryPath);
+  storeData();
 }
 
 export async function getVideoData(videoPath: string): Promise<{
   tags: ITagModel[];
   galleries: IGalleryModel[];
 }> {
-  if (!Video || !Tag || !Gallery)
-    return Promise.resolve({ tags: [], galleries: [] });
-  const videoObj = await Video.findOne({
-    where: { filePath: videoPath },
-    include: [Tag, Gallery],
-  });
-  if (!videoObj) return { tags: [], galleries: [] };
   return {
-    tags: await videoObj.getTags({ raw: true }),
-    galleries: await videoObj.getGalleries({ raw: true }),
+    tags: data.videoTags
+      .filter(([vp, _tt]) => vp === videoPath)
+      .map(([_vp, tt]) => ({ title: tt })),
+    galleries: data.videoGalleries
+      .filter(([vp, _gp]) => vp === videoPath)
+      .map(([_vp, gp]) => ({ galleryPath: gp })),
   };
 }
 
 export async function getGalleryData(
   galleryPath: string,
 ): Promise<{ videos: IVideoModel[] }> {
-  if (!Gallery || !Video) return Promise.resolve({ videos: [] });
-  const galleryObj = await Gallery.findOne({
-    where: { galleryPath },
-    include: [Video],
-  });
+  const videoPaths = new Set(
+    data.videoGalleries
+      .filter(([_vp, gp]) => gp === galleryPath)
+      .map(([vp, _gp]) => vp),
+  );
   return {
-    videos: galleryObj ? await galleryObj.getVideos({ raw: true }) : [],
+    videos: data.videos.filter((video) => videoPaths.has(video.filePath)),
   };
 }
 
 export async function getTagData(
   tagTitle: string,
 ): Promise<{ videos: IVideoModel[] }> {
-  if (!Tag || !Video) return Promise.resolve({ videos: [] });
-  const tagObj = await Tag.findOne({
-    where: { title: tagTitle },
-    include: [Video],
-  });
+  const videoPaths = new Set(
+    data.videoTags
+      .filter(([_vp, tt]) => tt === tagTitle)
+      .map(([vp, _tt]) => vp),
+  );
   return {
-    videos: tagObj ? await tagObj.getVideos({ raw: true }) : [],
+    videos: data.videos.filter((video) => videoPaths.has(video.filePath)),
   };
 }
 
@@ -118,44 +135,56 @@ export async function updateVideoTags(
   videoPath: string,
   diffObj: IDiffObj,
 ): Promise<void> {
-  if (!Video) return;
-  const videoObj = await Video.findOne({ where: { filePath: videoPath } });
-  if (!videoObj) return;
-  await videoObj.addTags(diffObj.add);
-  await videoObj.removeTags(diffObj.remove);
+  const tagsToRemove = new Set(diffObj.remove);
+  data.videoTags = data.videoTags.filter(
+    ([vp, tt]) => vp !== videoPath || !tagsToRemove.has(tt),
+  );
+  for (const tagTitle of diffObj.add) {
+    data.videoTags.push([videoPath, tagTitle]);
+  }
+  storeData();
 }
 
 export async function updateVideoGalleries(
   videoPath: string,
   diffObj: IDiffObj,
 ): Promise<void> {
-  if (!Video) return;
-  const videoObj = await Video.findOne({ where: { filePath: videoPath } });
-  if (!videoObj) return;
-  await videoObj.addGalleries(diffObj.add);
-  await videoObj.removeGalleries(diffObj.remove);
+  const galleriesToRemove = new Set(diffObj.remove);
+  data.videoGalleries = data.videoGalleries.filter(
+    ([vp, gp]) => vp !== videoPath || !galleriesToRemove.has(gp),
+  );
+  for (const galleryPath of diffObj.add) {
+    data.videoGalleries.push([videoPath, galleryPath]);
+  }
+  storeData();
 }
 
 export async function updateGalleryVideos(
   galleryPath: string,
   diffObj: IDiffObj,
 ): Promise<void> {
-  if (!Gallery) return;
-  const galleryObj = await Gallery.findOne({ where: { galleryPath } });
-  if (!galleryObj) return;
-  await galleryObj.addVideos(diffObj.add);
-  await galleryObj.removeVideos(diffObj.remove);
+  const videosToRemove = new Set(diffObj.remove);
+  data.videoGalleries = data.videoGalleries.filter(
+    ([vp, gp]) => gp !== galleryPath || !videosToRemove.has(vp),
+  );
+  for (const videoPath of diffObj.add) {
+    data.videoGalleries.push([videoPath, galleryPath]);
+  }
+  storeData();
 }
 
 export async function updateTagVideos(
   tagTitle: string,
   diffObj: IDiffObj,
 ): Promise<void> {
-  if (!Tag) return;
-  const tagObj = await Tag.findOne({ where: { title: tagTitle } });
-  if (!tagObj) return;
-  await tagObj.addVideos(diffObj.add);
-  await tagObj.removeVideos(diffObj.remove);
+  const videosToRemove = new Set(diffObj.remove);
+  data.videoTags = data.videoTags.filter(
+    ([vp, tt]) => tt !== tagTitle || !videosToRemove.has(vp),
+  );
+  for (const videoPath of diffObj.add) {
+    data.videoTags.push([videoPath, tagTitle]);
+  }
+  storeData();
 }
 
 export async function getSelectedVideos(videoPaths: string[]): Promise<
@@ -165,18 +194,20 @@ export async function getSelectedVideos(videoPaths: string[]): Promise<
     videoGalleries: string[];
   }[]
 > {
-  if (!Video || !Tag || !Gallery) return Promise.resolve([]);
-  const videoObjs: IVideoModel[] = await Video.findAll({
-    where: { filePath: { [Op.in]: videoPaths } },
-    include: [Tag, Gallery],
-  });
+  const videoPathsSet = new Set(videoPaths);
+  const videoObjs: IVideoModel[] = data.videos.filter((video) =>
+    videoPathsSet.has(video.filePath),
+  );
   return Promise.all(
-    videoObjs.map(async (v: IVideoModel) => ({
-      videoPath: v.filePath,
-      videoTags: (await v.getTags()).map((t: ITagModel) => t.title),
-      videoGalleries: (await v.getGalleries()).map(
-        (g: IGalleryModel) => g.galleryPath,
-      ),
-    })),
+    videoObjs.map(async (v: IVideoModel) => {
+      const videoData = await getVideoData(v.filePath);
+      return {
+        videoPath: v.filePath,
+        videoTags: videoData.tags.map((t: ITagModel) => t.title),
+        videoGalleries: videoData.galleries.map(
+          (g: IGalleryModel) => g.galleryPath,
+        ),
+      };
+    }),
   );
 }
