@@ -1,9 +1,8 @@
-import * as React from 'react';
 import { FaCheck, FaTimes, FaTrash } from 'react-icons/fa';
+import { UseMutateFunction } from 'react-query';
 import { Link } from 'react-router-dom';
 import { Table } from 'rsuite';
 import { IGallery } from '../../types';
-import { UseMutateFunction } from 'react-query';
 
 const { Column, HeaderCell, Cell } = Table;
 

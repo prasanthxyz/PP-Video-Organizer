@@ -1,4 +1,3 @@
-import * as React from 'react';
 import { useGallery } from '../hooks/galleries';
 import { useVideo } from '../hooks/videos';
 import CenterMessage from '../views/app/CenterMessage';

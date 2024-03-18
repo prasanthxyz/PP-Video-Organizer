@@ -1,9 +1,9 @@
 import * as React from 'react';
+import { UseMutateFunction } from 'react-query';
 import { Stack } from 'rsuite';
 import CheckBoxGroups from '../../components/CheckBoxGroups';
-import ImageSlideShowView from '../common/ImageSlideShowView';
-import { UseMutateFunction } from 'react-query';
 import { IDiffObj, IGalleryFull, IVideoFull } from '../../types';
+import ImageSlideShowView from '../common/ImageSlideShowView';
 
 const GalleryView = ({
   gallery,

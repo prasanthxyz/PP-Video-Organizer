@@ -1,6 +1,6 @@
 import * as React from 'react';
-import CheckBoxGroupsView from '../views/common/CheckBoxGroupsView';
 import { IDiffObj } from '../types';
+import CheckBoxGroupsView from '../views/common/CheckBoxGroupsView';
 
 export default function CheckBoxGroups({
   lists,

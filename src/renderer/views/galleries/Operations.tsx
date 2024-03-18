@@ -1,7 +1,7 @@
 import * as React from 'react';
+import { UseMutateFunction } from 'react-query';
 import { Button, Stack } from 'rsuite';
 import SpinnerOr from '../common/SpinnerOr';
-import { UseMutateFunction } from 'react-query';
 
 const Operations = ({
   isCreating,

@@ -1,11 +1,11 @@
 import * as React from 'react';
 import { useParams } from 'react-router';
+import { IVideoModel } from '../../main/database/VideoModel';
 import { useGallery, useUpdateGalleryVideos } from '../hooks/galleries';
 import { useAllVideos } from '../hooks/videos';
+import { IGalleryFull } from '../types';
 import CenterMessage from '../views/app/CenterMessage';
 import GalleryView from '../views/galleries/GalleryView';
-import { IVideoModel } from '../../main/database/VideoModel';
-import { IGalleryFull } from '../types';
 
 export default function Gallery() {
   const [selectedVideos, setSelectedVideos] = React.useState<Set<string>>(
@@ -25,7 +25,6 @@ export default function Gallery() {
           gallery.data?.videos?.map((video: IVideoModel) => video.filePath),
         ),
       );
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [gallery.isLoading]);
 
   if (gallery.isLoading || allVideos.isLoading)

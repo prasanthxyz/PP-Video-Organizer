@@ -1,4 +1,3 @@
-// eslint-disable-next-line import/prefer-default-export
 export async function getExecutablesStatus(): Promise<boolean[]> {
   const pythonExecutable = await window.api.getPythonExecutable();
   let pipExecutable = '';

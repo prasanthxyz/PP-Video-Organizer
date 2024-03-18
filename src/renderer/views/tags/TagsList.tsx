@@ -1,6 +1,6 @@
+import { UseMutateFunction } from 'react-query';
 import { Stack, Tag } from 'rsuite';
 import { ITag } from '../../types';
-import { UseMutateFunction } from 'react-query';
 
 const TagsList = ({
   dbTags,

@@ -1,9 +1,9 @@
 import * as fs from 'fs';
 import _ from 'lodash';
 import * as path from 'path';
-import * as db from './db';
 import { IGallery, IGalleryFull } from '../../renderer/types';
 import { IGalleryModel } from '../database/GalleryModel';
+import * as db from './db';
 
 export async function deleteMissingGalleries(): Promise<void> {
   const allGalleries: string[] = (await db.getGalleries()).map(

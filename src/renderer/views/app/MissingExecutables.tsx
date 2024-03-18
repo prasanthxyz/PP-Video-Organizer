@@ -1,4 +1,3 @@
-import * as React from 'react';
 import { Stack, Table } from 'rsuite';
 
 const { Column, HeaderCell, Cell } = Table;

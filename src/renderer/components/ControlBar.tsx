@@ -3,8 +3,6 @@ import { useGallery } from '../hooks/galleries';
 import { useVideo } from '../hooks/videos';
 import CenterMessage from '../views/app/CenterMessage';
 import ControlBarView from '../views/home/ControlBarView';
-import { UseQueryResult } from 'react-query';
-import { IGalleryFull } from '../types';
 
 export default function ControlBar({
   showVid,

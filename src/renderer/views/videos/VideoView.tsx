@@ -1,9 +1,9 @@
+import { UseMutateFunction } from 'react-query';
 import { Button, Nav } from 'rsuite';
 import CheckBoxGroups from '../../components/CheckBoxGroups';
 import VideoPlayer from '../../components/VideoPlayer';
-import SpinnerOr from '../common/SpinnerOr';
 import { IDiffObj, IGallery, ITag, IVideoWithRelated } from '../../types';
-import { UseMutateFunction } from 'react-query';
+import SpinnerOr from '../common/SpinnerOr';
 
 const VideoView = ({
   video,

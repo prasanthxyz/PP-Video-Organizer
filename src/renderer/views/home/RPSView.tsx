@@ -1,8 +1,8 @@
+import { UseQueryResult } from 'react-query';
 import { Col, Row } from 'rsuite';
 import VideoPlayer from '../../components/VideoPlayer';
-import ImageSlideShowView from '../common/ImageSlideShowView';
-import { UseQueryResult } from 'react-query';
 import { IGalleryFull, IVideoWithRelated } from '../../types';
+import ImageSlideShowView from '../common/ImageSlideShowView';
 
 const RPSView = ({
   showVid,

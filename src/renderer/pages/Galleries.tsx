@@ -20,7 +20,6 @@ export default function Galleries() {
   const [deleteMissingGalleries, isDeletingGalleries] =
     useDeleteMissingGalleries();
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const handleCreateGallery = async () => {
     await createGallery(galleryInput);
     setGalleryInput('');

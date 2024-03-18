@@ -101,7 +101,6 @@ export default function App() {
       setIsBigScreen(checkIsBigScreen());
     }
     window.addEventListener('resize', autoResize);
-    // eslint-disable-next-line consistent-return
     return () => window.removeEventListener('resize', autoResize);
   }, []);
 
@@ -117,7 +116,6 @@ export default function App() {
         new Set(availableGalleries.data),
       );
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     availableVideos.isSuccess,
     availableTags.isSuccess,
@@ -170,7 +168,6 @@ export default function App() {
   return (
     <HashRouter basename="/">
       <Routes>
-        {/* eslint-disable-next-line react/jsx-no-bind */}
         <Route element={<Layout refreshCombinations={refreshCombinations} />}>
           <Route
             path="/"

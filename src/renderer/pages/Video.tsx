@@ -1,6 +1,9 @@
 import * as React from 'react';
 import { useHotkeys } from 'react-hotkeys-hook';
+import { UseMutateFunction } from 'react-query';
 import { useParams } from 'react-router';
+import { IGalleryModel } from '../../main/database/GalleryModel';
+import { ITagModel } from '../../main/database/TagModel';
 import { useAllGalleries } from '../hooks/galleries';
 import { useAllTags } from '../hooks/tags';
 import {
@@ -8,12 +11,9 @@ import {
   useUpdateVideoRelations,
   useVideo,
 } from '../hooks/videos';
+import { IGallery, ITag, IVideoWithRelated } from '../types';
 import CenterMessage from '../views/app/CenterMessage';
 import VideoView from '../views/videos/VideoView';
-import { IGallery, ITag, IVideoWithRelated } from '../types';
-import { ITagModel } from '../../main/database/TagModel';
-import { IGalleryModel } from '../../main/database/GalleryModel';
-import { UseMutateFunction } from 'react-query';
 
 export default function Video() {
   const [selectedTags, setSelectedTags] = React.useState<Set<string>>(

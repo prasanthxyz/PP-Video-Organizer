@@ -5,7 +5,6 @@ import { useAvailableTags } from '../hooks/tags';
 import { useAvailableVideos } from '../hooks/videos';
 import CenterMessage from '../views/app/CenterMessage';
 import HomeView from '../views/home/HomeView';
-import { UseQueryResult } from 'react-query';
 
 export default function Home({
   selection,

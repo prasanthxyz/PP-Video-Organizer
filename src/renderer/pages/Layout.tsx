@@ -1,8 +1,8 @@
 import React from 'react';
 import { useHotkeys } from 'react-hotkeys-hook';
 import { useLocation, useNavigate } from 'react-router-dom';
-import LayoutView from '../views/layout/LayoutView';
 import { IPage } from '../types';
+import LayoutView from '../views/layout/LayoutView';
 
 const PAGES: IPage[] = [
   { text: 'Random', shortcut: 'Shift+R', location: '/', prefix: '/' },
