@@ -1,5 +1,5 @@
 appId: com.wordpress.prasanthxyz.pvorg
-productName: pvorg
+productName: P Video Organizer
 directories:
   buildResources: build
 files:
@@ -8,6 +8,7 @@ files:
   - '!electron.vite.config.{js,ts,mjs,cjs}'
   - '!{.eslintignore,.eslintrc.cjs,.prettierignore,.prettierrc.yaml,dev-app-update.yml,CHANGELOG.md,README.md}'
   - '!{.env,.env.*,.npmrc,pnpm-lock.yaml}'
+  - '!{tsconfig.json,tsconfig.node.json,tsconfig.web.json}'
 asar: false
 win:
   executableName: pvorg
@@ -38,4 +39,5 @@ appImage:
 npmRebuild: false
 publish:
   provider: github
-  url: https://github.com/prasanthxyz/P-Video-Organizer
+  owner: prasanthxyz
+  repo: P-Video-Organizer
