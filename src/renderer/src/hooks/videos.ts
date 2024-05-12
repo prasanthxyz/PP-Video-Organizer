@@ -34,6 +34,8 @@ export function useCreateVideos(): [
     onSuccess: () => {
       queryClient.invalidateQueries(['availableVideos'])
       queryClient.invalidateQueries(['allVideos'])
+      queryClient.invalidateQueries(['availableGalleries'])
+      queryClient.invalidateQueries(['allGalleries'])
     }
   })
   return [mutation.mutate, mutation.isLoading]
