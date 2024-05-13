@@ -16,22 +16,25 @@ export async function getAvailableGalleries(): Promise<string[]> {
   return (await db.getGalleries())
     .map((g: IGalleryModel) => g.galleryPath as string)
     .filter(fs.existsSync)
+    .sort((a, b) => (a > b ? 1 : b > a ? -1 : 0))
 }
 
 export async function getAllGalleries(): Promise<IGallery[]> {
-  return (await db.getGalleries()).map((gallery: IGalleryModel) => ({
-    ...gallery,
-    id: gallery.galleryPath,
-    galleryName: path.basename(gallery.galleryPath as string),
-    isAvailable: fs.existsSync(gallery.galleryPath as string)
-  }))
+  return (await db.getGalleries())
+    .map((gallery: IGalleryModel) => ({
+      ...gallery,
+      id: gallery.galleryPath,
+      galleryName: path.basename(gallery.galleryPath as string),
+      isAvailable: fs.existsSync(gallery.galleryPath as string)
+    }))
+    .sort((a, b) => (a.id > b.id ? 1 : b.id > a.id ? -1 : 0))
 }
 
 function getGalleryImagePaths(galleryPath: string): string[] {
   const imageExtensions = ['.jpg', '.jpeg', '.png', '.gif']
   return fs
     .readdirSync(galleryPath)
-    .filter((file) => imageExtensions.includes(path.extname(file).toLowerCase()))
+    .filter((file) => file[0] != '.' && imageExtensions.includes(path.extname(file).toLowerCase()))
     .map((file) => path.join(galleryPath, file))
 }
 

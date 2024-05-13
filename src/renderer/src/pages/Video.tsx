@@ -5,15 +5,23 @@ import { useParams } from 'react-router'
 import { IGallery, IGalleryModel, ITag, ITagModel, IVideoWithRelated } from '../../../types'
 import { useAllGalleries } from '../hooks/galleries'
 import { useAllTags } from '../hooks/tags'
-import { useGenerateTgp, useUpdateVideoRelations, useVideo } from '../hooks/videos'
+import {
+  useDeleteVideo,
+  useGenerateTgp,
+  useUpdateVideoGalleries,
+  useUpdateVideoTags,
+  useVideo
+} from '../hooks/videos'
 import CenterMessage from '../views/app/CenterMessage'
 import VideoView from '../views/videos/VideoView'
+import { useNavigate } from 'react-router-dom'
 
 export default function Video(): JSX.Element {
   const [selectedTags, setSelectedTags] = React.useState<Set<string>>(new Set())
   const [selectedGalleries, setSelectedGalleries] = React.useState<Set<string>>(new Set())
-  const [activeTab, setActiveTab] = React.useState('video')
+  const [activeTab, setActiveTab] = React.useState('galleries')
   const [isVideoPlaying, setIsVideoPlaying] = React.useState(false)
+  const [isVideoShown, setIsVideoShown] = React.useState(false)
 
   let { videoPath } = useParams()
   videoPath = decodeURIComponent(videoPath as string)
@@ -21,31 +29,25 @@ export default function Video(): JSX.Element {
   const allTags = useAllTags()
   const allGalleries = useAllGalleries()
 
-  const updateVideoRelations = useUpdateVideoRelations()
+  const updateVideoGalleries = useUpdateVideoGalleries()
+  const updateVideoTags = useUpdateVideoTags()
   const [generateTgp, isGeneratingTgp] = useGenerateTgp()
+  const deleteVideo = useDeleteVideo()
 
-  useHotkeys('v', () => {
-    if (activeTab === 'video') return
+  const navigate = useNavigate()
+
+  useHotkeys('g', () => {
+    if (activeTab === 'galleries') return
     setIsVideoPlaying(false)
-    setActiveTab('video')
+    setActiveTab('galleries')
   })
   useHotkeys('t', () => {
-    if (activeTab === 'tgp') return
+    if (activeTab === 'tags') return
     setIsVideoPlaying(false)
-    setActiveTab('tgp')
-  })
-  useHotkeys('a', () => {
-    if (activeTab === 'relations') return
-    setIsVideoPlaying(false)
-    setActiveTab('relations')
+    setActiveTab('tags')
   })
   useHotkeys('p', () => {
-    if (activeTab !== 'video') {
-      setActiveTab('video')
-      setIsVideoPlaying(true)
-    } else {
-      setIsVideoPlaying(!isVideoPlaying)
-    }
+    toggleVideo()
   })
 
   React.useEffect(() => {
@@ -62,6 +64,16 @@ export default function Video(): JSX.Element {
     setActiveTab(newTabId)
   }
 
+  const toggleVideo = (): void => {
+    if (isVideoShown) {
+      setIsVideoPlaying(false)
+      setIsVideoShown(false)
+    } else {
+      setIsVideoPlaying(true)
+      setIsVideoShown(true)
+    }
+  }
+
   if (video.isLoading || allGalleries.isLoading || allTags.isLoading)
     return <CenterMessage msg="Loading..." />
 
@@ -70,6 +82,9 @@ export default function Video(): JSX.Element {
       video={video.data as IVideoWithRelated}
       activeTab={activeTab}
       isVideoPlaying={isVideoPlaying}
+      isVideoShown={isVideoShown}
+      toggleVideo={toggleVideo}
+      deleteVideo={deleteVideo}
       isGeneratingTgp={isGeneratingTgp as boolean}
       handleGenerateTgp={generateTgp as UseMutateFunction<unknown, unknown, string, unknown>}
       allItems={{
@@ -81,8 +96,10 @@ export default function Video(): JSX.Element {
         tags: setSelectedTags,
         galleries: setSelectedGalleries
       }}
-      updateVideoRelations={updateVideoRelations}
+      updateVideoGalleries={updateVideoGalleries}
+      updateVideoTags={updateVideoTags}
       handleTabClick={handleTabClick}
+      navigate={navigate}
     />
   )
 }
