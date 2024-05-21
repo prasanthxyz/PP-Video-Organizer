@@ -4,7 +4,8 @@ import ffprobeStatic from 'ffprobe-static'
 import * as fs from 'fs'
 import * as path from 'path'
 
-import { IVideo, IVideoFull, IVideoModel, IVideoWithRelated } from '../../types'
+import { getAllGalleries } from './gallery'
+import { IVideo, IVideoFull, IVideoModel, IVideoWithRelated, IGallery, IDiffObj } from '../../types'
 import * as db from './db'
 import { getPythonExecutable } from './utils'
 
@@ -58,6 +59,15 @@ export async function addVideos(videoPaths: string[]): Promise<void> {
   }
 
   await db.createVideos(newVideos)
+
+  const allGalleries = (await getAllGalleries()).map((gallery: IGallery) => gallery.galleryPath)
+  const galleryDiffObj: IDiffObj = {
+    add: allGalleries,
+    remove: []
+  }
+  for (const video of newVideos) {
+    await db.updateVideoGalleries(video.filePath, galleryDiffObj)
+  }
 }
 
 function getVideoData(videoPath: string): IVideo {
