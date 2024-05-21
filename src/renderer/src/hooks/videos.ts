@@ -99,14 +99,22 @@ export function useDeleteMissingVideos(): [
   return [mutation.mutate, mutation.isLoading]
 }
 
+<<<<<<< HEAD
 export function useUpdateVideoGalleries(): UseMutateFunction<
   unknown,
   unknown,
   [string, IDiffObj],
+=======
+export function useUpdateVideoRelations(): UseMutateFunction<
+  string,
+  unknown,
+  [string, IDiffObj, IDiffObj],
+>>>>>>> main
   unknown
 > {
   const queryClient = useQueryClient()
   return useMutation(
+<<<<<<< HEAD
     ([videoPath, galleriesDiffObj]: [string, IDiffObj]) =>
       window.api.updateDbVideoGalleries(videoPath, galleriesDiffObj).then(() => videoPath),
     {
@@ -129,6 +137,14 @@ export function useUpdateVideoTags(): UseMutateFunction<
   return useMutation(
     ([videoPath, tagsDiffObj]: [string, IDiffObj]) =>
       window.api.updateDbVideoTags(videoPath, tagsDiffObj).then(() => videoPath),
+=======
+    ([videoPath, tagsDiffObj, galleriesDiffObj]: [string, IDiffObj, IDiffObj]) => {
+      return Promise.all([
+        window.api.updateDbVideoTags(videoPath, tagsDiffObj),
+        window.api.updateDbVideoGalleries(videoPath, galleriesDiffObj)
+      ]).then(() => videoPath)
+    },
+>>>>>>> main
     {
       onSuccess: (videoPath) => {
         queryClient.invalidateQueries(['availableVideos'])
