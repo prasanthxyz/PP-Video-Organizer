@@ -5,24 +5,42 @@ import {
   useQuery,
   useQueryClient
 } from 'react-query'
+import bi from '../../../backend_interface'
 import { IDiffObj, IVideoFull, IVideoWithRelated } from '../../../types'
 
 export function useAvailableVideos(): UseQueryResult<string[], unknown> {
-  return useQuery('availableVideos', () => window.api.getAvailableVideos(), {
-    staleTime: Infinity
-  })
+  return useQuery(
+    'availableVideos',
+    () => fetch(`${bi.SERVER_URL}/${bi.GET_AVAILABLE_VIDEOS}`).then((res) => res.json()),
+    {
+      staleTime: Infinity
+    }
+  )
 }
 
 export function useAllVideos(): UseQueryResult<IVideoFull[], unknown> {
-  return useQuery('allVideos', () => window.api.getAllVideos(), {
-    staleTime: Infinity
-  })
+  return useQuery(
+    'allVideos',
+    () => fetch(`${bi.SERVER_URL}/${bi.GET_ALL_VIDEOS}`).then((res) => res.json()),
+    {
+      staleTime: Infinity
+    }
+  )
 }
 
 export function useVideo(videoPath: string): UseQueryResult<IVideoWithRelated, unknown> {
-  return useQuery(['allVideos', videoPath], () => window.api.getVideo(videoPath), {
-    staleTime: Infinity
-  })
+  return useQuery(
+    ['allVideos', videoPath],
+    () =>
+      fetch(`${bi.SERVER_URL}/${bi.GET_VIDEO}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ videoPath: videoPath })
+      }).then((res) => res.json()),
+    {
+      staleTime: Infinity
+    }
+  )
 }
 
 export function useCreateVideos(): [
@@ -30,21 +48,34 @@ export function useCreateVideos(): [
   boolean
 ] {
   const queryClient = useQueryClient()
-  const mutation = useMutation((videoPaths: string[]) => window.api.addVideos(videoPaths), {
-    onSuccess: () => {
-      queryClient.invalidateQueries(['availableVideos'])
-      queryClient.invalidateQueries(['allVideos'])
-      queryClient.invalidateQueries(['availableGalleries'])
-      queryClient.invalidateQueries(['allGalleries'])
+  const mutation = useMutation(
+    (videoPaths: string[]) =>
+      fetch(`${bi.SERVER_URL}/${bi.ADD_VIDEOS}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ videoPaths: videoPaths })
+      }),
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries(['availableVideos'])
+        queryClient.invalidateQueries(['allVideos'])
+        queryClient.invalidateQueries(['availableGalleries'])
+        queryClient.invalidateQueries(['allGalleries'])
+      }
     }
-  })
+  )
   return [mutation.mutate, mutation.isLoading]
 }
 
 export function useGenerateTgp(): [UseMutateFunction<unknown, unknown, string, unknown>, boolean] {
   const queryClient = useQueryClient()
   const mutation = useMutation(
-    (videoPath: string) => window.api.generateTgp(videoPath).then(() => videoPath),
+    (videoPath: string) =>
+      fetch(`${bi.SERVER_URL}/${bi.GENERATE_TGP}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ videoPath: videoPath })
+      }).then(() => videoPath),
     {
       onSuccess: (videoPath) => {
         queryClient.invalidateQueries(['availableVideos'])
@@ -61,7 +92,7 @@ export function useGenerateMissingTgps(): [
   boolean
 ] {
   const queryClient = useQueryClient()
-  const mutation = useMutation(() => window.api.generateMissingTgps(), {
+  const mutation = useMutation(() => fetch(`${bi.SERVER_URL}/${bi.GENERATE_MISSING_TGPS}`), {
     onSuccess: () => {
       queryClient.invalidateQueries(['availableVideos'])
       queryClient.invalidateQueries(['allVideos'])
@@ -74,7 +105,11 @@ export function useDeleteVideo(): UseMutateFunction<unknown, unknown, string, un
   const queryClient = useQueryClient()
   return useMutation(
     (videoPathToRemove: string) =>
-      window.api.deleteDbVideo(videoPathToRemove).then(() => videoPathToRemove),
+      fetch(`${bi.SERVER_URL}/${bi.DELETE_VIDEO}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ videoPath: videoPathToRemove })
+      }).then(() => videoPathToRemove),
     {
       onSuccess: (videoPathToRemove) => {
         queryClient.invalidateQueries(['availableVideos'])
@@ -90,7 +125,7 @@ export function useDeleteMissingVideos(): [
   boolean
 ] {
   const queryClient = useQueryClient()
-  const mutation = useMutation(() => window.api.deleteMissingDbVideos(), {
+  const mutation = useMutation(() => fetch(`${bi.SERVER_URL}/${bi.DELETE_MISSING_VIDEOS}`), {
     onSuccess: () => {
       queryClient.invalidateQueries(['availableVideos'])
       queryClient.invalidateQueries(['allVideos'])
@@ -108,7 +143,11 @@ export function useUpdateVideoGalleries(): UseMutateFunction<
   const queryClient = useQueryClient()
   return useMutation(
     ([videoPath, galleriesDiffObj]: [string, IDiffObj]) =>
-      window.api.updateDbVideoGalleries(videoPath, galleriesDiffObj).then(() => videoPath),
+      fetch(`${bi.SERVER_URL}/${bi.UPDATE_VIDEO_GALLERIES}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ videoPath: videoPath, diffObj: galleriesDiffObj })
+      }).then(() => videoPath),
     {
       onSuccess: (videoPath) => {
         queryClient.invalidateQueries(['availableVideos'])
@@ -128,7 +167,11 @@ export function useUpdateVideoTags(): UseMutateFunction<
   const queryClient = useQueryClient()
   return useMutation(
     ([videoPath, tagsDiffObj]: [string, IDiffObj]) =>
-      window.api.updateDbVideoTags(videoPath, tagsDiffObj).then(() => videoPath),
+      fetch(`${bi.SERVER_URL}/${bi.UPDATE_VIDEO_TAGS}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ videoPath: videoPath, diffObj: tagsDiffObj })
+      }).then(() => videoPath),
     {
       onSuccess: (videoPath) => {
         queryClient.invalidateQueries(['availableVideos'])

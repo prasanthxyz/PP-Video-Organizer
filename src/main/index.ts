@@ -2,8 +2,7 @@ import { electronApp, is, optimizer } from '@electron-toolkit/utils'
 import { BrowserWindow, app, dialog, ipcMain, shell } from 'electron'
 import { join } from 'path'
 import icon from '../../resources/icon.png?asset'
-import { ipcMethods } from '../preload/ipcMethods'
-import { setupDB } from './database'
+import { startBackendServer } from './server'
 
 if (process.platform !== 'win32') {
   process.env.PATH = '/opt/homebrew/bin:/opt/homebrew/sbin:' + process.env.PATH
@@ -52,7 +51,7 @@ async function createWindow(): Promise<void> {
     mainWindow.loadFile(join(__dirname, '../renderer/index.html'))
   }
 
-  await setupDB(app)
+  startBackendServer()
 }
 
 // This method will be called when Electron has finished
@@ -68,10 +67,6 @@ app.whenReady().then(() => {
   app.on('browser-window-created', (_, window) => {
     optimizer.watchWindowShortcuts(window)
   })
-
-  for (const methodName in ipcMethods) {
-    ipcMain.handle(methodName, (_event, ...args) => ipcMethods[methodName](...args))
-  }
 
   createWindow()
 

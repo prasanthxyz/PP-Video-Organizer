@@ -5,24 +5,42 @@ import {
   useQuery,
   useQueryClient
 } from 'react-query'
+import bi from '../../../backend_interface'
 import { IDiffObj, IGallery, IGalleryFull } from '../../../types'
 
 export function useAvailableGalleries(): UseQueryResult<string[], unknown> {
-  return useQuery('availableGalleries', () => window.api.getAvailableGalleries(), {
-    staleTime: Infinity
-  })
+  return useQuery(
+    'availableGalleries',
+    () => fetch(`${bi.SERVER_URL}/${bi.GET_AVAILABLE_GALLERIES}`).then((res) => res.json()),
+    {
+      staleTime: Infinity
+    }
+  )
 }
 
 export function useAllGalleries(): UseQueryResult<IGallery[], unknown> {
-  return useQuery('allGalleries', () => window.api.getAllGalleries(), {
-    staleTime: Infinity
-  })
+  return useQuery(
+    'allGalleries',
+    () => fetch(`${bi.SERVER_URL}/${bi.GET_ALL_GALLERIES}`).then((res) => res.json()),
+    {
+      staleTime: Infinity
+    }
+  )
 }
 
 export function useGallery(galleryPath: string): UseQueryResult<IGalleryFull, unknown> {
-  return useQuery(['allGalleries', galleryPath], () => window.api.getGallery(galleryPath), {
-    staleTime: Infinity
-  })
+  return useQuery(
+    ['allGalleries', galleryPath],
+    () =>
+      fetch(`${bi.SERVER_URL}/${bi.GET_GALLERY}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ galleryPath: galleryPath })
+      }).then((res) => res.json()),
+    {
+      staleTime: Infinity
+    }
+  )
 }
 
 export function useCreateGallery(): [
@@ -30,12 +48,20 @@ export function useCreateGallery(): [
   boolean
 ] {
   const queryClient = useQueryClient()
-  const mutation = useMutation((galleryInput: string) => window.api.createDbGallery(galleryInput), {
-    onSuccess: () => {
-      queryClient.invalidateQueries(['availableGalleries'])
-      queryClient.invalidateQueries(['allGalleries'])
+  const mutation = useMutation(
+    (galleryInput: string) =>
+      fetch(`${bi.SERVER_URL}/${bi.CREATE_GALLERY}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ galleryPath: galleryInput })
+      }),
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries(['availableGalleries'])
+        queryClient.invalidateQueries(['allGalleries'])
+      }
     }
-  })
+  )
   return [mutation.mutate, mutation.isLoading]
 }
 
@@ -43,7 +69,11 @@ export function useDeleteGallery(): UseMutateFunction<unknown, unknown, string, 
   const queryClient = useQueryClient()
   return useMutation(
     (galleryPathToRemove: string) =>
-      window.api.deleteDbGallery(galleryPathToRemove).then(() => galleryPathToRemove),
+      fetch(`${bi.SERVER_URL}/${bi.DELETE_GALLERY}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ galleryPath: galleryPathToRemove })
+      }).then(() => galleryPathToRemove),
     {
       onSuccess: (galleryPathToRemove) => {
         queryClient.invalidateQueries(['availableGalleries'])
@@ -59,7 +89,7 @@ export function useDeleteMissingGalleries(): [
   boolean
 ] {
   const queryClient = useQueryClient()
-  const mutation = useMutation(() => window.api.deleteMissingDbGalleries(), {
+  const mutation = useMutation(() => fetch(`${bi.SERVER_URL}/${bi.DELETE_MISSING_GALLERIES}`), {
     onSuccess: () => {
       queryClient.invalidateQueries(['availableGalleries'])
       queryClient.invalidateQueries(['allGalleries'])
@@ -77,7 +107,11 @@ export function useUpdateGalleryVideos(): UseMutateFunction<
   const queryClient = useQueryClient()
   return useMutation(
     ([galleryPath, videosDiffObj]: [string, IDiffObj]) =>
-      window.api.updateDbGalleryVideos(galleryPath, videosDiffObj).then(() => galleryPath),
+      fetch(`${bi.SERVER_URL}/${bi.UPDATE_GALLERY_VIDEOS}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ galleryPath: galleryPath, diffObj: videosDiffObj })
+      }).then(() => galleryPath),
     {
       onSuccess: (galleryPath) => {
         queryClient.invalidateQueries(['availableGalleries'])
