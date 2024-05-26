@@ -2,6 +2,7 @@ import _ from 'lodash'
 import * as React from 'react'
 import { UseQueryResult, useQueryClient } from 'react-query'
 import { HashRouter, Route, Routes } from 'react-router-dom'
+import bi from '../../backend_interface'
 import { useAvailableGalleries } from './hooks/galleries'
 import { useAvailableTags } from './hooks/tags'
 import { useAvailableVideos } from './hooks/videos'
@@ -48,11 +49,16 @@ export default function App(): JSX.Element {
     galleries: Set<string>
   ): Promise<void> {
     setIsGeneratingCombinations(true)
-    setCombinations(
-      _.shuffle(
-        (await window.api.getCombinationsData(videos, tags, galleries)) as [string, string][]
-      )
-    )
+    const combinationsData = await fetch(`${bi.SERVER_URL}/${bi.GET_COMBINATIONS_DATA}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        videoPaths: [...videos],
+        tagsSet: [...tags],
+        galleriesSet: [...galleries]
+      })
+    })
+    setCombinations(_.shuffle((await combinationsData.json()) as [string, string][]))
     setCombinationIndex(0)
     setIsGeneratingCombinations(false)
   }
@@ -100,7 +106,8 @@ export default function App(): JSX.Element {
   }, [availableVideos.isSuccess, availableTags.isSuccess, availableGalleries.isSuccess])
 
   const checkExecutables = async (): Promise<void> => {
-    setExecutablesStatus(await window.api.getExecutablesStatus())
+    const executablesStatusResponse = await fetch(`${bi.SERVER_URL}/${bi.GET_EXECUTABLES_STATUS}`)
+    setExecutablesStatus(await executablesStatusResponse.json())
     setIsCheckingExecutables(false)
   }
 
@@ -124,12 +131,9 @@ export default function App(): JSX.Element {
   }
 
   if (executablesStatus.includes(false)) {
-    const packagesToInstall = [
-      ['ffmpeg', 'https://ffmpeg.org/', 'link'],
-      ['python', 'https://www.python.org/', 'link'],
-      ['pip', 'https://pip.pypa.io/en/stable/installation/', 'link'],
-      ['vcsi', 'python -m pip install vcsi', 'code']
-    ].filter((_item, index) => !executablesStatus[index])
+    const packagesToInstall = [['ffmpeg', 'https://ffmpeg.org/', 'link']].filter(
+      (_item, index) => !executablesStatus[index]
+    )
 
     return <MissingExecutables packagesToInstall={packagesToInstall} />
   }

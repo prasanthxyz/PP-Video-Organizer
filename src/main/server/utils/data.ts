@@ -1,9 +1,13 @@
 import * as fs from 'fs'
+import * as os from 'os'
 import * as path from 'path'
 import { parse, stringify } from 'yaml'
-import { IVideoModel } from '../types'
+import { IVideoModel } from '../../../types'
 
-export interface IData {
+export let data: IData
+const configFile = path.join(os.homedir(), 'pvorg.yml')
+
+interface IData {
   galleries: string[]
   tags: string[]
   videoGalleries: [string, string][]
@@ -11,11 +15,7 @@ export interface IData {
   videos: IVideoModel[]
 }
 
-export let data: IData
-let configFile: string
-
-export async function setupDB(app: Electron.App): Promise<void> {
-  configFile = path.join(app.getPath('home'), 'pvorg.yml')
+export async function setupDB(): Promise<void> {
   if (!fs.existsSync(configFile)) {
     data = {
       galleries: [],
@@ -30,11 +30,11 @@ export async function setupDB(app: Electron.App): Promise<void> {
   }
 }
 
-export function loadData(): void {
-  const file = fs.readFileSync(configFile, 'utf8')
-  data = parse(file)
-}
-
 export function storeData(): void {
   fs.writeFileSync(configFile, stringify(data))
+}
+
+function loadData(): void {
+  const file = fs.readFileSync(configFile, 'utf8')
+  data = parse(file)
 }
