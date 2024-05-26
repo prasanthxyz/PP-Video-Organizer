@@ -3,7 +3,15 @@ import ffprobeStatic from 'ffprobe-static'
 import ffmpeg, { FfprobeData } from 'fluent-ffmpeg'
 import * as fs from 'fs'
 import * as path from 'path'
-import { IVideo } from '../../../types'
+import { IVideo, IVideoFull, IVideoModel } from '../../../types'
+import * as dataUtils from './data'
+
+export function getAllVideos(): IVideoFull[] {
+  return dataUtils.data.videos.map((video: IVideoModel) => ({
+    ...video,
+    ...getVideoData(video.filePath)
+  }))
+}
 
 export async function generateTgp(videoPath: string): Promise<void> {
   if (!fs.existsSync(videoPath)) return

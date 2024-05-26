@@ -16,10 +16,7 @@ export function getAvailableVideos(ctx: Context): void {
 }
 
 export function getAllVideos(ctx: Context): void {
-  ctx.body = dataUtils.data.videos.map((video: IVideoModel) => ({
-    ...video,
-    ...videoUtils.getVideoData(video.filePath)
-  }))
+  ctx.body = videoUtils.getAllVideos()
 }
 
 export function getVideo(ctx: Context): void {

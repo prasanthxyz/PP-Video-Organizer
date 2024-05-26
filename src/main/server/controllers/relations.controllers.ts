@@ -67,14 +67,7 @@ export function updateGalleryVideos(ctx: Context): void {
   const requestData = ctx.request.body as { galleryPath: string; diffObj: IDiffObj }
   const galleryPath = requestData.galleryPath
   const diffObj = requestData.diffObj
-  const videosToRemove = new Set(diffObj.remove)
-  dataUtils.data.videoGalleries = dataUtils.data.videoGalleries.filter(
-    ([vp, gp]) => gp !== galleryPath || !videosToRemove.has(vp)
-  )
-  for (const videoPath of diffObj.add) {
-    dataUtils.data.videoGalleries.push([videoPath, galleryPath])
-  }
-  dataUtils.storeData()
+  relationsUtils.updateGalleryVideos(galleryPath, diffObj)
   ctx.body = { success: true }
 }
 

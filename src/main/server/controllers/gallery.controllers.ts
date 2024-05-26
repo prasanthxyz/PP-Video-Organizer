@@ -2,9 +2,11 @@ import * as fs from 'fs'
 import { Context } from 'koa'
 import _ from 'lodash'
 import * as path from 'path'
-import { IGalleryModel } from '../../../types'
+import { IDiffObj, IGalleryModel, IVideoFull } from '../../../types'
 import * as dataUtils from '../utils/data'
 import * as galleryUtils from '../utils/gallery'
+import * as relationsUtils from '../utils/relations'
+import * as videoUtils from '../utils/video'
 
 export function getAvailableGalleries(ctx: Context): void {
   ctx.body = galleryUtils
@@ -43,6 +45,14 @@ export function createGallery(ctx: Context): void {
   if (existingGalleries.has(galleryPath)) return
   dataUtils.data.galleries.push(galleryPath)
   dataUtils.storeData()
+
+  const allVideos = videoUtils.getAllVideos().map((video: IVideoFull) => video.filePath)
+  const videoDiffObj: IDiffObj = {
+    add: allVideos,
+    remove: []
+  }
+  relationsUtils.updateGalleryVideos(galleryPath, videoDiffObj)
+
   ctx.body = { success: true }
 }
 
