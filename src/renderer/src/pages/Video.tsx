@@ -57,7 +57,7 @@ export default function Video(): JSX.Element {
         new Set(video.data.galleries.map((gallery: IGalleryModel) => gallery.galleryPath))
       )
     }
-  }, [video.isSuccess])
+  }, [video.data])
 
   const handleTabClick = (newTabId: string): void => {
     setIsVideoPlaying(false)

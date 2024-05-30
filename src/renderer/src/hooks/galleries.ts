@@ -1,4 +1,5 @@
 import {
+  QueryClient,
   UseMutateFunction,
   UseQueryResult,
   useMutation,
@@ -8,39 +9,92 @@ import {
 import bi from '../../../backend_interface'
 import { IDiffObj, IGallery, IGalleryFull } from '../../../types'
 
+const QUERIES = {
+  fetchAvailableGalleries: async (): Promise<string[]> =>
+    fetch(`${bi.SERVER_URL}/${bi.GET_AVAILABLE_GALLERIES}`).then((res) => res.json()),
+
+  fetchAllGalleries: async (): Promise<IGallery[]> =>
+    fetch(`${bi.SERVER_URL}/${bi.GET_ALL_GALLERIES}`).then((res) => res.json()),
+
+  fetchGallery: async (galleryPath: string): Promise<IGalleryFull> =>
+    fetch(`${bi.SERVER_URL}/${bi.GET_GALLERY}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ galleryPath: galleryPath })
+    }).then((res) => res.json()),
+
+  createGallery: async (galleryInput: string): Promise<Response> =>
+    fetch(`${bi.SERVER_URL}/${bi.CREATE_GALLERY}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ galleryPath: galleryInput })
+    }),
+
+  deleteGallery: async (galleryPathToRemove: string): Promise<Response> =>
+    fetch(`${bi.SERVER_URL}/${bi.DELETE_GALLERY}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ galleryPath: galleryPathToRemove })
+    }),
+
+  deleteMissingGalleries: async (): Promise<Response> =>
+    fetch(`${bi.SERVER_URL}/${bi.DELETE_MISSING_GALLERIES}`),
+
+  updateGalleryVideos: async ([galleryPath, videosDiffObj]: [
+    string,
+    IDiffObj
+  ]): Promise<Response> =>
+    fetch(`${bi.SERVER_URL}/${bi.UPDATE_GALLERY_VIDEOS}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ galleryPath: galleryPath, diffObj: videosDiffObj })
+    })
+}
+
+const INVALIDATE_CACHES = {
+  createGallery: async (queryClient: QueryClient): Promise<void[]> =>
+    Promise.all([
+      queryClient.invalidateQueries(['availableGalleries']),
+      queryClient.invalidateQueries(['allGalleries']),
+      queryClient.invalidateQueries(['allVideos'])
+    ]),
+
+  deleteGallery: async (queryClient: QueryClient): Promise<void[]> =>
+    Promise.all([
+      queryClient.invalidateQueries(['availableGalleries']),
+      queryClient.invalidateQueries(['allGalleries']),
+      queryClient.invalidateQueries(['allVideos'])
+    ]),
+
+  deleteMissingGalleries: async (queryClient: QueryClient): Promise<void[]> =>
+    Promise.all([
+      queryClient.invalidateQueries(['allGalleries']),
+      queryClient.invalidateQueries(['allVideos'])
+    ]),
+
+  updateGalleryVideos: async (queryClient: QueryClient): Promise<void[]> =>
+    Promise.all([
+      queryClient.invalidateQueries(['allGalleries']),
+      queryClient.invalidateQueries(['allVideos'])
+    ])
+}
+
 export function useAvailableGalleries(): UseQueryResult<string[], unknown> {
-  return useQuery(
-    'availableGalleries',
-    () => fetch(`${bi.SERVER_URL}/${bi.GET_AVAILABLE_GALLERIES}`).then((res) => res.json()),
-    {
-      staleTime: Infinity
-    }
-  )
+  return useQuery('availableGalleries', QUERIES.fetchAvailableGalleries, {
+    staleTime: Infinity
+  })
 }
 
 export function useAllGalleries(): UseQueryResult<IGallery[], unknown> {
-  return useQuery(
-    'allGalleries',
-    () => fetch(`${bi.SERVER_URL}/${bi.GET_ALL_GALLERIES}`).then((res) => res.json()),
-    {
-      staleTime: Infinity
-    }
-  )
+  return useQuery('allGalleries', QUERIES.fetchAllGalleries, {
+    staleTime: Infinity
+  })
 }
 
 export function useGallery(galleryPath: string): UseQueryResult<IGalleryFull, unknown> {
-  return useQuery(
-    ['allGalleries', galleryPath],
-    () =>
-      fetch(`${bi.SERVER_URL}/${bi.GET_GALLERY}`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ galleryPath: galleryPath })
-      }).then((res) => res.json()),
-    {
-      staleTime: Infinity
-    }
-  )
+  return useQuery(['allGalleries', galleryPath], () => QUERIES.fetchGallery(galleryPath), {
+    staleTime: Infinity
+  })
 }
 
 export function useCreateGallery(): [
@@ -48,40 +102,17 @@ export function useCreateGallery(): [
   boolean
 ] {
   const queryClient = useQueryClient()
-  const mutation = useMutation(
-    (galleryInput: string) =>
-      fetch(`${bi.SERVER_URL}/${bi.CREATE_GALLERY}`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ galleryPath: galleryInput })
-      }),
-    {
-      onSuccess: () => {
-        queryClient.invalidateQueries(['availableGalleries'])
-        queryClient.invalidateQueries(['allGalleries'])
-      }
-    }
-  )
+  const mutation = useMutation(QUERIES.createGallery, {
+    onSuccess: () => INVALIDATE_CACHES.createGallery(queryClient)
+  })
   return [mutation.mutate, mutation.isLoading]
 }
 
 export function useDeleteGallery(): UseMutateFunction<unknown, unknown, string, unknown> {
   const queryClient = useQueryClient()
-  return useMutation(
-    (galleryPathToRemove: string) =>
-      fetch(`${bi.SERVER_URL}/${bi.DELETE_GALLERY}`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ galleryPath: galleryPathToRemove })
-      }).then(() => galleryPathToRemove),
-    {
-      onSuccess: (galleryPathToRemove) => {
-        queryClient.invalidateQueries(['availableGalleries'])
-        queryClient.invalidateQueries(['allGalleries'])
-        queryClient.invalidateQueries(['allGalleries', galleryPathToRemove])
-      }
-    }
-  ).mutate
+  return useMutation(QUERIES.deleteGallery, {
+    onSuccess: () => INVALIDATE_CACHES.deleteGallery(queryClient)
+  }).mutate
 }
 
 export function useDeleteMissingGalleries(): [
@@ -89,11 +120,8 @@ export function useDeleteMissingGalleries(): [
   boolean
 ] {
   const queryClient = useQueryClient()
-  const mutation = useMutation(() => fetch(`${bi.SERVER_URL}/${bi.DELETE_MISSING_GALLERIES}`), {
-    onSuccess: () => {
-      queryClient.invalidateQueries(['availableGalleries'])
-      queryClient.invalidateQueries(['allGalleries'])
-    }
+  const mutation = useMutation(QUERIES.deleteMissingGalleries, {
+    onSuccess: () => INVALIDATE_CACHES.deleteMissingGalleries(queryClient)
   })
   return [mutation.mutate, mutation.isLoading]
 }
@@ -105,19 +133,7 @@ export function useUpdateGalleryVideos(): UseMutateFunction<
   unknown
 > {
   const queryClient = useQueryClient()
-  return useMutation(
-    ([galleryPath, videosDiffObj]: [string, IDiffObj]) =>
-      fetch(`${bi.SERVER_URL}/${bi.UPDATE_GALLERY_VIDEOS}`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ galleryPath: galleryPath, diffObj: videosDiffObj })
-      }).then(() => galleryPath),
-    {
-      onSuccess: (galleryPath) => {
-        queryClient.invalidateQueries(['availableGalleries'])
-        queryClient.invalidateQueries(['allGalleries'])
-        queryClient.invalidateQueries(['allGalleries', galleryPath])
-      }
-    }
-  ).mutate
+  return useMutation(QUERIES.updateGalleryVideos, {
+    onSuccess: () => INVALIDATE_CACHES.updateGalleryVideos(queryClient)
+  }).mutate
 }

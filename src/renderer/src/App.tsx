@@ -103,7 +103,7 @@ export default function App(): JSX.Element {
     if (availableVideos.isSuccess && availableTags.isSuccess && availableGalleries.isSuccess) {
       saveSelection(new Set(availableVideos.data), new Set(), new Set(availableGalleries.data))
     }
-  }, [availableVideos.isSuccess, availableTags.isSuccess, availableGalleries.isSuccess])
+  }, [availableVideos.data, availableTags.data, availableGalleries.data])
 
   const checkExecutables = async (): Promise<void> => {
     const executablesStatusResponse = await fetch(`${bi.SERVER_URL}/${bi.GET_EXECUTABLES_STATUS}`)

@@ -16,9 +16,9 @@ export default function Gallery(): JSX.Element {
   const updateGalleryVideos = useUpdateGalleryVideos()
 
   React.useEffect(() => {
-    if (!gallery.isLoading)
+    if (gallery.isSuccess)
       setSelectedVideos(new Set(gallery.data?.videos?.map((video: IVideoModel) => video.filePath)))
-  }, [gallery.isLoading])
+  }, [gallery.data])
 
   if (gallery.isLoading || allVideos.isLoading) return <CenterMessage msg="Loading..." />
 
