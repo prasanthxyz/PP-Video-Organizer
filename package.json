@@ -32,6 +32,7 @@
     "koa": "^2.15.3",
     "koa-bodyparser": "^4.4.1",
     "koa-router": "^12.0.1",
+    "lodash": "^4.17.21",
     "react-hotkeys-hook": "^4.5.0",
     "react-icons": "^5.0.1",
     "react-query": "^3.39.3",
