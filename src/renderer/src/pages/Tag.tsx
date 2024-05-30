@@ -16,11 +16,11 @@ export default function Tag(): JSX.Element {
   const updateTagVideos = useUpdateTagVideos()
 
   React.useEffect(() => {
-    if (!tag.isLoading)
+    if (tag.isSuccess)
       setSelectedVideos(
         new Set(tag.data ? tag.data.videos.map((video: IVideoModel) => video.filePath) : [])
       )
-  }, [tag.isLoading])
+  }, [tag.data])
 
   if (tag.isLoading || allVideos.isLoading) return <CenterMessage msg="Loading..." />
 
