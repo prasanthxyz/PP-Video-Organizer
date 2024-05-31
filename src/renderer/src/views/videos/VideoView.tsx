@@ -1,10 +1,10 @@
 import { MutateOptions, UseMutateFunction } from 'react-query'
+import { NavigateFunction } from 'react-router-dom'
 import { Button, Nav, Stack } from 'rsuite'
-import { IDiffObj, IGallery, ITag, IVideoWithRelated } from '../../../../types'
+import { IDiffObj, IGallery, ITag, IVideo } from '../../../../types'
 import CheckBoxGroups from '../../components/CheckBoxGroups'
 import VideoPlayer from '../../components/VideoPlayer'
 import SpinnerOr from '../common/SpinnerOr'
-import { NavigateFunction } from 'react-router-dom'
 
 const VideoView = ({
   video,
@@ -23,7 +23,7 @@ const VideoView = ({
   handleTabClick,
   navigate
 }: {
-  video: IVideoWithRelated
+  video: IVideo
   activeTab: string
   isVideoPlaying: boolean
   isVideoShown: boolean
@@ -91,7 +91,7 @@ const getTabContent = (
   isVideoShown: boolean,
   isVideoPlaying: boolean,
   isGeneratingTgp: boolean,
-  video: IVideoWithRelated,
+  video: IVideo,
   handleGenerateTgp: UseMutateFunction<unknown, unknown, string, unknown>,
   heading: string,
   allItems: string[],
@@ -143,7 +143,7 @@ const getVideoElement = (
   isVideoShown: boolean,
   isVideoPlaying: boolean,
   isGeneratingTgp: boolean,
-  video: IVideoWithRelated,
+  video: IVideo,
   handleGenerateTgp: UseMutateFunction<unknown, unknown, string, unknown>,
   toggleVideo: () => void,
   deleteVideo: UseMutateFunction<unknown, unknown, string, unknown>,

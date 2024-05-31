@@ -1,18 +1,20 @@
-import { IDiffObj, IGalleryModel, ITagModel } from '../../../types'
+import { IDiffObj } from '../../../types'
 import * as dataUtils from './data'
 
-export function getVideoRelations(videoPath: string): {
-  tags: ITagModel[]
-  galleries: IGalleryModel[]
-} {
-  return {
-    tags: dataUtils.data.videoTags
-      .filter((vt) => vt[0] === videoPath)
-      .map((vt) => ({ title: vt[1] })),
-    galleries: dataUtils.data.videoGalleries
-      .filter((vg) => vg[0] === videoPath)
-      .map((vg) => ({ galleryPath: vg[1] }))
-  }
+export function getVideoGalleries(videoPath: string): string[] {
+  return dataUtils.data.videoGalleries.filter((vg) => vg[0] === videoPath).map((vg) => vg[1])
+}
+
+export function getVideoTags(videoPath: string): string[] {
+  return dataUtils.data.videoTags.filter((vt) => vt[0] === videoPath).map((vt) => vt[1])
+}
+
+export function getGalleryVideos(galleryPath: string): string[] {
+  return dataUtils.data.videoGalleries.filter((vg) => vg[1] === galleryPath).map((vg) => vg[0])
+}
+
+export function getTagVideos(tagTitle: string): string[] {
+  return dataUtils.data.videoTags.filter((vt) => vt[1] === tagTitle).map((vt) => vt[0])
 }
 
 export function updateVideoGalleries(videoPath: string, diffObj: IDiffObj): void {
@@ -26,6 +28,17 @@ export function updateVideoGalleries(videoPath: string, diffObj: IDiffObj): void
   dataUtils.storeData()
 }
 
+export function updateVideoTags(videoPath: string, diffObj: IDiffObj): void {
+  const tagsToRemove = new Set(diffObj.remove)
+  dataUtils.data.videoTags = dataUtils.data.videoTags.filter(
+    ([vp, tt]) => vp !== videoPath || !tagsToRemove.has(tt)
+  )
+  for (const tagTitle of diffObj.add) {
+    dataUtils.data.videoTags.push([videoPath, tagTitle])
+  }
+  dataUtils.storeData()
+}
+
 export function updateGalleryVideos(galleryPath: string, diffObj: IDiffObj): void {
   const videosToRemove = new Set(diffObj.remove)
   dataUtils.data.videoGalleries = dataUtils.data.videoGalleries.filter(
@@ -33,6 +46,17 @@ export function updateGalleryVideos(galleryPath: string, diffObj: IDiffObj): voi
   )
   for (const videoPath of diffObj.add) {
     dataUtils.data.videoGalleries.push([videoPath, galleryPath])
+  }
+  dataUtils.storeData()
+}
+
+export function updateTagVideos(tagTitle: string, diffObj: IDiffObj): void {
+  const videosToRemove = new Set(diffObj.remove)
+  dataUtils.data.videoTags = dataUtils.data.videoTags.filter(
+    ([vp, tt]) => tt !== tagTitle || !videosToRemove.has(vp)
+  )
+  for (const videoPath of diffObj.add) {
+    dataUtils.data.videoTags.push([videoPath, tagTitle])
   }
   dataUtils.storeData()
 }

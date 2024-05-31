@@ -11,14 +11,12 @@ const router = new Router()
 router.get('/get-executables-status', utilsControllers.getExecutablesStatus)
 
 // RELATIONS
-router.post('/get-combinations-data', relationsControllers.getCombinationsData)
 router.post('/update-video-galleries', relationsControllers.updateVideoGalleries)
 router.post('/update-video-tags', relationsControllers.updateVideoTags)
 router.post('/update-gallery-videos', relationsControllers.updateGalleryVideos)
 router.post('/update-tag-videos', relationsControllers.updateTagVideos)
 
 // VIDEO
-router.get('/get-available-videos', videoControllers.getAvailableVideos)
 router.get('/get-all-videos', videoControllers.getAllVideos)
 router.post('/get-video', videoControllers.getVideo)
 router.post('/add-videos', videoControllers.addVideos)
@@ -28,7 +26,6 @@ router.post('/generate-tgp', videoControllers.generateTgp)
 router.get('/generate-missing-tgps', videoControllers.generateMissingTgps)
 
 // GALLERY
-router.get('/get-available-galleries', galleryControllers.getAvailableGalleries)
 router.get('/get-all-galleries', galleryControllers.getAllGalleries)
 router.post('/get-gallery', galleryControllers.getGallery)
 router.post('/create-gallery', galleryControllers.createGallery)
@@ -36,7 +33,6 @@ router.post('/delete-gallery', galleryControllers.deleteGallery)
 router.get('/delete-missing-galleries', galleryControllers.deleteMissingGalleries)
 
 // TAG
-router.get('/get-available-tags', tagControllers.getAvailableTags)
 router.get('/get-all-tags', tagControllers.getAllTags)
 router.post('/get-tag', tagControllers.getTag)
 router.post('/create-tags', tagControllers.createTags)

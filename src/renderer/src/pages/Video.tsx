@@ -2,7 +2,8 @@ import * as React from 'react'
 import { useHotkeys } from 'react-hotkeys-hook'
 import { UseMutateFunction } from 'react-query'
 import { useParams } from 'react-router'
-import { IGallery, IGalleryModel, ITag, ITagModel, IVideoWithRelated } from '../../../types'
+import { useNavigate } from 'react-router-dom'
+import { IGallery, ITag, IVideo } from '../../../types'
 import { useAllGalleries } from '../hooks/galleries'
 import { useAllTags } from '../hooks/tags'
 import {
@@ -14,7 +15,6 @@ import {
 } from '../hooks/videos'
 import CenterMessage from '../views/app/CenterMessage'
 import VideoView from '../views/videos/VideoView'
-import { useNavigate } from 'react-router-dom'
 
 export default function Video(): JSX.Element {
   const [selectedTags, setSelectedTags] = React.useState<Set<string>>(new Set())
@@ -52,10 +52,8 @@ export default function Video(): JSX.Element {
 
   React.useEffect(() => {
     if (video.isSuccess) {
-      setSelectedTags(new Set(video.data.tags.map((tag: ITagModel) => tag.title)))
-      setSelectedGalleries(
-        new Set(video.data.galleries.map((gallery: IGalleryModel) => gallery.galleryPath))
-      )
+      setSelectedTags(new Set(video.data.tags))
+      setSelectedGalleries(new Set(video.data.galleries))
     }
   }, [video.data])
 
@@ -79,7 +77,7 @@ export default function Video(): JSX.Element {
 
   return (
     <VideoView
-      video={video.data as IVideoWithRelated}
+      video={video.data as IVideo}
       activeTab={activeTab}
       isVideoPlaying={isVideoPlaying}
       isVideoShown={isVideoShown}

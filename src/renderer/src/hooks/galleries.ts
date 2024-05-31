@@ -7,16 +7,13 @@ import {
   useQueryClient
 } from 'react-query'
 import bi from '../../../backend_interface'
-import { IDiffObj, IGallery, IGalleryFull } from '../../../types'
+import { IDiffObj, IGallery } from '../../../types'
 
 const QUERIES = {
-  fetchAvailableGalleries: async (): Promise<string[]> =>
-    fetch(`${bi.SERVER_URL}/${bi.GET_AVAILABLE_GALLERIES}`).then((res) => res.json()),
-
   fetchAllGalleries: async (): Promise<IGallery[]> =>
     fetch(`${bi.SERVER_URL}/${bi.GET_ALL_GALLERIES}`).then((res) => res.json()),
 
-  fetchGallery: async (galleryPath: string): Promise<IGalleryFull> =>
+  fetchGallery: async (galleryPath: string): Promise<IGallery> =>
     fetch(`${bi.SERVER_URL}/${bi.GET_GALLERY}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -54,14 +51,12 @@ const QUERIES = {
 const INVALIDATE_CACHES = {
   createGallery: async (queryClient: QueryClient): Promise<void[]> =>
     Promise.all([
-      queryClient.invalidateQueries(['availableGalleries']),
       queryClient.invalidateQueries(['allGalleries']),
       queryClient.invalidateQueries(['allVideos'])
     ]),
 
   deleteGallery: async (queryClient: QueryClient): Promise<void[]> =>
     Promise.all([
-      queryClient.invalidateQueries(['availableGalleries']),
       queryClient.invalidateQueries(['allGalleries']),
       queryClient.invalidateQueries(['allVideos'])
     ]),
@@ -79,19 +74,13 @@ const INVALIDATE_CACHES = {
     ])
 }
 
-export function useAvailableGalleries(): UseQueryResult<string[], unknown> {
-  return useQuery('availableGalleries', QUERIES.fetchAvailableGalleries, {
-    staleTime: Infinity
-  })
-}
-
 export function useAllGalleries(): UseQueryResult<IGallery[], unknown> {
   return useQuery('allGalleries', QUERIES.fetchAllGalleries, {
     staleTime: Infinity
   })
 }
 
-export function useGallery(galleryPath: string): UseQueryResult<IGalleryFull, unknown> {
+export function useGallery(galleryPath: string): UseQueryResult<IGallery, unknown> {
   return useQuery(['allGalleries', galleryPath], () => QUERIES.fetchGallery(galleryPath), {
     staleTime: Infinity
   })

@@ -1,11 +1,12 @@
 import _ from 'lodash'
 import * as React from 'react'
-import { UseQueryResult, useQueryClient } from 'react-query'
+import { useQueryClient } from 'react-query'
 import { HashRouter, Route, Routes } from 'react-router-dom'
-import bi from '../../backend_interface'
-import { useAvailableGalleries } from './hooks/galleries'
-import { useAvailableTags } from './hooks/tags'
-import { useAvailableVideos } from './hooks/videos'
+import { IVideo } from 'src/types'
+import { useAllGalleries } from './hooks/galleries'
+import { useAllTags } from './hooks/tags'
+import { useExecutablesStatus } from './hooks/utils'
+import { useAllVideos } from './hooks/videos'
 import Galleries from './pages/Galleries'
 import Gallery from './pages/Gallery'
 import Home from './pages/Home'
@@ -19,49 +20,22 @@ import MissingExecutables from './views/app/MissingExecutables'
 
 export const AppContext = React.createContext(null)
 
-function checkIsBigScreen(): boolean {
-  return typeof window === 'undefined' || window.innerWidth >= 768
-}
-
 export default function App(): JSX.Element {
-  const [isBigScreen, setIsBigScreen] = React.useState(checkIsBigScreen)
+  const queryClient = useQueryClient()
 
-  const [isCheckingExecutables, setIsCheckingExecutables] = React.useState(true)
-  const [executablesStatus, setExecutablesStatus] = React.useState<boolean[]>([])
+  const [isBigScreen, setIsBigScreen] = React.useState(checkIsBigScreen())
+  const executablesStatus = useExecutablesStatus()
 
-  const [isGeneratingCombinations, setIsGeneratingCombinations] = React.useState(false)
   const [selection, setSelection] = React.useState({
     tags: new Set<string>(),
     videos: new Set<string>(),
     galleries: new Set<string>()
   })
-  const [combinations, setCombinations] = React.useState<[string, string][]>([])
   const [combinationIndex, setCombinationIndex] = React.useState(0)
 
-  const queryClient = useQueryClient()
-  const availableVideos: UseQueryResult<string[], unknown> = useAvailableVideos()
-  const availableTags = useAvailableTags()
-  const availableGalleries = useAvailableGalleries()
-
-  async function generateCombinations(
-    videos: Set<string>,
-    tags: Set<string>,
-    galleries: Set<string>
-  ): Promise<void> {
-    setIsGeneratingCombinations(true)
-    const combinationsData = await fetch(`${bi.SERVER_URL}/${bi.GET_COMBINATIONS_DATA}`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        videoPaths: [...videos],
-        tagsSet: [...tags],
-        galleriesSet: [...galleries]
-      })
-    })
-    setCombinations(_.shuffle((await combinationsData.json()) as [string, string][]))
-    setCombinationIndex(0)
-    setIsGeneratingCombinations(false)
-  }
+  const allVideos = useAllVideos()
+  const allGalleries = useAllGalleries()
+  const allTags = useAllTags()
 
   async function saveSelection(
     videos: Set<string>,
@@ -73,21 +47,15 @@ export default function App(): JSX.Element {
       videos,
       galleries
     })
-    await generateCombinations(videos, tags, galleries)
+    setCombinationIndex(0)
   }
 
   async function refreshCombinations(): Promise<void> {
-    queryClient.invalidateQueries(['availableVideos'])
-    queryClient.invalidateQueries(['allVideos'])
-    queryClient.invalidateQueries(['availableGalleries'])
-    queryClient.invalidateQueries(['allGalleries'])
-    queryClient.invalidateQueries(['availableTags'])
-    queryClient.invalidateQueries(['allTags'])
-
-    await availableTags.refetch()
-    const videos = new Set((await availableVideos.refetch()).data)
-    const galleries = new Set((await availableGalleries.refetch()).data)
-    await saveSelection(videos, new Set(), galleries)
+    await Promise.all([
+      queryClient.invalidateQueries(['allVideos']),
+      queryClient.invalidateQueries(['allGalleries']),
+      queryClient.invalidateQueries(['allTags'])
+    ])
   }
 
   React.useEffect(() => {
@@ -100,16 +68,26 @@ export default function App(): JSX.Element {
   }, [])
 
   React.useEffect(() => {
-    if (availableVideos.isSuccess && availableTags.isSuccess && availableGalleries.isSuccess) {
-      saveSelection(new Set(availableVideos.data), new Set(), new Set(availableGalleries.data))
+    if (allVideos.isSuccess && allTags.isSuccess && allGalleries.isSuccess) {
+      const videos = new Set(
+        allVideos.data
+          ?.filter((video) => video.isAvailable && video.isTgpAvailable)
+          .map((video) => video.id) || []
+      )
+      const galleries = new Set(
+        allGalleries.data
+          ?.filter((gallery) => gallery.isAvailable && gallery.images.length > 0)
+          .map((gallery) => gallery.id) || []
+      )
+      saveSelection(new Set(videos), new Set(), new Set(galleries))
     }
-  }, [availableVideos.data, availableTags.data, availableGalleries.data])
+  }, [allVideos.dataUpdatedAt, allTags.dataUpdatedAt, allGalleries.dataUpdatedAt])
 
-  const checkExecutables = async (): Promise<void> => {
-    const executablesStatusResponse = await fetch(`${bi.SERVER_URL}/${bi.GET_EXECUTABLES_STATUS}`)
-    setExecutablesStatus(await executablesStatusResponse.json())
-    setIsCheckingExecutables(false)
-  }
+  const combinations = React.useMemo(
+    () =>
+      getCombinations(allVideos.data || [], selection.videos, selection.tags, selection.galleries),
+    [selection]
+  )
 
   if (!isBigScreen) {
     return (
@@ -125,12 +103,11 @@ export default function App(): JSX.Element {
     )
   }
 
-  if (isCheckingExecutables) {
-    checkExecutables()
+  if (executablesStatus.isLoading) {
     return <CenterMessage msg="Checking Executables..." />
   }
 
-  if (executablesStatus.includes(false)) {
+  if ((executablesStatus.data || []).includes(false)) {
     const packagesToInstall = [['ffmpeg', 'https://ffmpeg.org/', 'link']].filter(
       (_item, index) => !executablesStatus[index]
     )
@@ -138,7 +115,7 @@ export default function App(): JSX.Element {
     return <MissingExecutables packagesToInstall={packagesToInstall} />
   }
 
-  if (availableVideos.isLoading || availableTags.isLoading || availableGalleries.isLoading) {
+  if (allVideos.isLoading || allGalleries.isLoading || allTags.isLoading) {
     return <CenterMessage msg="Loading..." />
   }
 
@@ -155,7 +132,6 @@ export default function App(): JSX.Element {
                 combinations={combinations}
                 combinationIndex={combinationIndex}
                 setCombinationIndex={setCombinationIndex}
-                isGeneratingCombinations={isGeneratingCombinations}
               />
             }
           />
@@ -169,4 +145,30 @@ export default function App(): JSX.Element {
       </Routes>
     </HashRouter>
   )
+}
+
+function checkIsBigScreen(): boolean {
+  return typeof window === 'undefined' || window.innerWidth >= 768
+}
+
+function getCombinations(
+  allVideos: IVideo[],
+  selectedVideos: Set<string>,
+  selectedTags: Set<string>,
+  selectedGalleries: Set<string>
+): [string, string][] {
+  const combinations: [string, string][] = []
+  for (const video of allVideos) {
+    if (!selectedVideos.has(video.filePath)) continue
+
+    const commonTags = video.tags.filter((tag) => selectedTags.has(tag))
+    const commonGalleries = video.galleries.filter((gallery) => selectedGalleries.has(gallery))
+    if (commonTags.length !== selectedTags.size || commonGalleries.length === 0) continue
+
+    for (const gallery of commonGalleries) {
+      combinations.push([video.filePath, gallery])
+    }
+  }
+
+  return _.shuffle(combinations)
 }

@@ -1,5 +1,5 @@
 import { UseMutateFunction } from 'react-query'
-import { IDiffObj, ITagFull, IVideoFull } from '../../../../types'
+import { IDiffObj, ITag, IVideo } from '../../../../types'
 import CheckBoxGroups from '../../components/CheckBoxGroups'
 
 const TagView = ({
@@ -9,8 +9,8 @@ const TagView = ({
   setSelectedVideos,
   updateTagVideos
 }: {
-  tag: ITagFull
-  allVideos: IVideoFull[]
+  tag: ITag
+  allVideos: IVideo[]
   selectedVideos: Set<string>
   setSelectedVideos: React.Dispatch<React.SetStateAction<Set<string>>>
   updateTagVideos: UseMutateFunction<unknown, unknown, [string, IDiffObj], unknown>
@@ -21,7 +21,7 @@ const TagView = ({
       lists={[
         {
           heading: 'Videos',
-          allItems: allVideos.map((v: IVideoFull) => v.id),
+          allItems: allVideos.map((v: IVideo) => v.id),
           selectedItems: selectedVideos
         }
       ]}

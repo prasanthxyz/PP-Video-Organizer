@@ -1,7 +1,7 @@
 import * as React from 'react'
 import { UseMutateFunction } from 'react-query'
 import { Stack } from 'rsuite'
-import { IDiffObj, IGalleryFull, IVideoFull } from '../../../../types'
+import { IDiffObj, IGallery, IVideo } from '../../../../types'
 import CheckBoxGroups from '../../components/CheckBoxGroups'
 import ImageSlideShowView from '../common/ImageSlideShowView'
 
@@ -12,8 +12,8 @@ const GalleryView = ({
   setSelectedVideos,
   updateGalleryVideos
 }: {
-  gallery: IGalleryFull
-  allVideos: IVideoFull[]
+  gallery: IGallery
+  allVideos: IVideo[]
   selectedVideos: Set<string>
   setSelectedVideos: React.Dispatch<React.SetStateAction<Set<string>>>
   updateGalleryVideos: UseMutateFunction<unknown, unknown, [string, IDiffObj], unknown>
@@ -33,7 +33,7 @@ const GalleryView = ({
           lists={[
             {
               heading: 'Videos',
-              allItems: allVideos.map((v: IVideoFull) => v.id),
+              allItems: allVideos.map((v: IVideo) => v.id),
               selectedItems: selectedVideos
             }
           ]}

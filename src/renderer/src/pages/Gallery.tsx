@@ -1,6 +1,6 @@
 import * as React from 'react'
 import { useParams } from 'react-router'
-import { IGalleryFull, IVideoModel } from '../../../types'
+import { IGallery } from '../../../types'
 import { useGallery, useUpdateGalleryVideos } from '../hooks/galleries'
 import { useAllVideos } from '../hooks/videos'
 import CenterMessage from '../views/app/CenterMessage'
@@ -16,15 +16,14 @@ export default function Gallery(): JSX.Element {
   const updateGalleryVideos = useUpdateGalleryVideos()
 
   React.useEffect(() => {
-    if (gallery.isSuccess)
-      setSelectedVideos(new Set(gallery.data?.videos?.map((video: IVideoModel) => video.filePath)))
+    if (gallery.isSuccess) setSelectedVideos(new Set(gallery.data?.videos || []))
   }, [gallery.data])
 
   if (gallery.isLoading || allVideos.isLoading) return <CenterMessage msg="Loading..." />
 
   return (
     <GalleryView
-      gallery={gallery.data as IGalleryFull}
+      gallery={gallery.data as IGallery}
       allVideos={allVideos.data ? allVideos.data : []}
       selectedVideos={selectedVideos}
       setSelectedVideos={setSelectedVideos}
