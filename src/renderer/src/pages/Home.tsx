@@ -1,9 +1,8 @@
 import * as React from 'react'
 import { useHotkeys } from 'react-hotkeys-hook'
-import { useAvailableGalleries } from '../hooks/galleries'
-import { useAvailableTags } from '../hooks/tags'
-import { useAvailableVideos } from '../hooks/videos'
-import CenterMessage from '../views/app/CenterMessage'
+import { useAllGalleries } from '../hooks/galleries'
+import { useAllTags } from '../hooks/tags'
+import { useAllVideos } from '../hooks/videos'
 import HomeView from '../views/home/HomeView'
 
 export default function Home({
@@ -11,23 +10,27 @@ export default function Home({
   saveSelection,
   combinations,
   combinationIndex,
-  setCombinationIndex,
-  isGeneratingCombinations
+  setCombinationIndex
 }: {
   selection: { tags: Set<string>; videos: Set<string>; galleries: Set<string> }
   saveSelection: (videos: Set<string>, tags: Set<string>, galleries: Set<string>) => Promise<void>
   combinations: [string, string][]
   combinationIndex: number
   setCombinationIndex: React.Dispatch<React.SetStateAction<number>>
-  isGeneratingCombinations: boolean
 }): JSX.Element {
   const [activeTab, setActiveTab] = React.useState('watch')
   const [showVid, setShowVid] = React.useState(false)
   const [isVideoPlaying, setIsVideoPlaying] = React.useState(false)
 
-  const availableVideos: string[] = useAvailableVideos().data || []
-  const availableTags = useAvailableTags().data || []
-  const availableGalleries = useAvailableGalleries().data || []
+  const availableVideos: string[] =
+    useAllVideos()
+      .data?.filter((video) => video.isAvailable && video.isTgpAvailable)
+      .map((video) => video.id) || []
+  const availableTags = useAllTags().data?.map((tag) => tag.id) || []
+  const availableGalleries =
+    useAllGalleries()
+      .data?.filter((gallery) => gallery.isAvailable && gallery.images.length > 0)
+      .map((gallery) => gallery.id) || []
 
   useHotkeys('c', () => {
     setIsVideoPlaying(false)
@@ -66,8 +69,6 @@ export default function Home({
   const handleBack = (): void => navigateCombinations(false)
   useHotkeys('n', handleNext)
   useHotkeys('b', handleBack)
-
-  if (isGeneratingCombinations) return <CenterMessage msg="Generating combinations..." />
 
   return (
     <HomeView

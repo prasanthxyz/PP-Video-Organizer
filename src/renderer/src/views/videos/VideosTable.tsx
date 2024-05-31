@@ -4,7 +4,7 @@ import { UseMutateFunction } from 'react-query'
 import { Link } from 'react-router-dom'
 import { Table } from 'rsuite'
 import { SortType } from 'rsuite/esm/Table'
-import { IVideoFull } from '../../../../types'
+import { IVideo } from '../../../../types'
 
 const { Column, HeaderCell, Cell } = Table
 
@@ -13,21 +13,21 @@ const VideosTable = ({
   handleDeleteVideo,
   filterText
 }: {
-  dbVideos: IVideoFull[]
+  dbVideos: IVideo[]
   handleDeleteVideo: UseMutateFunction<unknown, unknown, string, unknown>
   filterText: string
 }): JSX.Element => {
   const [sortColumn, setSortColumn] = React.useState('filePath')
   const [sortType, setSortType] = React.useState('asc')
 
-  const getData = (): IVideoFull[] => {
+  const getData = (): IVideo[] => {
     if (sortColumn && sortType) {
       const col = ({
         video: 'videoName',
         FR: 'frameRate',
         BR: 'bitRate',
         minutes: 'duration'
-      }[sortColumn] || sortColumn) as keyof IVideoFull
+      }[sortColumn] || sortColumn) as keyof IVideo
       return dbVideos.sort((a, b) => {
         let x = a[col] as string | number
         let y = b[col] as string | number
@@ -58,8 +58,8 @@ const VideosTable = ({
       sortColumn={sortColumn}
       sortType={sortType as SortType}
       data={getData()
-        .filter((video: IVideoFull) => video.videoName.toLowerCase().includes(filterText))
-        .map((video: IVideoFull) => ({
+        .filter((video: IVideo) => video.videoName.toLowerCase().includes(filterText))
+        .map((video: IVideo) => ({
           video: video.isAvailable ? (
             <Link to={`/video/${encodeURIComponent(video.filePath)}`}>{video.videoName}</Link>
           ) : (

@@ -1,6 +1,6 @@
 import * as React from 'react'
 import { useParams } from 'react-router'
-import { ITagFull, IVideoModel } from '../../../types'
+import { ITag } from '../../../types'
 import { useTag, useUpdateTagVideos } from '../hooks/tags'
 import { useAllVideos } from '../hooks/videos'
 import CenterMessage from '../views/app/CenterMessage'
@@ -16,17 +16,14 @@ export default function Tag(): JSX.Element {
   const updateTagVideos = useUpdateTagVideos()
 
   React.useEffect(() => {
-    if (tag.isSuccess)
-      setSelectedVideos(
-        new Set(tag.data ? tag.data.videos.map((video: IVideoModel) => video.filePath) : [])
-      )
+    if (tag.isSuccess) setSelectedVideos(new Set(tag.data?.videos || []))
   }, [tag.data])
 
   if (tag.isLoading || allVideos.isLoading) return <CenterMessage msg="Loading..." />
 
   return (
     <TagView
-      tag={tag.data as ITagFull}
+      tag={tag.data as ITag}
       allVideos={allVideos.data ? allVideos.data : []}
       selectedVideos={selectedVideos}
       setSelectedVideos={setSelectedVideos}

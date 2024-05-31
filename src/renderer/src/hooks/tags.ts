@@ -7,16 +7,13 @@ import {
   useQueryClient
 } from 'react-query'
 import bi from '../../../backend_interface'
-import { IDiffObj, ITag, ITagFull } from '../../../types'
+import { IDiffObj, ITag } from '../../../types'
 
 const QUERIES = {
-  fetchAvailableTags: async (): Promise<string[]> =>
-    fetch(`${bi.SERVER_URL}/${bi.GET_AVAILABLE_TAGS}`).then((res) => res.json()),
-
   fetchAllTags: async (): Promise<ITag[]> =>
     fetch(`${bi.SERVER_URL}/${bi.GET_ALL_TAGS}`).then((res) => res.json()),
 
-  fetchTag: async (tagTitle: string): Promise<ITagFull> =>
+  fetchTag: async (tagTitle: string): Promise<ITag> =>
     fetch(`${bi.SERVER_URL}/${bi.GET_TAG}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -47,14 +44,10 @@ const QUERIES = {
 
 const INVALIDATE_CACHES = {
   createTags: async (queryClient: QueryClient): Promise<void[]> =>
-    Promise.all([
-      queryClient.invalidateQueries(['availableTags']),
-      queryClient.invalidateQueries(['allTags'])
-    ]),
+    Promise.all([queryClient.invalidateQueries(['allTags'])]),
 
   deleteTag: async (queryClient: QueryClient): Promise<void[]> =>
     Promise.all([
-      queryClient.invalidateQueries(['availableTags']),
       queryClient.invalidateQueries(['allTags']),
       queryClient.invalidateQueries(['allVideos'])
     ]),
@@ -66,19 +59,13 @@ const INVALIDATE_CACHES = {
     ])
 }
 
-export function useAvailableTags(): UseQueryResult<string[], unknown> {
-  return useQuery('availableTags', QUERIES.fetchAvailableTags, {
-    staleTime: Infinity
-  })
-}
-
 export function useAllTags(): UseQueryResult<ITag[], unknown> {
   return useQuery('allTags', QUERIES.fetchAllTags, {
     staleTime: Infinity
   })
 }
 
-export function useTag(tagTitle: string): UseQueryResult<ITagFull, unknown> {
+export function useTag(tagTitle: string): UseQueryResult<ITag, unknown> {
   return useQuery(['allTags', tagTitle], () => QUERIES.fetchTag(tagTitle), {
     staleTime: Infinity
   })

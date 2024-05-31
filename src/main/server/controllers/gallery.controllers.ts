@@ -1,81 +1,31 @@
-import * as fs from 'fs'
 import { Context } from 'koa'
-import _ from 'lodash'
-import * as path from 'path'
-import { IDiffObj, IGalleryModel, IVideoFull } from '../../../types'
-import * as dataUtils from '../utils/data'
+import { IGallery } from '../../../types'
 import * as galleryUtils from '../utils/gallery'
-import * as relationsUtils from '../utils/relations'
-import * as videoUtils from '../utils/video'
-
-export function getAvailableGalleries(ctx: Context): void {
-  ctx.body = galleryUtils
-    .getGalleries()
-    .map((g: IGalleryModel) => g.galleryPath as string)
-    .filter(fs.existsSync)
-    .sort((a, b) => (a > b ? 1 : b > a ? -1 : 0))
-}
 
 export function getAllGalleries(ctx: Context): void {
-  ctx.body = galleryUtils.getAllGalleries()
+  const allGalleries: IGallery[] = galleryUtils.getAllGalleries()
+  ctx.body = allGalleries
 }
 
 export function getGallery(ctx: Context): void {
   const requestData = ctx.request.body as { galleryPath: string }
-  const galleryPath = requestData.galleryPath
-  const galleryData = galleryUtils.getGalleryData(galleryPath)
-  ctx.body = {
-    ...galleryData,
-    id: galleryPath,
-    galleryPath,
-    galleryName: path.basename(galleryPath),
-    isAvailable: fs.existsSync(galleryPath),
-    images: _.shuffle(
-      galleryUtils.getGalleryImagePaths(galleryPath).map((i) => `file:///${i.replace(/\\/g, '/')}`)
-    )
-  }
+  const galleryData: IGallery = galleryUtils.getGalleryData(requestData.galleryPath)
+  ctx.body = galleryData
 }
 
 export function createGallery(ctx: Context): void {
   const requestData = ctx.request.body as { galleryPath: string }
-  const galleryPath = requestData.galleryPath
-  const existingGalleries = new Set(
-    galleryUtils.getGalleries().map((g: IGalleryModel) => g.galleryPath)
-  )
-  if (existingGalleries.has(galleryPath)) return
-  dataUtils.data.galleries.push(galleryPath)
-  dataUtils.storeData()
-
-  const allVideos = videoUtils.getAllVideos().map((video: IVideoFull) => video.filePath)
-  const videoDiffObj: IDiffObj = {
-    add: allVideos,
-    remove: []
-  }
-  relationsUtils.updateGalleryVideos(galleryPath, videoDiffObj)
-
+  galleryUtils.createGallery(requestData.galleryPath)
   ctx.body = { success: true }
 }
 
 export function deleteGallery(ctx: Context): void {
   const requestData = ctx.request.body as { galleryPath: string }
-  const galleryPath = requestData.galleryPath
-  dataUtils.data.galleries = dataUtils.data.galleries.filter((gp) => gp !== galleryPath)
-  dataUtils.data.videoGalleries = dataUtils.data.videoGalleries.filter(
-    (vg) => vg[1] !== galleryPath
-  )
-  dataUtils.storeData()
+  galleryUtils.deleteGallery(requestData.galleryPath)
   ctx.body = { success: true }
 }
 
 export function deleteMissingGalleries(ctx: Context): void {
-  const allGalleries: string[] = galleryUtils
-    .getGalleries()
-    .map((g: IGalleryModel) => g.galleryPath) as string[]
-  const missingGalleries = new Set(allGalleries.filter((g: string) => !fs.existsSync(g)))
-  dataUtils.data.galleries = dataUtils.data.galleries.filter((gp) => !missingGalleries.has(gp))
-  dataUtils.data.videoGalleries = dataUtils.data.videoGalleries.filter(
-    (vg) => !missingGalleries.has(vg[1])
-  )
-  dataUtils.storeData()
+  galleryUtils.deleteMissingGalleries()
   ctx.body = { success: true }
 }

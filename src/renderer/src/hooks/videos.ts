@@ -7,16 +7,13 @@ import {
   useQueryClient
 } from 'react-query'
 import bi from '../../../backend_interface'
-import { IDiffObj, IVideoFull, IVideoWithRelated } from '../../../types'
+import { IDiffObj, IVideo } from '../../../types'
 
 const QUERIES = {
-  fetchAvailableVideos: async (): Promise<string[]> =>
-    fetch(`${bi.SERVER_URL}/${bi.GET_AVAILABLE_VIDEOS}`).then((res) => res.json()),
-
-  fetchAllVideos: async (): Promise<IVideoFull[]> =>
+  fetchAllVideos: async (): Promise<IVideo[]> =>
     fetch(`${bi.SERVER_URL}/${bi.GET_ALL_VIDEOS}`).then((res) => res.json()),
 
-  fetchVideo: async (videoPath: string): Promise<IVideoWithRelated> =>
+  fetchVideo: async (videoPath: string): Promise<IVideo> =>
     fetch(`${bi.SERVER_URL}/${bi.GET_VIDEO}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -71,26 +68,18 @@ const QUERIES = {
 const INVALIDATE_CACHES = {
   createVideos: async (queryClient: QueryClient): Promise<void[]> =>
     Promise.all([
-      queryClient.invalidateQueries(['availableVideos']),
       queryClient.invalidateQueries(['allVideos']),
       queryClient.invalidateQueries(['allGalleries'])
     ]),
 
   generateTgp: async (queryClient: QueryClient): Promise<void[]> =>
-    Promise.all([
-      queryClient.invalidateQueries(['availableVideos']),
-      queryClient.invalidateQueries(['allVideos'])
-    ]),
+    Promise.all([queryClient.invalidateQueries(['allVideos'])]),
 
   generateMissingTgps: async (queryClient: QueryClient): Promise<void[]> =>
-    Promise.all([
-      queryClient.invalidateQueries(['availableVideos']),
-      queryClient.invalidateQueries(['allVideos'])
-    ]),
+    Promise.all([queryClient.invalidateQueries(['allVideos'])]),
 
   deleteVideo: async (queryClient: QueryClient): Promise<void[]> =>
     Promise.all([
-      queryClient.invalidateQueries(['availableVideos']),
       queryClient.invalidateQueries(['allVideos']),
       queryClient.invalidateQueries(['allGalleries']),
       queryClient.invalidateQueries(['allTags'])
@@ -116,19 +105,13 @@ const INVALIDATE_CACHES = {
     ])
 }
 
-export function useAvailableVideos(): UseQueryResult<string[], unknown> {
-  return useQuery('availableVideos', QUERIES.fetchAvailableVideos, {
-    staleTime: Infinity
-  })
-}
-
-export function useAllVideos(): UseQueryResult<IVideoFull[], unknown> {
+export function useAllVideos(): UseQueryResult<IVideo[], unknown> {
   return useQuery('allVideos', QUERIES.fetchAllVideos, {
     staleTime: Infinity
   })
 }
 
-export function useVideo(videoPath: string): UseQueryResult<IVideoWithRelated, unknown> {
+export function useVideo(videoPath: string): UseQueryResult<IVideo, unknown> {
   return useQuery(['allVideos', videoPath], () => QUERIES.fetchVideo(videoPath), {
     staleTime: Infinity
   })

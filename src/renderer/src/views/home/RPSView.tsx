@@ -1,6 +1,6 @@
 import { UseQueryResult } from 'react-query'
 import { Col, Row } from 'rsuite'
-import { IGalleryFull, IVideoWithRelated } from '../../../../types'
+import { IGallery, IVideo } from '../../../../types'
 import VideoPlayer from '../../components/VideoPlayer'
 import ImageSlideShowView from '../common/ImageSlideShowView'
 
@@ -14,8 +14,8 @@ const RPSView = ({
   showVid: boolean
   videoPath: string
   isVideoPlaying: boolean
-  gallery: UseQueryResult<IGalleryFull, unknown>
-  video: UseQueryResult<IVideoWithRelated, unknown>
+  gallery: UseQueryResult<IGallery, unknown>
+  video: UseQueryResult<IVideo, unknown>
 }): JSX.Element => (
   <Row gutter={3}>
     <Col xs={18}>

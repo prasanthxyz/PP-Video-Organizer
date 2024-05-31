@@ -2,7 +2,7 @@ import * as React from 'react'
 import { UseQueryResult } from 'react-query'
 import { Link } from 'react-router-dom'
 import { Button, Col, Row, Stack } from 'rsuite'
-import { IGalleryFull, IVideoWithRelated } from '../../../../types'
+import { IGallery, IVideo } from '../../../../types'
 
 const ControlBarView = ({
   showVid,
@@ -14,8 +14,8 @@ const ControlBarView = ({
 }: {
   showVid: boolean
   setShowVid: React.Dispatch<React.SetStateAction<boolean>>
-  video: UseQueryResult<IVideoWithRelated, unknown>
-  gallery: UseQueryResult<IGalleryFull, unknown>
+  video: UseQueryResult<IVideo, unknown>
+  gallery: UseQueryResult<IGallery, unknown>
   handleBack: () => void
   handleNext: () => void
 }): JSX.Element => (
