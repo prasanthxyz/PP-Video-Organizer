@@ -1,12 +1,7 @@
-import _ from 'lodash'
 import * as React from 'react'
-import { useQueryClient } from 'react-query'
 import { HashRouter, Route, Routes } from 'react-router-dom'
-import { IVideo } from 'src/types'
-import { useAllGalleries } from './hooks/galleries'
-import { useAllTags } from './hooks/tags'
+import useRelations from './hooks/relations'
 import { useExecutablesStatus } from './hooks/utils'
-import { useAllVideos } from './hooks/videos'
 import Galleries from './pages/Galleries'
 import Gallery from './pages/Gallery'
 import Home from './pages/Home'
@@ -21,42 +16,18 @@ import MissingExecutables from './views/app/MissingExecutables'
 export const AppContext = React.createContext(null)
 
 export default function App(): JSX.Element {
-  const queryClient = useQueryClient()
-
   const [isBigScreen, setIsBigScreen] = React.useState(checkIsBigScreen())
   const executablesStatus = useExecutablesStatus()
 
-  const [selection, setSelection] = React.useState({
-    tags: new Set<string>(),
-    videos: new Set<string>(),
-    galleries: new Set<string>()
-  })
-  const [combinationIndex, setCombinationIndex] = React.useState(0)
-
-  const allVideos = useAllVideos()
-  const allGalleries = useAllGalleries()
-  const allTags = useAllTags()
-
-  async function saveSelection(
-    videos: Set<string>,
-    tags: Set<string>,
-    galleries: Set<string>
-  ): Promise<void> {
-    setSelection({
-      tags,
-      videos,
-      galleries
-    })
-    setCombinationIndex(0)
-  }
-
-  async function refreshCombinations(): Promise<void> {
-    await Promise.all([
-      queryClient.invalidateQueries(['allVideos']),
-      queryClient.invalidateQueries(['allGalleries']),
-      queryClient.invalidateQueries(['allTags'])
-    ])
-  }
+  const {
+    selection,
+    combinations,
+    combinationIndex,
+    setCombinationIndex,
+    saveSelection,
+    refreshCombinations,
+    isGeneratingCombinations
+  } = useRelations()
 
   React.useEffect(() => {
     if (typeof window === 'undefined') return
@@ -66,28 +37,6 @@ export default function App(): JSX.Element {
     window.addEventListener('resize', autoResize)
     return () => window.removeEventListener('resize', autoResize)
   }, [])
-
-  React.useEffect(() => {
-    if (allVideos.isSuccess && allTags.isSuccess && allGalleries.isSuccess) {
-      const videos = new Set(
-        allVideos.data
-          ?.filter((video) => video.isAvailable && video.isTgpAvailable)
-          .map((video) => video.id) || []
-      )
-      const galleries = new Set(
-        allGalleries.data
-          ?.filter((gallery) => gallery.isAvailable && gallery.images.length > 0)
-          .map((gallery) => gallery.id) || []
-      )
-      saveSelection(new Set(videos), new Set(), new Set(galleries))
-    }
-  }, [allVideos.dataUpdatedAt, allTags.dataUpdatedAt, allGalleries.dataUpdatedAt])
-
-  const combinations = React.useMemo(
-    () =>
-      getCombinations(allVideos.data || [], selection.videos, selection.tags, selection.galleries),
-    [selection]
-  )
 
   if (!isBigScreen) {
     return (
@@ -115,7 +64,7 @@ export default function App(): JSX.Element {
     return <MissingExecutables packagesToInstall={packagesToInstall} />
   }
 
-  if (allVideos.isLoading || allGalleries.isLoading || allTags.isLoading) {
+  if (isGeneratingCombinations) {
     return <CenterMessage msg="Loading..." />
   }
 
@@ -149,26 +98,4 @@ export default function App(): JSX.Element {
 
 function checkIsBigScreen(): boolean {
   return typeof window === 'undefined' || window.innerWidth >= 768
-}
-
-function getCombinations(
-  allVideos: IVideo[],
-  selectedVideos: Set<string>,
-  selectedTags: Set<string>,
-  selectedGalleries: Set<string>
-): [string, string][] {
-  const combinations: [string, string][] = []
-  for (const video of allVideos) {
-    if (!selectedVideos.has(video.filePath)) continue
-
-    const commonTags = video.tags.filter((tag) => selectedTags.has(tag))
-    const commonGalleries = video.galleries.filter((gallery) => selectedGalleries.has(gallery))
-    if (commonTags.length !== selectedTags.size || commonGalleries.length === 0) continue
-
-    for (const gallery of commonGalleries) {
-      combinations.push([video.filePath, gallery])
-    }
-  }
-
-  return _.shuffle(combinations)
 }
