@@ -1,11 +1,11 @@
 import ffprobe from 'ffprobe'
 import ffprobeStatic from 'ffprobe-static'
-import ffmpeg, { FfprobeData } from 'fluent-ffmpeg'
 import * as fs from 'fs'
 import * as path from 'path'
 import { IDiffObj, IVideo, IVideoData, IVideoModel } from '../../../types'
 import * as dataUtils from './data'
 import * as relationsUtils from './relations'
+import * as vcsi from './vcsi'
 
 export function getAllVideos(): IVideo[] {
   return dataUtils.data.videos.map((video: IVideoModel) => ({
@@ -129,22 +129,9 @@ export async function generateTgp(videoPath: string): Promise<void> {
     fs.mkdirSync(imgDir)
   }
 
-  ffmpeg.setFfprobePath(ffprobeStatic.path)
-  const metadata = await new Promise<FfprobeData>((resolve) => {
-    ffmpeg.ffprobe(videoPath, (_err, metadata) => {
-      resolve(metadata)
-    })
-  })
-  await new Promise<void>((resolve, reject) => {
-    ffmpeg(videoPath)
-      .output(`${imgDir}/${path.basename(videoPath)}.jpg`)
-      .outputOptions('-vf', `fps=16/${metadata.format.duration},tile=4x4`)
-      .on('end', () => resolve())
-      .on('error', (err) => {
-        return reject(new Error(err))
-      })
-      .run()
-  })
+  const videoStream = await getVideoStream(videoPath)
+  if (videoStream === null) return
+  await vcsi.generateTgp(videoPath, imgDir, Number(videoStream.duration), 4, 4, 1500)
 }
 
 export async function generateMissingTgps(): Promise<void> {
