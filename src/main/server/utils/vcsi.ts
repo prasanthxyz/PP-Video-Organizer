@@ -15,6 +15,7 @@ export async function generateTgp(
   const imgName = path.basename(videoPath) + '.jpg'
   const numTiles = cols * rows
   const timeSlice = Math.floor((duration * 1000) / numTiles)
+  const offset = Math.floor(timeSlice / 2)
 
   const snapshots: string[] = []
   const streams: string[] = []
@@ -25,7 +26,7 @@ export async function generateTgp(
     streams.push(`[${i}:v]`)
     layouts.push(getFfmpegLayoutString(i, cols))
     await generateSnapshot(
-      Duration.fromMillis(i * timeSlice).toFormat('h:m:s'),
+      Duration.fromMillis(offset + i * timeSlice).toFormat('h:m:s'),
       snapshotPath,
       videoPath
     )
