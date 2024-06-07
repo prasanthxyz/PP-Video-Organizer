@@ -11,12 +11,13 @@ export function getAllGalleries(): IGallery[] {
 }
 
 export function getGalleryData(galleryPath: string): IGallery {
+  const isGalleryAvailable = fs.existsSync(galleryPath)
   return {
     id: galleryPath,
     galleryPath: galleryPath,
-    isAvailable: fs.existsSync(galleryPath),
+    isAvailable: isGalleryAvailable,
     galleryName: path.basename(galleryPath),
-    images: getGalleryImagePaths(galleryPath),
+    images: isGalleryAvailable ? getGalleryImagePaths(galleryPath) : [],
     videos: relationsUtils.getGalleryVideos(galleryPath)
   }
 }

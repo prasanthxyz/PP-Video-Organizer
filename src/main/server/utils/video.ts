@@ -135,7 +135,9 @@ export async function generateTgp(videoPath: string): Promise<void> {
 }
 
 export async function generateMissingTgps(): Promise<void> {
-  await Promise.all(dataUtils.data.videos.map((video: IVideoModel) => generateTgp(video.filePath)))
+  for (const video of dataUtils.data.videos) {
+    await generateTgp(video.filePath)
+  }
 }
 
 async function getVideoStream(videoPath: string): Promise<ffprobe.FFProbeStream | null> {
