@@ -1,5 +1,5 @@
 import { electronApp, is, optimizer } from '@electron-toolkit/utils'
-import { BrowserWindow, app, dialog, ipcMain, shell } from 'electron'
+import { BrowserWindow, app, shell } from 'electron'
 import { join } from 'path'
 import icon from '../../resources/icon.png?asset'
 import { startBackendServer } from './server'
@@ -17,20 +17,8 @@ async function createWindow(): Promise<void> {
     autoHideMenuBar: true,
     ...(process.platform === 'linux' ? { icon } : {}),
     webPreferences: {
-      preload: join(__dirname, '../preload/index.js'),
       sandbox: false,
       webSecurity: false
-    }
-  })
-
-  ipcMain.handle('chooseDirectory', async () => {
-    const { canceled, filePaths } = await dialog.showOpenDialog(mainWindow, {
-      properties: ['openDirectory']
-    })
-    if (canceled) {
-      return
-    } else {
-      return filePaths[0]
     }
   })
 

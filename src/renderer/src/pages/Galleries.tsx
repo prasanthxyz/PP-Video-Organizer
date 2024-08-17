@@ -24,10 +24,6 @@ export default function Galleries(): JSX.Element {
     setGalleryInput('')
   }
 
-  const getGalleryPathInput = async (): Promise<void> => {
-    setGalleryInput(await window.api.chooseDirectory())
-  }
-
   if (dbGalleries.isLoading) return <CenterMessage msg="Loading..." />
 
   return (
@@ -35,7 +31,7 @@ export default function Galleries(): JSX.Element {
       <Operations
         isCreating={isCreating as boolean}
         galleryInput={galleryInput}
-        getGalleryPathInput={getGalleryPathInput}
+        setGalleryInput={setGalleryInput}
         handleCreateGallery={handleCreateGallery}
         isDeletingGalleries={isDeletingGalleries}
         handleDeleteMissingGalleries={deleteMissingGalleries}
